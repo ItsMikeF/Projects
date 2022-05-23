@@ -5,19 +5,20 @@ library(utils)
 library(stats)
 
 #Inputs
-tournament <- "AT&T Byron Nelson"
-date <- c("2022-05-15")
+tournament <- "PGA Championship"
+date <- c("2022-05-22")
 
 tournaments <- c("2022-04-10	The Masters", 
                  "2022-04-17	RBC Heritage", 
                  "2022-05-01	Mexico Open",
                  "2022-05-08	Wells Fargo", 
-                 "2022-05-15 AT&T Byron Nelson")
+                 "2022-05-15 AT&T Byron Nelson", 
+                 "2022-05-22 PGA Championship")
 
 #Set Working Directory
 dt <- paste(date, tournament)
 
-setwd(paste0("C://Users//",unlist(strsplit(getwd(), "/"))[3],"//Documents//GitHub//DFS_Data//Data_Golf//", dt))
+setwd(paste0("C://Users//",unlist(strsplit(getwd(), "/"))[3],"//Documents//GitHub//Projects//Golf//Training_data//", dt))
 
 #Import CSVs
 golf_salaries <- read.csv("DKSalaries.csv")
@@ -107,4 +108,4 @@ golfers <- golfers %>%
 
 golfers$date <- date
 golfers$tournament <- tournament
-#write.csv(golfers, file = "golfers_results.csv")
+write.csv(golfers, file = "golfers_results.csv")
