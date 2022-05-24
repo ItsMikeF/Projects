@@ -5,7 +5,7 @@ library(stringr, warn.conflicts = F)
 library(caret, warn.conflicts = F)
 library(car, warn.conflicts = F)
 
-setwd("C:/Users/mikef/Documents/GitHub/DFS_Data/Data_Golf/results")
+setwd("C:/Users/mikef/Documents/GitHub/Projects/Golf/results")
 
 #make this example reproducible
 set.seed(0)
@@ -29,7 +29,7 @@ train_x <- data.matrix(train %>%
                                 odds_delta_per, 
                                 odds_close))
 train_x <- data.matrix(train %>% 
-                         select(ceil, floor,
+                         select(ceil,
                                 Salary, 
                                 residuals,
                                 AvgPointsPerGame, 
@@ -69,7 +69,7 @@ watchlist = list(train=xgb_train, test=xgb_test)
 model <- xgb.train(data = xgb_train, max.depth = 3, watchlist=watchlist, nrounds = 20, print_every_n = 1)
 
 #define final model
-final <- xgboost(data = xgb_train, max.depth = 3, nrounds = 7, print_every_n = 1)
+final <- xgboost(data = xgb_train, max.depth = 3, nrounds = 8, print_every_n = 1)
 
 #use model to make predictions on test data
 pred_y <- round(predict(final, xgb_test), digits = 1)

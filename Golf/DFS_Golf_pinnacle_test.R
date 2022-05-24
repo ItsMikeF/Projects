@@ -10,13 +10,13 @@ library(XML)
 library(binr)
 
 #Inputs
-tournament <- "PGA Championship"
-date <- c("2022-05-22")
-entries <- 100
+tournament <- "Charles Schwab"
+date <- c("2022-05-29")
+entries <- 50
 salary_filter <- 7000
 
 #Set Working Directory
-setwd(paste0("C://Users//",unlist(strsplit(getwd(), "/"))[3],"//Documents//GitHub//DFS_Data//Data_Golf//", date," ", tournament))
+setwd(paste0("C://Users//",unlist(strsplit(getwd(), "/"))[3],"//Documents//GitHub//Projects//Golf//", date," ", tournament))
 
 #Import CSVs
 golf_salaries <- read.csv("DKSalaries.csv")
@@ -144,10 +144,11 @@ own_multiplier <- 100 / entries
 
 #Max ownership change formula
 golfers$own_change <- round(
-  (own_multiplier * 2 * golfers$residuals) +
-  (own_multiplier * 2) +
-  (own_multiplier * 2 * (golfers$ceil + golfers$floor) / 200) +
-  (own_multiplier * 2 * if_else(golfers$odds_delta_per > 1, 1, golfers$odds_delta_per)), digits = 2)
+  (own_multiplier * 1.5 * ((golfers$ceil - mean(golfers$ceil, na.rm=T)) / sd(golfers$ceil, na.rm = T))) +
+  (own_multiplier * 1.0 * ((golfers$AvgPointsPerGame - mean(golfers$AvgPointsPerGame, na.rm=T)) / sd(golfers$AvgPointsPerGame, na.rm = T))) +
+  (own_multiplier * 0.6 * golfers$residuals) +
+  (own_multiplier * 0.7 * if_else(golfers$odds_delta_per > 1, 1, golfers$odds_delta_per)) +
+  (own_multiplier * 2), digits = 2)
 
 golfers$adj_own <- case_when(golfers$proj_own + golfers$own_change <= 0 ~ 0,
                              golfers$proj_own + golfers$own_change < 40 ~ round((golfers$proj_own + golfers$own_change)/own_multiplier)*own_multiplier, 
