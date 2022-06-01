@@ -29,7 +29,7 @@ course$app_sg_rank <- rank(-course$app_sg)
 course$ott_sg_rank <- rank(-course$ott_sg)
 
 course <- course %>% 
-  filter(course == "Colonial Country Club") %>% 
+  filter(course == "Muirfield Village Golf Club") %>% 
   select(par,
          yardage, yardage_rank, 
          adj_score_to_par, adj_score_to_par_rank, 
@@ -40,4 +40,4 @@ course <- course %>%
          app_sg, app_sg_rank, 
          ott_sg, ott_sg_rank)
 
-course$adj_score_to_par_rank / 75 * (7400 - 6800) + 6800
+course$adj_score_to_par_rank / 75 * (7400 - 6300) + 6300

@@ -14,7 +14,7 @@ library(stats)
 library(XML)
 library(binr)
 
-setwd("C:/Users/mikef/Documents/GitHub/DFS_Data/Data_Golf/results")
+setwd("C:/Users/mikef/Documents/GitHub/Projects/Golf/results")
 
 golfers <- read.csv("golfers.csv")
 df <- read.csv("df.csv")
@@ -43,7 +43,7 @@ entries <- 50
 own_multiplier <- 100 / entries
 
 #Salary Filter
-salary_filter <- 7000
+salary_filter <- 7100
 golfers2 <- golfers %>% 
   filter(Salary >= salary_filter)
 

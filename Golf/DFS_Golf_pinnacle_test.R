@@ -12,10 +12,10 @@ library(officer)
 library(janitor)
 
 #Inputs
-tournament <- "Charles Schwab"
-date <- c("2022-05-29")
+tournament <- "Memorial Tournament"
+date <- c("2022-06-02")
 entries <- 50
-salary_filter <- 7200
+salary_filter <- 7100
 
 #Set Working Directory
 setwd(paste0("C://Users//",unlist(strsplit(getwd(), "/"))[3],"//Documents//GitHub//Projects//Golf//", date," ", tournament))
@@ -31,12 +31,17 @@ odds_pn_close <- read.csv(list.files(pattern = "_close.csv"), header = T)
 odds_pn_open <- odds_pn_open %>% 
   separate(player_name, into = c("last", "first"), sep = ",") 
 odds_pn_open$player_name <- trimws(paste(odds_pn_open$first, odds_pn_open$last))
-odds_pn_open <- odds_pn_open %>% select(player_name, pinnacle_odds)
+odds_pn_open <- odds_pn_open %>%
+  select(player_name, pinnacle_odds)
+
+odds_pn_open$pinnacle_odds[is.infinite(odds_pn_open$pinnacle_odds)] <- max(odds_pn_open$pinnacle_odds[is.finite(odds_pn_open$pinnacle_odds)], na.rm = T)
 
 odds_pn_close <- odds_pn_close %>% 
   separate(player_name, into = c("last", "first"), sep = ",") 
 odds_pn_close$player_name <- trimws(paste(odds_pn_close$first, odds_pn_close$last))
 odds_pn_close <- odds_pn_close %>% select(player_name, pinnacle_odds)
+
+odds_pn_close$pinnacle_odds[is.infinite(odds_pn_close$pinnacle_odds)] <- max(odds_pn_close$pinnacle_odds[is.finite(odds_pn_close$pinnacle_odds)], na.rm = T)
 
 odds_pn <- odds_pn_open %>% 
   left_join(odds_pn_close, by = c("player_name"))
