@@ -1,11 +1,11 @@
 library(tidyverse)
 
 #Get list of tournaments
-dir_list <- list.dirs("C:/Users/mikef/Documents/GitHub/DFS_Data/Data_Golf", recursive = TRUE)
+dir_list <- list.dirs("C:/Users/mikef/Documents/GitHub/Projects/Golf", recursive = TRUE)
 
 tournaments <- NULL
-for (i in 2:(length(dir_list)-2)) {
-  tournaments[i-1] <- unlist(strsplit(dir_list[i], "/"))[8]
+for (i in 5:(length(dir_list))) {
+  tournaments[i-4] <- unlist(strsplit(dir_list[i], "/"))[9]
 }
 
 tournaments <- tournaments[-which(tournaments %in% c("2020-01-05 Sentry ToC",
@@ -22,20 +22,17 @@ tournaments <- tournaments[-which(tournaments %in% c("2020-01-05 Sentry ToC",
                                                      "2021-11-07 Technology Championship", 
                                                      "2021-12-05 Hero World Challenge"))]
 
-#Setwd
-setwd(paste0("C://Users//",unlist(strsplit(getwd(), "/"))[3],"//Documents//GitHub//DFS_Data//Data_Golf"))
-
-#Compile data
-dg <- list()
-
 #Add Functions
 convert_ML <- function(odds) {
   breakeven <- if_else(odds > 0, 100 / (100 + odds), abs(odds) / (abs(odds) + 100))
   return(round(breakeven, digits = 4))
 }
 
+#Compile data
+dg <- list()
+
 for(i in c(1:(length(tournaments)-1))) {
-  setwd(paste0("C://Users//",unlist(strsplit(getwd(), "/"))[3],"//Documents//GitHub//DFS_Data//Data_Golf/",tournaments[i]))
+  setwd(paste0("C://Users//",unlist(strsplit(getwd(), "/"))[3],"//Documents//GitHub//Projects//Golf/Training_data//",tournaments[i]))
   
   files <- length(list.files())
   
@@ -66,12 +63,12 @@ for(i in c(1:(length(tournaments)-1))) {
   sg <- sg %>% 
     group_by(player_name, dg_id) %>% 
     summarize(round_score = mean(round_score), 
-              sg_putt = mean(sg_putt, na.rm = T), 
-              sg_arg = mean(sg_arg, na.rm = T), 
-              sg_app = mean(sg_app, na.rm = T), 
-              sg_ott = mean(sg_ott, na.rm = T), 
-              sg_t2g = mean(sg_t2g, na.rm = T), 
-              sg_total = mean(sg_total, na.rm = T), 
+              sg_putt = sum(sg_putt, na.rm = T), 
+              sg_arg = sum(sg_arg, na.rm = T), 
+              sg_app = sum(sg_app, na.rm = T), 
+              sg_ott = sum(sg_ott, na.rm = T), 
+              sg_t2g = sum(sg_t2g, na.rm = T), 
+              sg_total = sum(sg_total, na.rm = T), 
               driving_dist = mean(driving_dist, na.rm = T), 
               driving_acc = mean(driving_acc, na.rm = T), 
               gir = mean(gir, na.rm = T), 
@@ -89,7 +86,7 @@ for(i in c(1:(length(tournaments)-1))) {
   print(tournaments[i])
 }
 
-setwd(paste0("C://Users//",unlist(strsplit(getwd(), "/"))[3],"//Documents//GitHub//DFS_Data//Data_Golf//Results"))
+setwd(paste0("C://Users//",unlist(strsplit(getwd(), "/"))[3],"//Documents//GitHub//Projects//Golf//Results"))
 
 #Write dg csv
 write.csv(dg[[1]], file = "dg.csv")

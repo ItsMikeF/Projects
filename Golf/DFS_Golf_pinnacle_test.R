@@ -8,12 +8,14 @@ library(lpSolve)
 library(stats)
 library(XML)
 library(binr)
+library(officer)
+library(janitor)
 
 #Inputs
 tournament <- "Charles Schwab"
 date <- c("2022-05-29")
 entries <- 50
-salary_filter <- 7000
+salary_filter <- 7200
 
 #Set Working Directory
 setwd(paste0("C://Users//",unlist(strsplit(getwd(), "/"))[3],"//Documents//GitHub//Projects//Golf//", date," ", tournament))
@@ -71,7 +73,7 @@ rg <- rg %>%
 #Create golfer tibble
 golfers <- golf_salaries %>%
   left_join(odds_pn, by = c("Name" = "Golfer"))
-
+ 
 #Add Odds Rank
 golfers$odds_rank <- round(rank(-golfers$odds_close), digits =0)
 

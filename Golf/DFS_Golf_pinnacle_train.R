@@ -5,15 +5,16 @@ library(utils)
 library(stats)
 
 #Inputs
-tournament <- "PGA Championship"
-date <- c("2022-05-22")
+tournament <- "Charles Schwab"
+date <- c("2022-05-29")
 
 tournaments <- c("2022-04-10	The Masters", 
                  "2022-04-17	RBC Heritage", 
                  "2022-05-01	Mexico Open",
                  "2022-05-08	Wells Fargo", 
                  "2022-05-15 AT&T Byron Nelson", 
-                 "2022-05-22 PGA Championship")
+                 "2022-05-22 PGA Championship", 
+                 "2022-05-29 Charles Schwab")
 
 #Set Working Directory
 dt <- paste(date, tournament)

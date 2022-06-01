@@ -5,7 +5,7 @@ library(stringr, warn.conflicts = F)
 library(caret, warn.conflicts = F)
 library(car, warn.conflicts = F)
 
-setwd("C:/Users/mikef/Documents/GitHub/DFS_Data/Data_Golf/results")
+setwd("C:/Users/mikef/Documents/GitHub/Projects/Golf/Results")
 
 #make this example reproducible
 set.seed(0)

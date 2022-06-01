@@ -1,6 +1,9 @@
 #Load packages
 library(tidyverse)
 
+#Set Working Directory
+setwd(paste0("C://Users//",unlist(strsplit(getwd(), "/"))[3],"//Documents//GitHub//Projects//Golf//Results"))
+
 #Import csv
 course <- read.csv("dg_course_table.csv")
 skill <- read.csv("dg_skill_ratings.csv")
@@ -26,7 +29,7 @@ course$app_sg_rank <- rank(-course$app_sg)
 course$ott_sg_rank <- rank(-course$ott_sg)
 
 course <- course %>% 
-  filter(course == "TPC Scottsdale") %>% 
+  filter(course == "Colonial Country Club") %>% 
   select(par,
          yardage, yardage_rank, 
          adj_score_to_par, adj_score_to_par_rank, 

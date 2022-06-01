@@ -39,7 +39,7 @@ golfer_own <- matrix(nrow = dim(golfers)[1], ncol = 3)
 golfer_own <- golfers$Name
 golfer_own <- tibble(golfer_own)
 
-entries <- 100
+entries <- 50
 own_multiplier <- 100 / entries
 
 #Salary Filter
