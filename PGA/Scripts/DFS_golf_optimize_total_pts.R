@@ -14,10 +14,15 @@ library(stats)
 library(XML)
 library(binr)
 
-setwd("C:/Users/mikef/Documents/GitHub/Projects/Golf/results")
+#Inputs
+entries <- 115
+salary_filter <- 7100
 
-golfers <- read.csv("golfers.csv")
-df <- read.csv("df.csv")
+#Import CSVs
+golfers <- read.csv("./Results/golfers.csv")
+df <- read.csv("./Results/df.csv")
+
+#Add xgb projects to golfers
 golfers$total_pts <- round(df$pred_y, digits = 2)
 
 #Optimal Lineup
@@ -39,11 +44,10 @@ golfer_own <- matrix(nrow = dim(golfers)[1], ncol = 3)
 golfer_own <- golfers$Name
 golfer_own <- tibble(golfer_own)
 
-entries <- 50
 own_multiplier <- 100 / entries
 
 #Salary Filter
-salary_filter <- 7100
+
 golfers2 <- golfers %>% 
   filter(Salary >= salary_filter)
 
@@ -111,10 +115,10 @@ names(entries_wp) <- "Lineup WP"
 
 #Check ownership
 ownership_table <- golfers %>% 
-  select(Name, ID, Salary, fpts, total_pts, odds_open, odds_close, odds_delta, odds_delta_per, odds_rank, proj_own, own_change)
+  select(Name, ID, Salary, fpts, total_pts, odds_open, odds_close, odds_delta, odds_delta_per, odds_rank, residuals, proj_own, own_change)
 
 for(i in 1:dim(golfers)[1]){
-  ownership_table$own[i] <- sum(str_count(optimal_table$Name, ownership_table$Name[i])) / entries
+  ownership_table$own[i] <- sum(str_count(optimal_table$Name, ownership_table$Name[i])) / 100
 }
 
 ownership_table %>% 
@@ -135,6 +139,5 @@ names(entries_upload) <- c("G","G","G","G","G","G")
 entries_upload <- unique(entries_upload)
 
 #Write
-#write.csv(golfers, file = "golfers.csv")
-write.csv(ownership_table, file = "ownership_table.csv")
-write.csv(entries_upload, file = "entries_upload.csv")
+write.csv(ownership_table, file = "./Results/ownership_table.csv")
+write.csv(entries_upload, file = "./Results/entries_upload.csv")
