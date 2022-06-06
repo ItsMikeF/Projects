@@ -1,42 +1,33 @@
 #Load packages
 library(tidyverse, warn.conflicts = F) #metapackage
-library(lubridate, warn.conflicts = F)
-library(utils)
-library(stats)
 
-#Inputs
-tournament <- "Charles Schwab"
-date <- c("2022-05-29")
-
+#List tournaments in golfer results
 tournaments <- c("2022-04-10	The Masters", 
                  "2022-04-17	RBC Heritage", 
                  "2022-05-01	Mexico Open",
                  "2022-05-08	Wells Fargo", 
                  "2022-05-15 AT&T Byron Nelson", 
                  "2022-05-22 PGA Championship", 
-                 "2022-05-29 Charles Schwab")
+                 "2022-05-29 Charles Schwab", 
+                 "2022-06-05 Memorial Tournament")
 
-#Set Working Directory
-dt <- paste(date, tournament)
-
-setwd(paste0("C://Users//",unlist(strsplit(getwd(), "/"))[3],"//Documents//GitHub//Projects//Golf//Training_data//", dt))
-
-#Set folder
+#Find latest training data folder
+date <- "2022-06-05"
+tournament <- "Memorial Tournament"
 folder <- list.dirs()[length(list.dirs())]
 file_list <- list.files(path = folder, pattern = "*.csv")
 
+for (i in 1:length(file_list)){
+  assign(file_list[i], 
+         read.csv(paste0(folder, "/", file_list[i]))
+  )}
+
 #Import CSVs
 golf_salaries <- read.csv(paste0(folder, "/DKSalaries.csv"))
-rg <- read.csv(list.files(pattern = "projections_draftkings_golf"))
-
-
-
-#Import CSVs
-golf_salaries <- read.csv("DKSalaries.csv")
-rg <- read.csv(list.files(pattern = "projections_draftkings_golf"))
-odds_pn <- read.csv("pga_historical_outrights.csv", header = T)
-cam <- read.csv(list.files(pattern = "-model"))
-results <- read.csv(list.files(pattern = "draftkings_pga_"))
+rg <- get(ls(pattern = "projections_draftkings_golf"))
+odds_pn <- get("pga_historical_outrights.csv")
+cam <- get(ls(pattern = "-model"))
+results <- get(ls(pattern = "draftkings_pga_"))
 
 #Add Functions
 convert_ML <- function(odds) {
@@ -92,7 +83,7 @@ golfers$odds_per_dollar <- round(golfers$odds_close / golfers$Salary * 10^6, dig
 golfers$residuals <- round(residuals(loess(odds_per_dollar ~ Salary, golfers)), digits = 2)
 
 ### Ownership Change formula
-own_multiplier <- 100/50
+own_multiplier <- 100/100
 
 golfers$own_change <- round(
   (own_multiplier * 0.15 * golfers$residuals) +
@@ -101,11 +92,10 @@ golfers$own_change <- round(
   (own_multiplier * 2 * if_else(golfers$odds_delta_per > 1, 1, golfers$odds_delta_per)^2), digits = 2)
 
 golfers$adj_own <- case_when(golfers$proj_own + golfers$own_change <= 0 ~ 0,
-                             golfers$proj_own + golfers$own_change < 100 ~ round((golfers$proj_own + golfers$own_change)/own_multiplier)*own_multiplier, 
-                             golfers$proj_own + golfers$own_change >= 100 ~ 100)
+                             golfers$proj_own + golfers$own_change < 40 ~ round((golfers$proj_own + golfers$own_change)/own_multiplier)*own_multiplier, 
+                             golfers$proj_own + golfers$own_change >= 40 ~ 40)
 
 ### Modify Results
-results <- read.csv(list.files(pattern = "draftkings_pga_"))
 results <- results %>%
   select(player_name, ownership, total_pts) %>%
   separate(player_name, into = c("last", "first"), sep = ",")
@@ -120,4 +110,4 @@ golfers <- golfers %>%
 
 golfers$date <- date
 golfers$tournament <- tournament
-write.csv(golfers, file = "golfers_results.csv")
+write.csv(golfers, file = paste0(folder,"/golfers_results.csv"))

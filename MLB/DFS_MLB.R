@@ -1,34 +1,13 @@
-library(tidyverse, warn.conflicts = F)
-library(ggrepel)
-library(lubridate, warn.conflicts = F)
-library(utils)
-library(filesstrings, warn.conflicts = F)
-library(xtable)
-library(tictoc)
-library(lpSolve)
-library(stats)
-library(XML)
-library(binr)
+#Load packages
+library(tidyverse, warn.conflicts = F) #metapackage
+library(ggrepel, warn.conflicts = F) #automatically position non-overlapping text labels
+library(lubridate, warn.conflicts = F) #make dealing with dates easier
+library(utils, warn.conflicts = F) #various programming utilities
+library(stats, warn.conflicts = F) #R statistical functions
+library(binr, warn.conflicts = F) #cut numerical values into evenly distributed groups
 
-user <- unlist(strsplit(getwd(), "/"))
-user <- user[3]
-
+#Inputs
 date <- c("2022-04-08")
 
-setwd(paste0("C://Users//",user,"//Documents//GitHub//DFS_Data//Data_MLB//", date))
-
-date <- format(if_else(format(Sys.time(), format = "%H:%M:%S") > 13, today()+1, today()), format = "%Y-%m-%d")
-
-if(!exists(paste("C://Users//",user,"//Documents//GitHub//DFS_Data//Data_CBB//",date, sep = "")))
-{
-  dir.create(paste("C://Users//",user,"//Documents//GitHub//DFS_Data//Data_CBB//",date, sep = ""))
-  setwd(paste("C://Users//",user,"//Downloads", sep = ""))
-  file.move(c("summary22.csv", "cbb-odds-rotowire.csv"), paste("C://Users//",user,"//Documents//GitHub//DFS_Data//Data_CBB//",date, sep = ""), 
-            overwrite = T)
-}
-
-setwd(paste("C://Users//",user,"//Documents//GitHub//DFS_Data//Data_CBB//",date, sep = ""))
-
-### Import CSVs ###
-
-mlb_salaries <- read.csv("DKSalaries.csv")
+#Import CSVs
+mlb_salaries <- read.csv(paste0("./",date,"/DKSalaries.csv"))

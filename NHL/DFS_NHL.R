@@ -1,61 +1,41 @@
+#Load packages
 library(tidyverse, warn.conflicts = F)
 library(lubridate, warn.conflicts = F)
 library(ggrepel, warn.conflicts = F)
-library(filesstrings, warn.conflicts = F)
 library(gt, warn.conflicts = F)
 library(fastRhockey, warn.conflicts = F)
 
-user <- unlist(strsplit(getwd(), "/"))
-user <- user[3]
-
+#Specify date
 date <- "2022-03-23"
-#date <- format(if_else(format(Sys.time(), format = "%H:%M:%S") > 23, today()+1, today()), format = "%Y-%m-%d")
 
-if(!exists(paste("C://Users//",user,"//Documents//GitHub//DFS_Data//Data_NHL//",date, sep = "")))
-{
-  dir.create(paste("C://Users//",user,"//Documents//GitHub//DFS_Data//Data_NHL//",date, sep = ""))
-  setwd(paste("C://Users//",user,"//Downloads", sep = ""))
-  file.move(c("DKSalaries.csv", "skaters.csv", "goalies.csv", "teams.csv", "lines.csv", "nhl-odds-rotowire.csv"), paste("C://Users//",user,"//Documents//GitHub//DFS_Data//Data_NHL//",date, sep = ""), 
-            overwrite = T)
-}
+#Import CSVs
+nhl_salaries <- read.csv(paste0("./", date, "/DKSalaries.csv"))
+mp_skaters <- read.csv(paste0("./", date,"/skaters.csv"))
+mp_lines <- read.csv(paste0("./", date,"/lines.csv"))
+mp_goalies <- read.csv(paste0("./", date,"/goalies.csv"))
+money_puck_teams <- read.csv(paste0("./", date,"/teams.csv"))
+rotowire_nhl <- read.csv(paste0("./", date,"/nhl-odds-rotowire.csv"))
+nhl_team_table <- read.csv("./nhlteams.csv")
 
-setwd(paste0("C://Users//",user,"//Documents//GitHub//DFS_Data//Data_NHL//"))
-nhl_team_table <- read.csv("nhlteams.csv")
-
-setwd(paste0("C://Users//",user,"//Documents//GitHub//DFS_Data//Data_NHL//",date))
-
-###Import CSVs###
-
-nhl_salaries <- read.csv("DKSalaries.csv")
-mp_skaters <- read.csv("skaters.csv")
-mp_lines <- read.csv("lines.csv")
-mp_goalies <- read.csv("goalies.csv")
-money_puck_teams <- read.csv("teams.csv")
-rotowire_nhl <- read.csv("nhl-odds-rotowire.csv")
-
-###Add Opponent###
-
+#Add Opponent
 nhl_salaries <- nhl_salaries %>%
   separate(Game.Info, c("Away", "String"), sep = "@") %>%
   separate(String, c("Home", "Date", "Time"), sep = " ")
 
 nhl_salaries$Opponent <- if_else(nhl_salaries$Home == nhl_salaries$TeamAbbrev, nhl_salaries$Away, nhl_salaries$Home)
 
-###Change Team Abbrevs###
-
+#Change Team Abbrevs
 nhl_salaries <- replace(nhl_salaries, nhl_salaries == "ANH", "ANA")
 nhl_salaries <- replace(nhl_salaries, nhl_salaries == "NJ", "NJD")
 nhl_salaries <- replace(nhl_salaries, nhl_salaries == "SJ", "SJS")
 nhl_salaries <- replace(nhl_salaries, nhl_salaries == "MON", "MTL")
 
-###Skaters
-
+#Skaters
 skaters <- nhl_salaries %>% 
   left_join(mp_skaters, by = c('Name' = "name")) %>% 
   filter(situation == "all") 
 
-###Teams###
-
+#Teams
 teams <- money_puck_teams
 
 teams <- teams %>% 
@@ -104,8 +84,7 @@ nhl_team_logos
 teams <- teams %>% 
   left_join(nhl_team_table, by = c("name" = "TeamAbbrev"))
 
-###Team Chart###
-
+#Team Chart
 teams %>%
   ggplot(aes(x = xg_per_game , y = xga_per_game)) +
   geom_hline(yintercept = mean(teams$xga_per_game, na.rm = TRUE), color = "red", linetype = "dashed", alpha=0.5) +
@@ -124,8 +103,7 @@ teams %>%
   scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) +
   scale_y_reverse(n.breaks = 10)
 
-###Rotowire NHL###
-
+#Rotowire NHL
 names(rotowire_nhl)[c(1,2,11)] <- c('Squad', 'DateTime', 'Opp.Score')
 
 rotowire_nhl <- rotowire_nhl[-c(1),-c(4,6,8)]
@@ -167,8 +145,7 @@ rotowire_nhl_slate %>%
   arrange(-xgd_home) %>% 
   view(title = "NHL Slate")
 
-### Centers ###
-
+#Centers
 centers <- skaters %>% 
   filter(position == "C" &
            Salary > 2500)
@@ -196,8 +173,7 @@ centers <- centers %>%
   arrange(-I_F_xGoals) %>%
   view(title = "Centers")
 
-###Wingers###
-
+#Wingers
 wingers <- skaters %>% 
   filter(position == "L" | position == "R" &
            Salary > 2500) %>%
@@ -236,8 +212,7 @@ defenders <- skaters %>%
   arrange(-I_F_xGoals) %>% 
   view(title = "Defenders")
 
-###Goalies###
-
+#Goalies
 goalies <- nhl_salaries %>% 
   left_join(mp_goalies, by = c('Name' = "name")) %>% 
   filter(situation == "all")
@@ -256,8 +231,7 @@ goalies %>%
   arrange(-gsae_per_game) %>% 
   view(title = "Goalies")
 
-###Combinations
-
+#Combinations
 possibilities_centers <- round(factorial(dim(centers)[1]) / (factorial(2)*factorial(dim(centers)[1] - 2)), digits = 0)
 possibilities_wingers <- round(factorial(dim(wingers)[1]) / (factorial(2)*factorial(dim(wingers)[1] - 2)), digits = 0)
 possibilities_defenders <- round(factorial(dim(defenders)[1]) / (factorial(2)*factorial(dim(defenders)[1] - 2)), digits = 0)
