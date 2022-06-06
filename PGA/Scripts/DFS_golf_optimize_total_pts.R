@@ -20,10 +20,10 @@ salary_filter <- 7100
 
 #Import CSVs
 golfers <- read.csv("./Results/golfers.csv")
-df <- read.csv("./Results/df.csv")
+xgb_fpts <- read.csv("./Results/xgb_fpts.csv")
 
 #Add xgb projects to golfers
-golfers$total_pts <- round(df$pred_y, digits = 2)
+golfers$total_pts <- round(xgb_fpts$pred_y, digits = 2)
 
 #Optimal Lineup
 optimal <- lp(direction = "max", 

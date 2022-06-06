@@ -67,7 +67,6 @@ odds_pn$odds_delta <- odds_pn$odds_close - odds_pn$odds_open
 odds_pn$odds_delta_per <- round((odds_pn$odds_close - odds_pn$odds_open)/odds_pn$odds_open, digits = 4)
 
 #DG predictions adjustments
-
 dg_pred <- dg_pred %>% 
   separate(player_name, into = c("last", "first"), sep = ",") 
 

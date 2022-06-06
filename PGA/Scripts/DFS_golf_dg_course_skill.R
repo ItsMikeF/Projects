@@ -1,12 +1,9 @@
 #Load packages
 library(tidyverse)
 
-#Set Working Directory
-setwd(paste0("C://Users//",unlist(strsplit(getwd(), "/"))[3],"//Documents//GitHub//Projects//Golf//Results"))
-
 #Import csv
-course <- read.csv("dg_course_table.csv")
-skill <- read.csv("dg_skill_ratings.csv")
+course <- read.csv("./Results/dg_course_table.csv")
+skill <- read.csv("./Results/dg_skill_ratings.csv")
 
 #Select Course
 

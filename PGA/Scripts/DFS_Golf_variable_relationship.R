@@ -14,10 +14,8 @@ library(reshape2) #restructure and aggregate data via melt() and dcast()
 library(factoextra) #packages to cluster
 library(jiebaR) #packages to cut the words
 
-setwd("C:/Users/mikef/Documents/GitHub/Projects/Golf/results")
-
 #split into training (80%) and testing set (20%)
-data <- read.csv("golfers_results.csv") %>% 
+data <- read.csv("./Results/golfers_results.csv") %>% 
   drop_na()
 
 regulation<-function(x){
@@ -26,6 +24,8 @@ regulation<-function(x){
 
 data <- data[,c(4:29)]
 data <- data[,c(4,8,10,11,13:15,22,23,25,28,29)]
+data <- data %>% 
+  select(ceil, Salary, residuals, AvgPointsPerGame, win, odds_close, odds_delta_per, total_pts)
 
 for(i in 1:length(data)){
   data[,i] = regulation(data[,i])

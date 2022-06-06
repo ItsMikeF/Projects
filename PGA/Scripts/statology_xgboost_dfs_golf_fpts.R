@@ -22,7 +22,7 @@ train_plot <- train %>%
     filter(odds_delta_per < 1) %>% 
     filter(Salary > 7000)
 
-train_plot %>%
+{train_plot %>%
     ggplot(aes(x = odds_delta_per , y = observed_finish)) +
     geom_hline(yintercept = mean(train_plot$observed_finish), color = "red", linetype = "dashed", alpha=0.5) +
     geom_vline(xintercept =  mean(train_plot$odds_delta_per), color = "red", linetype = "dashed", alpha=0.5) +
@@ -36,6 +36,7 @@ train_plot %>%
     theme(plot.title = element_text(size = 14, hjust = 0.5, face = "bold")) +
     scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
     scale_x_continuous(breaks = scales::pretty_breaks(n = 10))
+    }
 
 #define predictor and response variables in training set
 train_x <- data.matrix(train %>% select(ceil,Salary, residuals, AvgPointsPerGame, win, odds_close, odds_delta_per))
@@ -59,6 +60,6 @@ final <- xgboost(data = xgb_train, max.depth = 2, nrounds = 34, print_every_n = 
 pred_y <- predict(final, xgb_test)
 
 #Create dataframe to copy
-df = cbind(pred_y, test_y)
+xgb_fpts = cbind(pred_y, test_y)
 
-write.csv(df, file = "./Results/df.csv")
+write.csv(xgb_fpts, file = "./Results/xgb_fpts.csv")

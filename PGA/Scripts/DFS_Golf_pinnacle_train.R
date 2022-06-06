@@ -21,11 +21,22 @@ dt <- paste(date, tournament)
 
 setwd(paste0("C://Users//",unlist(strsplit(getwd(), "/"))[3],"//Documents//GitHub//Projects//Golf//Training_data//", dt))
 
+#Set folder
+folder <- list.dirs()[length(list.dirs())]
+file_list <- list.files(path = folder, pattern = "*.csv")
+
+#Import CSVs
+golf_salaries <- read.csv(paste0(folder, "/DKSalaries.csv"))
+rg <- read.csv(list.files(pattern = "projections_draftkings_golf"))
+
+
+
 #Import CSVs
 golf_salaries <- read.csv("DKSalaries.csv")
 rg <- read.csv(list.files(pattern = "projections_draftkings_golf"))
 odds_pn <- read.csv("pga_historical_outrights.csv", header = T)
 cam <- read.csv(list.files(pattern = "-model"))
+results <- read.csv(list.files(pattern = "draftkings_pga_"))
 
 #Add Functions
 convert_ML <- function(odds) {
