@@ -61,5 +61,8 @@ pred_y <- predict(final, xgb_test)
 
 #Create dataframe to copy
 xgb_fpts = cbind(pred_y, test_y)
+xgb_fpts[,1]
 
-write.csv(xgb_fpts, file = "./Results/xgb_fpts.csv")
+golfers$total_pts <- round(xgb_fpts[,1], digits = 2)
+
+write.csv(golfers, file = "./Results/golfers.csv")

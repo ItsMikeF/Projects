@@ -85,6 +85,10 @@ dg_pred[,2:6] <- sapply(dg_pred[,2:6], convert_ML)
 rg <- rg %>%
   select(name, fpts, proj_own, ceil, floor)
 
+rg$fpts[is.na(rg$fpts)] <- min(rg$fpts, na.rm = T)
+rg$ceil[is.na(rg$ceil)] <- min(rg$ceil, na.rm = T)
+rg$floor[is.na(rg$floor)] <- min(rg$floor, na.rm = T)
+
 #Create golfer tibble
 golfers <- golfer_salaries %>%
   left_join(odds_pn, by = c("Name" = "Golfer"))

@@ -26,7 +26,7 @@ course$app_sg_rank <- rank(-course$app_sg)
 course$ott_sg_rank <- rank(-course$ott_sg)
 
 course <- course %>% 
-  filter(course == "Muirfield Village Golf Club") %>% 
+  filter(course == "TPC Craig Ranch") %>% 
   select(par,
          yardage, yardage_rank, 
          adj_score_to_par, adj_score_to_par_rank, 

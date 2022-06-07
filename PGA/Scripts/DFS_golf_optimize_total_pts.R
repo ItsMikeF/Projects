@@ -1,29 +1,22 @@
-library(xgboost, warn.conflicts = F)
-library(readr, warn.conflicts = F)
-library(stringr, warn.conflicts = F)
-library(caret, warn.conflicts = F)
-library(car, warn.conflicts = F)
-library(tidyverse, warn.conflicts = F)
-library(ggrepel)
-library(lubridate, warn.conflicts = F)
-library(utils)
-library(filesstrings, warn.conflicts = F)
-library(xtable)
-library(lpSolve)
-library(stats)
-library(XML)
-library(binr)
+library(xgboost, warn.conflicts = F) #extreme gradient boosting for ml
+library(readr, warn.conflicts = F) #read rectangular text data
+library(stringr, warn.conflicts = F) #simple consistent wrappers for common string operatrions
+library(caret, warn.conflicts = F) 
+library(tidyverse, warn.conflicts = F) #metapackage
+library(ggrepel, warn.conflicts = F) #automatically position non-overlapping text labels
+library(lubridate, warn.conflicts = F) #make dealing with dates a little easier
+library(utils, warn.conflicts = F) #R utility functions
+library(lpSolve, warn.conflicts = F) #solver for linear / integer programs
+library(stats, warn.conflicts = F) #R statistical functions
+library(XML, warn.conflicts = F) #tools for parsing and generating XML
+library(binr, warn.conflicts = F) #cut numeric values into evenly distributed groups
 
 #Inputs
-entries <- 115
-salary_filter <- 7100
+entries <- 100
+salary_filter <- 6300
 
 #Import CSVs
 golfers <- read.csv("./Results/golfers.csv")
-xgb_fpts <- read.csv("./Results/xgb_fpts.csv")
-
-#Add xgb projects to golfers
-golfers$total_pts <- round(xgb_fpts$pred_y, digits = 2)
 
 #Optimal Lineup
 optimal <- lp(direction = "max", 
