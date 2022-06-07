@@ -1,5 +1,5 @@
 #Import packages
-library(tidyverse)  #Metapackage
+library(tidyverse, warn.conflicts = F)  #Metapackage
 library(xgboost, warn.conflicts = F)
 library(readr, warn.conflicts = F)
 library(stringr, warn.conflicts = F)
@@ -14,7 +14,8 @@ train <- read.csv("./Results/golfers_results.csv") %>%
   drop_na(total_pts) %>% 
   drop_na(observed_finish)
 
-test <- read.csv("./Results/golfers.csv") %>% 
+golfers <- read.csv("./Results/golfers.csv")
+test <- golfers %>% 
   drop_na()
 
 #train plot
@@ -66,3 +67,4 @@ xgb_fpts[,1]
 golfers$total_pts <- round(xgb_fpts[,1], digits = 2)
 
 write.csv(golfers, file = "./Results/golfers.csv")
+write.csv(paste0(list.dirs()[20],"/golfers.csv"))

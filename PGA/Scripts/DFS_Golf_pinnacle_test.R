@@ -126,7 +126,7 @@ golfer_bins$binct
   geom_hline(yintercept = mean(golfers$odds_per_dollar), color = "red", linetype = "dashed", alpha=0.5) +
   geom_vline(xintercept =  mean(golfers$Salary), color = "red", linetype = "dashed", alpha=0.5) +
   geom_smooth(method=loess, se=F) +
-  geom_point(aes(color = odds_per_dollar), alpha = 0.7, cex = 3) +
+  geom_point(aes(color = residuals), alpha = 0.7, cex = 3) +
   scale_color_gradient(low = "red", high = "green", guide = "colourbar") +
   geom_text_repel(aes(label=Name)) +
   labs(x = "Salary",

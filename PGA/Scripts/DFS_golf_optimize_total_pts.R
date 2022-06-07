@@ -20,7 +20,7 @@ golfers <- read.csv("./Results/golfers.csv")
 
 #Optimal Lineup
 optimal <- lp(direction = "max", 
-              objective.in = golfers$fpts, 
+              objective.in = golfers$total_pts, 
               rbind(golfers$Salary, golfers$Salary, golfers$one), 
               c("<=", ">=", "="), 
               c("50000", "49500", "6"), 
@@ -94,7 +94,7 @@ for (i in 1:entries) {
   
   golfers2 <- golfers2 %>% filter(filter == 0)
   
-  golfers2 <- golfers2[,-c(26:29)]
+  golfers2 <- golfers2[,-c(27:30)]
 }
 
 optimal_table <- do.call("rbind", optimal_list)
