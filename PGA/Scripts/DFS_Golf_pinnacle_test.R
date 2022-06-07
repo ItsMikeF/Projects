@@ -1,21 +1,25 @@
 #Import packages
-library(tidyverse, warn.conflicts = F)
-library(ggrepel)
-library(lubridate, warn.conflicts = F)
-library(utils)
-library(filesstrings, warn.conflicts = F)
-library(xtable)
-library(lpSolve)
-library(stats)
-library(XML)
-library(binr)
-library(officer)
-library(janitor, warn.conflicts = F)
+library(tidyverse, warn.conflicts = F) #metapackage
+library(ggrepel, warn.conflicts = F) #positions non-overlapping text labels
+library(lubridate, warn.conflicts = F) #make dealing with dates a little easier
+library(utils, warn.conflicts = F) #R utility functions
+library(filesstrings, warn.conflicts = F) #handy file and string manipulation
+library(xtable, warn.conflicts = F) #export tables to latex or HTML
+library(lpSolve, warn.conflicts = F) #solver for general linear/integer problems
+library(stats, warn.conflicts = F) #R statistical functions
+library(XML, warn.conflicts = F) #tools for parsing and generating XML
+library(binr, warn.conflicts = F) #cut numeric values into evenly distributed bins
+library(officer, warn.conflicts = F) #manipulation of word and pptx 
+library(janitor, warn.conflicts = F) #clearning dirty data
 
 #Inputs
-tournament <- "Memorial Tournament"
-date <- c("2022-06-02")
-entries <- 115
+date <- "2022-06-12"
+tournament <- "RBC Canadian Open"
+entries <- 100
+
+#Test data folder
+folder <- list.dirs()[20]
+file_list <- list.files(path = folder, pattern = "*.csv")
 
 #Import CSVs
 folder <- paste0("./", date," ", tournament)
