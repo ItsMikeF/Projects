@@ -1,3 +1,4 @@
+#Load Packages
 library(tidyverse)  #Metapackage
 library(xgboost, warn.conflicts = F)
 library(readr, warn.conflicts = F)
@@ -5,13 +6,11 @@ library(stringr, warn.conflicts = F)
 library(caret, warn.conflicts = F)
 library(car, warn.conflicts = F)
 
-setwd("C:/Users/mikef/Documents/GitHub/Projects/Golf/results")
-
 #make this example reproducible
 set.seed(0)
 
 #split into training (80%) and testing set (20%)
-data <- read.csv("golfers_results.csv") %>% 
+data <- read.csv("./Results/golfers_results.csv") %>% 
   drop_na(total_pts)
 parts = createDataPartition(data$total_pts, p = .8, list = F)
 train = data[parts, ]

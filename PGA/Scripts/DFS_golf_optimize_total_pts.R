@@ -108,7 +108,7 @@ names(entries_wp) <- "Lineup WP"
 
 #Check ownership
 ownership_table <- golfers %>% 
-  select(Name, ID, Salary, fpts, total_pts, odds_open, odds_close, odds_delta, odds_delta_per, odds_rank, residuals, proj_own, own_change)
+  select(Name, ID, Salary, ceil, fpts, total_pts, odds_open, odds_close, odds_delta_per, odds_rank, win, residuals, proj_own, own_change)
 
 for(i in 1:dim(golfers)[1]){
   ownership_table$own[i] <- sum(str_count(optimal_table$Name, ownership_table$Name[i])) / 100

@@ -1,5 +1,5 @@
 #Import packages
-library(tidyverse, warn.conflicts = F)  #Metapackage
+library(tidyverse, warn.conflicts = F) #Metapackage
 library(xgboost, warn.conflicts = F)
 library(readr, warn.conflicts = F)
 library(stringr, warn.conflicts = F)
@@ -55,7 +55,7 @@ xgb_test <- xgb.DMatrix(data = test_x, label = test_y)
 watchlist <- list(train=xgb_train, test=xgb_test)
 
 #define final model
-final <- xgboost(data = xgb_train, max.depth = 2, nrounds = 34, print_every_n = 1)
+final <- xgboost(data = xgb_train, max.depth = 2, nrounds = 11, print_every_n = 1)
 
 #use model to make predictions on test data
 pred_y <- predict(final, xgb_test)
@@ -67,4 +67,4 @@ xgb_fpts[,1]
 golfers$total_pts <- round(xgb_fpts[,1], digits = 2)
 
 write.csv(golfers, file = "./Results/golfers.csv")
-write.csv(paste0(list.dirs()[20],"/golfers.csv"))
+write.csv(golfers, file = paste0(list.dirs()[20],"/golfers.csv"))

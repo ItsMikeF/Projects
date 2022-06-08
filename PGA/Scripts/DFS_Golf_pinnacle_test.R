@@ -39,6 +39,7 @@ dg_pred <- get(ls(pattern = "_preds_ch_model"))
 
 #Merge Open and Close Odds
 odds_pn_open <- odds_pn_open %>% 
+  select("player_name", "sample_size", "DG_odds", "pinnacle_odds","pinnacle_ev" ) %>% 
   separate(player_name, into = c("last", "first"), sep = ",") 
 odds_pn_open$player_name <- trimws(paste(odds_pn_open$first, odds_pn_open$last))
 odds_pn_open <- odds_pn_open %>%
@@ -48,6 +49,7 @@ odds_pn_open$pinnacle_odds[is.infinite(odds_pn_open$pinnacle_odds)] <-
   max(odds_pn_open$pinnacle_odds[is.finite(odds_pn_open$pinnacle_odds)], na.rm = T)
 
 odds_pn_close <- odds_pn_close %>% 
+  select("player_name", "sample_size", "DG_odds", "pinnacle_odds","pinnacle_ev" ) %>% 
   separate(player_name, into = c("last", "first"), sep = ",") 
 odds_pn_close$player_name <- trimws(paste(odds_pn_close$first, odds_pn_close$last))
 odds_pn_close <- odds_pn_close %>% select(player_name, pinnacle_odds)
