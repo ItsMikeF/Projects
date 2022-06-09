@@ -21,7 +21,7 @@ train_x <- data.matrix(train[,c(4:22,24,25)])
 train_x <- data.matrix(train[,c(4:11,13:15,18,22,25)])
 train_x <- data.matrix(train %>% select(ceil, floor, Salary, AvgPointsPerGame, residuals, odds_delta_per, odds_close))
 train_x <- data.matrix(train %>% select(Salary, odds_close, odds_delta_per, fpts, ceil, floor, top_20, win))
-train_x <- data.matrix(train %>% select(ceil,Salary, residuals, AvgPointsPerGame, win, odds_close, odds_delta_per))
+train_x <- data.matrix(train %>% select(ceil, Salary, residuals, AvgPointsPerGame, win, top_20, odds_close, odds_delta_per))
 
 train_y <- train[,29]
 
@@ -30,7 +30,7 @@ test_x <- data.matrix(test[,c(4:22,24,25)])
 test_x <- data.matrix(test[,c(4:11,13:15,18,22,25)])
 test_x <- data.matrix(test %>% select(ceil, floor, Salary, AvgPointsPerGame, residuals, odds_delta_per, odds_close))
 test_x <- data.matrix(test %>% select(Salary, odds_close, odds_delta_per, fpts, ceil, floor, top_20, win))
-test_x <- data.matrix(test %>% select(ceil,Salary, residuals, AvgPointsPerGame, win, odds_close, odds_delta_per))
+test_x <- data.matrix(test %>% select(ceil, Salary, residuals, AvgPointsPerGame, win, top_20, odds_close, odds_delta_per))
 
 test_y <- test[,29]
 

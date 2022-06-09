@@ -6,6 +6,9 @@ library(stringr, warn.conflicts = F)
 library(caret, warn.conflicts = F)
 library(car, warn.conflicts = F)
 
+#inputs
+entries <- 20
+
 #make this example reproducible
 set.seed(0)
 
@@ -14,7 +17,7 @@ train <- read.csv("./Results/golfers_results.csv") %>%
   drop_na(total_pts) %>% 
   drop_na(observed_finish)
 
-golfers <- read.csv("./Results/golfers.csv")
+golfers <- read.csv(paste0("./Results/golfers_",entries,".csv"))
 test <- golfers %>% 
   drop_na()
 
@@ -41,10 +44,12 @@ train_plot <- train %>%
 
 #define predictor and response variables in training set
 train_x <- data.matrix(train %>% select(ceil,Salary, residuals, AvgPointsPerGame, win, odds_close, odds_delta_per))
+train_x <- data.matrix(train %>% select(ceil, Salary, residuals, AvgPointsPerGame, win, top_20, odds_close, odds_delta_per))
 train_y <- train[,29]
 
 #define predictor and response variables in testing set
 test_x <- data.matrix(test %>% select(ceil,Salary, residuals, AvgPointsPerGame, win, odds_close, odds_delta_per))
+test_x <- data.matrix(test %>% select(ceil, Salary, residuals, AvgPointsPerGame, win, top_20, odds_close, odds_delta_per))
 test_y <- test[,25]
 
 #define final training and testing sets
@@ -66,5 +71,5 @@ xgb_fpts[,1]
 
 golfers$total_pts <- round(xgb_fpts[,1], digits = 2)
 
-write.csv(golfers, file = "./Results/golfers.csv")
-write.csv(golfers, file = paste0(list.dirs()[20],"/golfers.csv"))
+write.csv(golfers, file = paste0("./Results/golfers_",entries,".csv"))
+write.csv(golfers, file = paste0(list.dirs()[20],"/golfers_",entries,".csv"))

@@ -12,11 +12,11 @@ library(XML, warn.conflicts = F) #tools for parsing and generating XML
 library(binr, warn.conflicts = F) #cut numeric values into evenly distributed groups
 
 #Inputs
-entries <- 100
+entries <- 20
 salary_filter <- 6300
 
 #Import CSVs
-golfers <- read.csv("./Results/golfers.csv")
+golfers <- read.csv(paste0("./Results/golfers_",entries,".csv"))
 
 #Optimal Lineup
 optimal <- lp(direction = "max", 
@@ -111,7 +111,7 @@ ownership_table <- golfers %>%
   select(Name, ID, Salary, ceil, fpts, total_pts, odds_open, odds_close, odds_delta_per, odds_rank, win, residuals, proj_own, own_change)
 
 for(i in 1:dim(golfers)[1]){
-  ownership_table$own[i] <- sum(str_count(optimal_table$Name, ownership_table$Name[i])) / 100
+  ownership_table$own[i] <- sum(str_count(optimal_table$Name, ownership_table$Name[i])) / 20
 }
 
 ownership_table %>% 
@@ -132,5 +132,5 @@ names(entries_upload) <- c("G","G","G","G","G","G")
 entries_upload <- unique(entries_upload)
 
 #Write
-write.csv(ownership_table, file = "./Results/ownership_table.csv")
-write.csv(entries_upload, file = "./Results/entries_upload.csv")
+write.csv(ownership_table, file = paste0("./Results/ownership_table_",entries,".csv"))
+write.csv(entries_upload, file = paste0("./Results/entries_upload_",entries,".csv"))

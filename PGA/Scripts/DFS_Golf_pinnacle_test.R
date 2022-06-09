@@ -15,7 +15,7 @@ library(janitor, warn.conflicts = F) #clearning dirty data
 #Inputs
 date <- "2022-06-12"
 tournament <- "RBC Canadian Open"
-entries <- 100
+entries <- 20
 
 #Test data folder
 folder <- list.dirs()[20]
@@ -180,5 +180,5 @@ golfers$adj_own <- case_when(golfers$proj_own + golfers$own_change <= 0 ~ 0,
 golfers$total_pts <- 0
 
 #Write
-write.csv(golfers, file = paste0("./", date," ", tournament,"/golfers.csv"))
-write.csv(golfers, file = paste0("./Results/golfers.csv"))
+write.csv(golfers, file = paste0("./", date," ", tournament,"/golfers_",entries,".csv"))
+write.csv(golfers, file = paste0("./Results/golfers_",entries,".csv"))
