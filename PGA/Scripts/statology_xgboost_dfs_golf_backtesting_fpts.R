@@ -45,7 +45,7 @@ watchlist = list(train=xgb_train, test=xgb_test)
 model <- xgb.train(data = xgb_train, max.depth = 2, watchlist=watchlist, nrounds = 50, print_every_n = 1)
 
 #define final model
-final <- xgboost(data = xgb_train, max.depth = 2, nrounds = 34, print_every_n = 1)
+final <- xgboost(data = xgb_train, max.depth = 2, nrounds = 11, print_every_n = 1)
 
 #use model to make predictions on test data
 pred_y <- round(predict(final, xgb_test), digits = 1)

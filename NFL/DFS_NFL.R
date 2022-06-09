@@ -1,12 +1,9 @@
+#load packages
 library(nflfastR)
 library(tidyverse)
 library(ggrepel)
-library(pracma)
 
-#setwd("C:\\Users\\Mike Francis\\Documents")
-
-###csv Imports###
-
+#csv Imports
 nfl_salaries <- read.csv("DKSalaries.csv")
 
 nfl_pff_dk_own <- read.csv("dk-ownership.csv")
@@ -27,8 +24,7 @@ nfl_pff_chart_wr_cb_matchup <- read.csv("wr_cb_matchup_chart.csv")
 nfl_pff_chart_te_matchup <- read.csv("te_matchup_chart.csv")
 nfl_pff_chart_oline_dline_matchup <- read.csv("oline_dline_matchup_chart.csv")
 
-###Chart Adjustments###
-
+#Chart Adjustments
 nfl_pff_chart_wr_cb_matchup <- nfl_pff_chart_wr_cb_matchup %>% 
   filter(defPlayer == 'All Defenders')
 
@@ -67,8 +63,7 @@ nfl_pff_chart_wr_cb_matchup$expectedSnaps <- round(nfl_pff_chart_wr_cb_matchup$e
 
 nfl_salaries$week <- max(nfl_2021$week)+1
 
-###QB###
-
+#QB
 nfl_qb <- nfl_salaries %>%
   left_join(nfl_pff_qb, by = c('Name' = 'player'))
          
@@ -174,8 +169,7 @@ nfl_qb %>%
   arrange(-sum_sd) %>% 
   view(title = "NFL QBs")
 
-###QB Chart###
-
+#QB Chart
 nfl_qb <- nfl_qb %>% 
   rename(blitz_rate = Bltz.)
 
@@ -215,8 +209,7 @@ nfl_qb_chart %>%
   scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
   scale_x_continuous(breaks = scales::pretty_breaks(n = 10))
 
-###RB###
-
+#RB
 nfl_rb <- nfl_salaries %>%
   left_join(nfl_pff_rb, by = c('Name' = 'player'))
 
@@ -285,8 +278,7 @@ nfl_rb %>%
   arrange(-sum_sd) %>%
   view(title = "NFL RBs")
 
-###RB Chart###
-
+#RB Chart
 nfl_rb %>%
   ggplot(aes(x = sum_sd , y = fantasyPoints)) +
   geom_hline(yintercept = mean(nfl_rb$fantasyPoints, na.rm = T), color = "red", linetype = "dashed", alpha=0.5) +
@@ -303,8 +295,7 @@ nfl_rb %>%
   scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
   scale_x_continuous(breaks = scales::pretty_breaks(n = 10))
 
-###WR###
-
+#WR
 nfl_wr <- nfl_salaries %>%
   left_join(nfl_pff_wr, by = c('Name' = 'player'))
 
@@ -384,8 +375,7 @@ nfl_wr %>%
   arrange(-sum_sd) %>%
   view(title = "NFL WRs")
 
-###WR Chart###
-
+#WR Chart
 nfl_wr %>%
   ggplot(aes(x = sum_sd , y = fantasyPoints)) +
   geom_hline(yintercept = mean(nfl_wr$fantasyPoints, na.rm = T), color = "red", linetype = "dashed", alpha=0.5) +
@@ -402,8 +392,7 @@ nfl_wr %>%
   scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
   scale_x_continuous(breaks = scales::pretty_breaks(n = 10))
 
-###Tight Ends###
-
+#Tight Ends
 nfl_te <- nfl_pff_chart_te_matchup
 
 nfl_te <- nfl_te %>% 
@@ -430,8 +419,7 @@ nfl_te <- nfl_te %>%
   drop_na() %>% 
   view(title = "NFL TEs")
 
-###Salary Table###
-
+#Salary Table
 nfl_wr_salary_table <- nfl_wr %>%
   group_by(TeamAbbrev) %>%
   summarise(wr_sum_salary = round(sum(salary), digits = 0))
@@ -455,8 +443,7 @@ nfl_reciever_salary$total_rec_salary_sd <- round((nfl_reciever_salary$total_rec_
 nfl_qb <- nfl_qb %>% 
   left_join(nfl_reciever_salary, by = c('TeamAbbrev' = 'TeamAbbrev'))
 
-###Defense###
-
+#Defense
 def <- nfl_pff_dk_own %>% 
   filter(position == "D") %>% 
   view(title = "NFL DST")
