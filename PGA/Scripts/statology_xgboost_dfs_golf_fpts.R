@@ -7,7 +7,7 @@ library(caret, warn.conflicts = F)
 library(car, warn.conflicts = F)
 
 #inputs
-entries <- 20
+entries <- 100
 
 #make this example reproducible
 set.seed(0)

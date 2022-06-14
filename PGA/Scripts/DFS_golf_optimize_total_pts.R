@@ -12,8 +12,8 @@ library(XML, warn.conflicts = F) #tools for parsing and generating XML
 library(binr, warn.conflicts = F) #cut numeric values into evenly distributed groups
 
 #Inputs
-entries <- 20
-salary_filter <- 6300
+entries <- 100
+salary_filter <- 7400
 
 #Import CSVs
 golfers <- read.csv(paste0("./Results/golfers_",entries,".csv"))

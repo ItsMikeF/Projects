@@ -13,9 +13,9 @@ library(officer, warn.conflicts = F) #manipulation of word and pptx
 library(janitor, warn.conflicts = F) #clearning dirty data
 
 #Inputs
-date <- "2022-06-12"
-tournament <- "RBC Canadian Open"
-entries <- 20
+date <- "2022-06-19"
+tournament <- "US Open"
+entries <- 100
 
 #Test data folder
 folder <- list.dirs()[20]
@@ -43,7 +43,7 @@ odds_pn_open <- odds_pn_open %>%
   separate(player_name, into = c("last", "first"), sep = ",") 
 odds_pn_open$player_name <- trimws(paste(odds_pn_open$first, odds_pn_open$last))
 odds_pn_open <- odds_pn_open %>%
-  select(player_name, pinnacle_odds)
+  select(player_name, pinnacle_odds, betcris_odds, betfair_odds, draftkings_odds)
 
 odds_pn_open$pinnacle_odds[is.infinite(odds_pn_open$pinnacle_odds)] <- 
   max(odds_pn_open$pinnacle_odds[is.finite(odds_pn_open$pinnacle_odds)], na.rm = T)
