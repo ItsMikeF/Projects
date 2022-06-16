@@ -42,10 +42,10 @@ xgb_test = xgb.DMatrix(data = test_x, label = test_y)
 watchlist = list(train=xgb_train, test=xgb_test)
 
 #fit XGBoost model and display training and testing data at each round
-model <- xgb.train(data = xgb_train, max.depth = 2, watchlist=watchlist, nrounds = 50, print_every_n = 1)
+model <- xgb.train(data = xgb_train, max.depth = 2, watchlist=watchlist, nrounds = 100, print_every_n = 2)
 
 #define final model
-final <- xgboost(data = xgb_train, max.depth = 2, nrounds = 11, print_every_n = 1)
+final <- xgboost(data = xgb_train, max.depth = 2, nrounds = 15, print_every_n = 1)
 
 #use model to make predictions on test data
 pred_y <- round(predict(final, xgb_test), digits = 1)

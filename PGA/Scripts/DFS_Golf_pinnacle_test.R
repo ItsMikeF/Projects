@@ -39,17 +39,22 @@ dg_pred <- get(ls(pattern = "_preds_ch_model"))
 
 #Merge Open and Close Odds
 odds_pn_open <- odds_pn_open %>% 
-  select("player_name", "sample_size", "DG_odds", "pinnacle_odds","pinnacle_ev" ) %>% 
+  select("player_name", "sample_size", "DG_odds", "pinnacle_odds", "betcris_odds", "betfair_odds") %>% 
   separate(player_name, into = c("last", "first"), sep = ",") 
+
+odds_pn_open$odds <- if_else(is.na(odds_pn_open$pinnacle_odds),
+                             if_else(is.na(odds_pn_open$betcris_odds),odds_pn_open$betfair_odds, odds_pn_open$betcris_odds), 
+                             odds_pn_open$pinnacle_odds)
+
 odds_pn_open$player_name <- trimws(paste(odds_pn_open$first, odds_pn_open$last))
 odds_pn_open <- odds_pn_open %>%
-  select(player_name, pinnacle_odds, betcris_odds, betfair_odds, draftkings_odds)
+  select(player_name, odds)
 
-odds_pn_open$pinnacle_odds[is.infinite(odds_pn_open$pinnacle_odds)] <- 
-  max(odds_pn_open$pinnacle_odds[is.finite(odds_pn_open$pinnacle_odds)], na.rm = T)
+odds_pn_open$odds[is.infinite(odds_pn_open$odds)] <- 
+  max(odds_pn_open$odds[is.finite(odds_pn_open$odds)], na.rm = T)
 
 odds_pn_close <- odds_pn_close %>% 
-  select("player_name", "sample_size", "DG_odds", "pinnacle_odds","pinnacle_ev" ) %>% 
+  select("player_name", "DG_odds", "pinnacle_odds" ) %>% 
   separate(player_name, into = c("last", "first"), sep = ",") 
 odds_pn_close$player_name <- trimws(paste(odds_pn_close$first, odds_pn_close$last))
 odds_pn_close <- odds_pn_close %>% select(player_name, pinnacle_odds)
@@ -171,7 +176,7 @@ golfers$own_change <- round(
   (own_multiplier * 1.0 * ((golfers$AvgPointsPerGame - mean(golfers$AvgPointsPerGame, na.rm=T)) / sd(golfers$AvgPointsPerGame, na.rm = T))) +
   (own_multiplier * 0.6 * golfers$residuals) +
   (own_multiplier * 0.7 * if_else(golfers$odds_delta_per > 1, 1, golfers$odds_delta_per)) +
-  (own_multiplier * 2), digits = 2)
+  (own_multiplier * 5), digits = 2)
 
 golfers$adj_own <- case_when(golfers$proj_own + golfers$own_change <= 0 ~ 0,
                              golfers$proj_own + golfers$own_change < 40 ~ round((golfers$proj_own + golfers$own_change)/own_multiplier)*own_multiplier, 

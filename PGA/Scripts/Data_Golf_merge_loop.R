@@ -21,7 +21,6 @@ tournaments <- tournaments[-which(tournaments %in% c("2020-01-05 Sentry ToC",
                                                      "2021-10-24 Zozo Championship", 
                                                      "2021-11-07 Technology Championship", 
                                                      "2021-12-05 Hero World Challenge"))]
-
 #Add Functions
 convert_ML <- function(odds) {
   breakeven <- if_else(odds > 0, 100 / (100 + odds), abs(odds) / (abs(odds) + 100))

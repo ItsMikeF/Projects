@@ -4,7 +4,6 @@ library(xgboost, warn.conflicts = F)
 library(readr, warn.conflicts = F)
 library(stringr, warn.conflicts = F)
 library(caret, warn.conflicts = F)
-library(car, warn.conflicts = F)
 
 #inputs
 entries <- 100
@@ -60,7 +59,7 @@ xgb_test <- xgb.DMatrix(data = test_x, label = test_y)
 watchlist <- list(train=xgb_train, test=xgb_test)
 
 #define final model
-final <- xgboost(data = xgb_train, max.depth = 2, nrounds = 11, print_every_n = 1)
+final <- xgboost(data = xgb_train, max.depth = 2, nrounds = 61, print_every_n = 1)
 
 #use model to make predictions on test data
 pred_y <- predict(final, xgb_test)
@@ -69,7 +68,7 @@ pred_y <- predict(final, xgb_test)
 xgb_fpts = cbind(pred_y, test_y)
 xgb_fpts[,1]
 
-golfers$total_pts <- round(xgb_fpts[,1], digits = 2)
+test$total_pts <- round(xgb_fpts[,1], digits = 2)
 
-write.csv(golfers, file = paste0("./Results/golfers_",entries,".csv"))
-write.csv(golfers, file = paste0(list.dirs()[20],"/golfers_",entries,".csv"))
+write.csv(test, file = paste0("./Results/golfers_",entries,".csv"), row.names = F)
+write.csv(test, file = paste0(list.dirs()[20],"/golfers_",entries,".csv"), row.names = F)

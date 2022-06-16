@@ -12,7 +12,7 @@ library(XML, warn.conflicts = F) #tools for parsing and generating XML
 library(binr, warn.conflicts = F) #cut numeric values into evenly distributed groups
 
 #Inputs
-entries <- 100
+entries <- 150
 salary_filter <- 7400
 
 #Import CSVs
@@ -94,7 +94,7 @@ for (i in 1:entries) {
   
   golfers2 <- golfers2 %>% filter(filter == 0)
   
-  golfers2 <- golfers2[,-c(27:30)]
+  golfers2 <- golfers2[,-c(26:29)]
 }
 
 optimal_table <- do.call("rbind", optimal_list)
@@ -111,7 +111,7 @@ ownership_table <- golfers %>%
   select(Name, ID, Salary, ceil, fpts, total_pts, odds_open, odds_close, odds_delta_per, odds_rank, win, residuals, proj_own, own_change)
 
 for(i in 1:dim(golfers)[1]){
-  ownership_table$own[i] <- sum(str_count(optimal_table$Name, ownership_table$Name[i])) / 20
+  ownership_table$own[i] <- sum(str_count(optimal_table$Name, ownership_table$Name[i])) / entries
 }
 
 ownership_table %>% 
