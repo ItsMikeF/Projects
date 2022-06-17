@@ -1,14 +1,11 @@
-library(nflfastR)
-library(tidyverse)
-library(ggrepel)
+#load packages
+library(nflfastR) #functions to efficiently access NFL pbp data
+library(tidyverse) #metapackage
+library(ggrepel) #automatically position non-overlapping text labels with ggplot2
 
-setwd("C://Users//Mike Francis//Documents")
-
-#######################
-###Defense EPA Table###
-#######################
-
-nfl_2021 <- load_pbp(2021)
+# defense epa table -------------------------------------------------------
+year <- 2021
+nfl_2021 <- load_pbp(year)
 
 nfl_2021_def_pass <- nfl_2021 %>% 
   filter(pass == 1 &
@@ -47,10 +44,7 @@ nfl_2021_def$total_plays <- nfl_2021_def$n_plays.x + nfl_2021_def$n_plays.y
 
 nfl_2021_def <- replace(nfl_2021_def, nfl_2021_def == 'LA', 'LAR')
 
-#######################
-###Defense EPA Chart###
-#######################
-
+# defense epa plot --------------------------------------------------------
 nfl_2021_def <- nfl_2021_def %>% 
   left_join(teams_colors_logos, by = c('defteam' = 'team_abbr'))
 
@@ -74,10 +68,8 @@ nfl_2021_def %>%
 
 nfl_2021_def <- replace(nfl_2021_def, nfl_2021_def == 'JAX', 'JAC')
 
-#######################
-###Offense EPA Table###
-#######################
 
+# offense epa table -------------------------------------------------------
 nfl_2021_off_pass <- nfl_2021 %>% 
   filter(pass == 1 &
            wp > .20 &
@@ -115,10 +107,8 @@ nfl_2021_off$total_plays <- nfl_2021_off$n_plays.x + nfl_2021_off$n_plays.y
 
 nfl_2021_off <- replace(nfl_2021_off, nfl_2021_off == 'LA', 'LAR')
 
-#######################
-###Offense EPA Chart###
-#######################
 
+# offense epa plot --------------------------------------------------------
 nfl_2021_off <- nfl_2021_off %>% 
   left_join(teams_colors_logos, by = c('posteam' = 'team_abbr'))
 
@@ -142,10 +132,8 @@ nfl_2021_off %>%
 
 nfl_2021_off <- replace(nfl_2021_off, nfl_2021_off == 'JAX', 'JAC')
 
-#######################
-###Defense PFF Table###
-#######################
 
+# defense pff table -------------------------------------------------------
 nfl_pff_def <- read.csv("defense_summary.csv")
 
 nfl_pff_def_table <- nfl_pff_def %>%
@@ -181,10 +169,8 @@ nfl_pff_def_table$tack_sd <- round((nfl_pff_def_table$tack - mean(nfl_pff_def_ta
 nfl_pff_def_table$prsh_sd <- round((nfl_pff_def_table$prsh - mean(nfl_pff_def_table$prsh)) / sd(nfl_pff_def_table$prsh), digits = 2)
 nfl_pff_def_table$cov_sd <- round((nfl_pff_def_table$cov - mean(nfl_pff_def_table$cov)) / sd(nfl_pff_def_table$cov), digits = 2)
 
-#####################
-###Coverage Scheme###
-#####################
 
+# defense coverage scheme -------------------------------------------------
 nfl_pff_defense_coverage_scheme <- read.csv("defense_coverage_scheme.csv")
 
 nfl_pff_defense_coverage_scheme <- replace(nfl_pff_defense_coverage_scheme, nfl_pff_defense_coverage_scheme == 'ARZ', 'ARI')
@@ -221,10 +207,9 @@ defense_coverage_scheme$def_zone_grade_rank <- round(rank(-defense_coverage_sche
 
 defense_coverage_scheme$total_cov_snaps <- defense_coverage_scheme$man_snaps + defense_coverage_scheme$zone_snaps
 
-#####################
-###Team Blitz data###
-###https://www.pro-football-reference.com/years/2021/opp.htm###
 
+# defense blitz  ----------------------------------------------------------
+#https://www.pro-football-reference.com/years/2021/opp.htm
 sportsref_download <- read.csv("sportsref_download.csv")
 
 sportsref_download$Bltz. <- round(as.numeric(sub("%","",sportsref_download$Bltz.))/100, digits = 3)
