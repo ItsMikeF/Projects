@@ -6,33 +6,33 @@ folder <- list.dirs()[50]
 year <- substring(folder, nchar(folder)-3, nchar(folder))
 
 #obtain column names from week 1 files
+defense_summary <- read.csv(paste0(folder,"/defense_summary (1).csv"))
+defense_summary_cols <- colnames(defense_summary)
 
-defense_summary
-pass_rush_summary
-run_defense_summary
-defense_coverage_summary
-defense_coverage_scheme
-slot_coverage
-pass_rush_productivity
+pass_rush_summary <- read.csv(paste0(folder,"/pass_rush_summary (1).csv"))
+pass_rush_summary_cols <- colnames(pass_rush_summary[c(2,6:length(pass_rush_summary))])
 
-receiving_summary <- read.csv(paste0(folder,"/receiving_summary (1).csv"))
-receiving_summary_cols <- colnames(receiving_summary)
+run_defense_summary <- read.csv(paste0(folder,"/run_defense_summary (1).csv"))
+run_defense_summary_cols <- colnames(run_defense_summary[c(2,6:length(run_defense_summary))])
 
-receiving_scheme <- read.csv(paste0(folder,"/receiving_scheme (1).csv"))
-receiving_scheme_cols <- colnames(receiving_scheme)
+defense_coverage_summary <- read.csv(paste0(folder,"/defense_coverage_summary (1).csv"))
+defense_coverage_summary_cols <- colnames(defense_coverage_summary[c(2,6:length(defense_coverage_summary))])
 
-receiving_concept <- read.csv(paste0(folder,"/receiving_concept (1).csv"))
-receiving_concept_cols <- colnames(receiving_concept)
+defense_coverage_scheme <- read.csv(paste0(folder,"/defense_coverage_scheme (1).csv"))
+defense_coverage_scheme_cols <- colnames(defense_coverage_scheme[c(2,6:length(defense_coverage_scheme))])
 
-receiving_depth <- read.csv(paste0(folder,"/receiving_depth (1).csv"))
-receiving_depth_cols <- colnames(receiving_depth)
+slot_coverage <- read.csv(paste0(folder,"/slot_coverage (1).csv"))
+slot_coverage_cols <- colnames(slot_coverage[c(2,6:length(slot_coverage))])
+
+pass_rush_productivity <- read.csv(paste0(folder,"/pass_rush_productivity (1).csv"))
+pass_rush_productivity_cols <- colnames(pass_rush_productivity[c(2,6:length(pass_rush_productivity))])
 
 #table of number of columns
 dim_table <- data.frame()
 
 #wr list
-wrs <- list()
-wrs_list <- list()
+def <- list()
+def_list <- list()
 
 #loop for all years into list
 for (j in 50:length(list.dirs())) {
@@ -44,33 +44,45 @@ for (j in 50:length(list.dirs())) {
   for (i in 1:17) {
     print(paste("Year:",year, "week:", i))
     
-    receiving_summary <- read.csv(paste0(folder,"/receiving_summary (", i,").csv")) %>% 
-      select(receiving_summary_cols)
-    dim_table[1,i] <- dim(receiving_summary)[2]
+    defense_summary <- read.csv(paste0(folder,"/defense_summary (", i,").csv")) %>% 
+      select(defense_summary_cols)
+    dim_table[1,i] <- dim(defense_summary)[2]
     
-    receiving_scheme <- read.csv(paste0(folder,"/receiving_scheme (", i,").csv")) %>% 
-      select(receiving_scheme_cols[c(2,7:length(receiving_scheme_cols))])
-    dim_table[2,i] <- dim(receiving_scheme)[2]
+    pass_rush_summary <- read.csv(paste0(folder,"/pass_rush_summary (", i,").csv")) %>% 
+      select(pass_rush_summary_cols)
+    dim_table[2,i] <- dim(pass_rush_summary)[2]
     
-    receiving_concept <- read.csv(paste0(folder,"/receiving_concept (", i,").csv")) %>% 
-      select(receiving_concept_cols[c(2,6:length(receiving_concept_cols))])
-    dim_table[3,i] <- dim(receiving_concept)[2]
+    run_defense_summary <- read.csv(paste0(folder,"/run_defense_summary (", i,").csv")) %>% 
+      select(run_defense_summary_cols)
+    dim_table[3,i] <- dim(run_defense_summary)[2]
     
-    receiving_depth <- read.csv(paste0(folder,"/receiving_depth (", i,").csv")) %>% 
-      select(receiving_depth_cols[c(2,8:length(receiving_depth_cols))])
-    dim_table[4,i] <- dim(receiving_depth)[2]
+    defense_coverage_summary <- read.csv(paste0(folder,"/defense_coverage_summary (", i,").csv")) %>% 
+      select(defense_coverage_summary_cols)
+    dim_table[4,i] <- dim(defense_coverage_summary)[2]
     
-    wrs_list[[i]] <- list(receiving_summary, receiving_scheme, receiving_concept, receiving_depth) %>% 
+    defense_coverage_scheme <- read.csv(paste0(folder,"/defense_coverage_scheme (", i,").csv")) %>% 
+      select(defense_coverage_scheme_cols)
+    dim_table[5,i] <- dim(defense_coverage_scheme)[2]
+    
+    slot_coverage <- read.csv(paste0(folder,"/slot_coverage (", i,").csv")) %>% 
+      select(slot_coverage_cols)
+    dim_table[6,i] <- dim(slot_coverage)[2]
+    
+    pass_rush_productivity <- read.csv(paste0(folder,"/pass_rush_productivity (", i,").csv")) %>% 
+      select(pass_rush_productivity_cols)
+    dim_table[7,i] <- dim(pass_rush_productivity)[2]
+    
+    def_list[[i]] <- list(defense_summary, pass_rush_summary, run_defense_summary, defense_coverage_summary, defense_coverage_scheme, slot_coverage, pass_rush_productivity) %>% 
       reduce(left_join, by = "player_id")
     
-    wrs_list[[i]]$year <- year
-    wrs_list[[i]]$week <- i
-    print(paste("Year:",year, "Week:", i, ", # of Columns:",dim(wrs_list[[i]])[2]))
+    def_list[[i]]$year <- year
+    def_list[[i]]$week <- i
+    print(paste("Year:",year, "Week:", i, ", # of Columns:",dim(def_list[[i]])[2]))
   }
   
-  rownames(dim_table) <- c("receiving_summary", "receiving_scheme", "receiving_concept", "receiving_depth")
+  rownames(dim_table) <- c("defense_summary", "pass_rush_summary", "run_defense_summary", "defense_coverage_summary", "defense_coverage_scheme", "slot_coverage", "pass_rush_productivity")
   
-  wrs[[j-49]] <- wrs_list
+  def[[j-49]] <- def_list
   
 }
 
@@ -82,7 +94,7 @@ for (j in 50:length(list.dirs())) {
   
   for(i in 1:17){
     
-    write.table(tibble(wrs[[j-49]][[i]]), file = "wrs.csv", sep = ",", col.names = !file.exists("wrs.csv"), append = T, row.names = F)
+    write.table(tibble(def[[j-49]][[i]]), file = "def.csv", sep = ",", col.names = !file.exists("def.csv"), append = T, row.names = F)
     print(paste("Year:", year,"Week:", i))
     
   }

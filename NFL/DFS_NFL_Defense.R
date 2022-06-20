@@ -169,7 +169,6 @@ nfl_pff_def_table$tack_sd <- round((nfl_pff_def_table$tack - mean(nfl_pff_def_ta
 nfl_pff_def_table$prsh_sd <- round((nfl_pff_def_table$prsh - mean(nfl_pff_def_table$prsh)) / sd(nfl_pff_def_table$prsh), digits = 2)
 nfl_pff_def_table$cov_sd <- round((nfl_pff_def_table$cov - mean(nfl_pff_def_table$cov)) / sd(nfl_pff_def_table$cov), digits = 2)
 
-
 # defense coverage scheme -------------------------------------------------
 nfl_pff_defense_coverage_scheme <- read.csv("defense_coverage_scheme.csv")
 
