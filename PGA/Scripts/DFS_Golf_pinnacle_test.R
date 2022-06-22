@@ -105,8 +105,7 @@ golfers$odds_rank <- round(rank(-golfers$odds_close), digits =0)
 
 #Adjust golfer table
 golfers <- golfers %>%
-  select(Name, ID, Salary, AvgPointsPerGame, odds_open, odds_close, odds_rank, odds_delta, odds_delta_per) %>%
-  drop_na(odds_close)
+  select(Name, ID, Salary, AvgPointsPerGame, odds_open, odds_close, odds_rank, odds_delta, odds_delta_per) 
 
 golfers <- golfers %>%
   left_join(rg, by=c("Name" = "name"))

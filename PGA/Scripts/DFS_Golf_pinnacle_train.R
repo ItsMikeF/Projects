@@ -10,11 +10,12 @@ tournaments <- c("2022-04-10	The Masters",
                  "2022-05-22 PGA Championship", 
                  "2022-05-29 Charles Schwab", 
                  "2022-06-05 Memorial Tournament", 
-                 "2022-06-12 RBC Canadian Open")
+                 "2022-06-12 RBC Canadian Open", 
+                 "2022-06-19 US Open")
 
 #Find latest training data folder
-date <- "2022-06-12"
-tournament <- "RBC Canadian Open"
+date <- "2022-06-19"
+tournament <- "US Open"
 folder <- list.dirs()[length(list.dirs())]
 file_list <- list.files(path = folder, pattern = "*.csv")
 
