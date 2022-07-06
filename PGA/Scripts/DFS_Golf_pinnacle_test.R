@@ -1,30 +1,35 @@
-#Import packages
-library(tidyverse, warn.conflicts = F) #metapackage
-library(ggrepel, warn.conflicts = F) #positions non-overlapping text labels
-library(lubridate, warn.conflicts = F) #make dealing with dates a little easier
-library(utils, warn.conflicts = F) #R utility functions
-library(filesstrings, warn.conflicts = F) #handy file and string manipulation
-library(xtable, warn.conflicts = F) #export tables to latex or HTML
-library(lpSolve, warn.conflicts = F) #solver for general linear/integer problems
-library(stats, warn.conflicts = F) #R statistical functions
-library(XML, warn.conflicts = F) #tools for parsing and generating XML
-library(binr, warn.conflicts = F) #cut numeric values into evenly distributed bins
-library(officer, warn.conflicts = F) #manipulation of word and pptx 
-library(janitor, warn.conflicts = F) #clearning dirty data
+#load packages
+suppressMessages({
+  library(tidyverse) #metapackage
+  library(ggrepel) #positions non-overlapping text labels
+  library(lubridate) #make dealing with dates a little easier
+  library(utils) #R utility functions
+  library(filesstrings) #handy file and string manipulation
+  library(xtable) #export tables to latex or HTML
+  library(lpSolve) #solver for general linear/integer problems
+  library(stats) #R statistical functions
+  library(XML) #tools for parsing and generating XML
+  library(binr) #cut numeric values into evenly distributed bins
+  library(officer) #manipulation of word and pptx 
+  library(janitor) #clearning dirty data
+  library(stringr) #simple consistent wrappers for common string operations
+})
 
-#Inputs
-date <- "2022-06-19"
-tournament <- "US Open"
-entries <- 100
-
-#Test data folder
+#set test data folder
 folder <- list.dirs()[20]
 file_list <- list.files(path = folder, pattern = "*.csv")
 
-#Import CSVs
-folder <- paste0("./", date," ", tournament)
-file_list <- list.files(path = folder, pattern = "*.csv")
+#manual inputs
+entries <- 100
+out <- NULL
 
+#automated inputs
+date <- str_sub(folder, 3, 12)
+tournament <- paste(unlist(strsplit(folder, split = " "))
+                    [2:(length(unlist(strsplit(folder, split = " ")))+1)], 
+                    collapse = " ")
+
+#import CSVs
 for (i in 1:length(file_list)){
   assign(file_list[i], 
          read.csv(paste0(folder, "/", file_list[i]))
@@ -32,14 +37,19 @@ for (i in 1:length(file_list)){
 
 #Rename CSVs
 golfer_salaries <- get(ls(pattern = "DKSalaries"))
+#golfer_salaries <- golfer_salaries[-c(which(golfer_salaries$Name %in% out)),]
+
 rg <- get(ls(pattern = "projections_draftkings_golf"))
+#rg <- rg[-c(which(rg$name %in% out)),]
+
 odds_pn_open <- get(ls(pattern = "_open.csv"))
 odds_pn_close <- get(ls(pattern = "_close.csv"))
+
 dg_pred <- get(ls(pattern = "_preds_ch_model"))
 
-#Merge Open and Close Odds
+#pinnacle open odds
 odds_pn_open <- odds_pn_open %>% 
-  select("player_name", "sample_size", "DG_odds", "pinnacle_odds", "betcris_odds", "betfair_odds") %>% 
+  select("player_name", "sample_size", "DG_odds", "pinnacle_odds", "betcris_odds", "betfair_odds", "draftkings_odds") %>% 
   separate(player_name, into = c("last", "first"), sep = ",") 
 
 odds_pn_open$odds <- if_else(is.na(odds_pn_open$pinnacle_odds),
@@ -53,11 +63,18 @@ odds_pn_open <- odds_pn_open %>%
 odds_pn_open$odds[is.infinite(odds_pn_open$odds)] <- 
   max(odds_pn_open$odds[is.finite(odds_pn_open$odds)], na.rm = T)
 
+#pinnacle close odds
 odds_pn_close <- odds_pn_close %>% 
-  select("player_name", "DG_odds", "pinnacle_odds" ) %>% 
-  separate(player_name, into = c("last", "first"), sep = ",") 
+  select("player_name", "sample_size", "DG_odds", "pinnacle_odds", "betcris_odds", "betfair_odds", "draftkings_odds") %>% 
+  separate(player_name, into = c("last", "first"), sep = ",")
+
+odds_pn_close$odds <- if_else(is.na(odds_pn_close$pinnacle_odds),
+                             if_else(is.na(odds_pn_close$betcris_odds),odds_pn_close$betfair_odds, odds_pn_close$betcris_odds), 
+                             odds_pn_close$pinnacle_odds)
+
 odds_pn_close$player_name <- trimws(paste(odds_pn_close$first, odds_pn_close$last))
-odds_pn_close <- odds_pn_close %>% select(player_name, pinnacle_odds)
+odds_pn_close <- odds_pn_close %>% 
+  select(player_name, pinnacle_odds)
 
 odds_pn_close$pinnacle_odds[is.infinite(odds_pn_close$pinnacle_odds)] <- 
   max(odds_pn_close$pinnacle_odds[is.finite(odds_pn_close$pinnacle_odds)], na.rm = T)
@@ -76,6 +93,9 @@ odds_pn[,2:3] <- sapply(odds_pn[,2:3], convert_ML)
 names(odds_pn) <- c("Golfer", "odds_open", "odds_close")
 odds_pn$odds_delta <- odds_pn$odds_close - odds_pn$odds_open
 odds_pn$odds_delta_per <- round((odds_pn$odds_close - odds_pn$odds_open)/odds_pn$odds_open, digits = 4)
+
+#Golfers Out
+#odds_pn <- odds_pn[-c(which(odds_pn$Golfer %in% out)),]
 
 #DG predictions adjustments
 dg_pred <- dg_pred %>% 
@@ -98,13 +118,9 @@ rg$floor[is.na(rg$floor)] <- min(rg$floor, na.rm = T)
 
 #Create golfer tibble
 golfers <- golfer_salaries %>%
-  left_join(odds_pn, by = c("Name" = "Golfer"))
- 
-#Add Odds Rank
-golfers$odds_rank <- round(rank(-golfers$odds_close), digits =0)
-
-#Adjust golfer table
-golfers <- golfers %>%
+  left_join(odds_pn, by = c("Name" = "Golfer")) %>% 
+  drop_na() %>% 
+  mutate(odds_rank = round(rank(-golfers$odds_close), digits =0)) %>% 
   select(Name, ID, Salary, AvgPointsPerGame, odds_open, odds_close, odds_rank, odds_delta, odds_delta_per) 
 
 golfers <- golfers %>%
@@ -117,10 +133,6 @@ golfers$odds_per_dollar <- round(golfers$odds_close / golfers$Salary * 10^6, dig
 golfers$one <- 1
 
 golfers$residuals <- round(residuals(loess(odds_per_dollar ~ Salary, golfers)), digits = 2)
-
-#Golfers Out
-out <- NULL
-#golfers <- golfers[-c(which(golfers$Name %in% out)),]
 
 #Bins
 golfer_bins <- bins(golfers$Salary, target.bins = 6, exact.groups = T, max.breaks = 6)

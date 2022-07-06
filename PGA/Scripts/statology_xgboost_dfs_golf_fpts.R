@@ -59,7 +59,7 @@ xgb_test <- xgb.DMatrix(data = test_x, label = test_y)
 watchlist <- list(train=xgb_train, test=xgb_test)
 
 #define final model
-final <- xgboost(data = xgb_train, max.depth = 2, nrounds = 61, print_every_n = 1)
+final <- xgboost(data = xgb_train, max.depth = 3, nrounds = 9, print_every_n = 1)
 
 #use model to make predictions on test data
 pred_y <- predict(final, xgb_test)

@@ -1,23 +1,30 @@
-#Load packages
-library(tidyverse, warn.conflicts = F) #metapackage
+#load packages
+suppressMessages({
+  library(tidyverse, warn.conflicts = F) #metapackage
+  library(stringr) #simple consistent wrappers for common string operations
+})
+
+#Find latest training data folder
+folder <- list.dirs()[length(list.dirs())]
+file_list <- list.files(path = folder, pattern = "*.csv")
+
+#automated inputs
+date <- str_sub(folder, nchar("./Training_data/")+1, nchar("./Training_data/")+10)
+tournament <- str_sub(folder, nchar("./Training_data/")+12, nchar(folder))
 
 #List tournaments in golfer results
-tournaments <- c("2022-04-10	The Masters", 
-                 "2022-04-17	RBC Heritage", 
-                 "2022-05-01	Mexico Open",
-                 "2022-05-08	Wells Fargo", 
+tournaments <- c("2022-04-10 The Masters", 
+                 "2022-04-17 RBC Heritage", 
+                 "2022-05-01 Mexico Open",
+                 "2022-05-08 Wells Fargo", 
                  "2022-05-15 AT&T Byron Nelson", 
                  "2022-05-22 PGA Championship", 
                  "2022-05-29 Charles Schwab", 
                  "2022-06-05 Memorial Tournament", 
                  "2022-06-12 RBC Canadian Open", 
-                 "2022-06-19 US Open")
-
-#Find latest training data folder
-date <- "2022-06-19"
-tournament <- "US Open"
-folder <- list.dirs()[length(list.dirs())]
-file_list <- list.files(path = folder, pattern = "*.csv")
+                 "2022-06-19 US Open", 
+                 "2022-06-26 Travelers Championship", 
+                 "2022-07-03 John Deere Classic")
 
 for (i in 1:length(file_list)){
   assign(file_list[i], 

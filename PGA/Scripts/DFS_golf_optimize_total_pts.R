@@ -1,19 +1,17 @@
-library(xgboost, warn.conflicts = F) #extreme gradient boosting for ml
-library(readr, warn.conflicts = F) #read rectangular text data
-library(stringr, warn.conflicts = F) #simple consistent wrappers for common string operatrions
-library(caret, warn.conflicts = F) 
-library(tidyverse, warn.conflicts = F) #metapackage
-library(ggrepel, warn.conflicts = F) #automatically position non-overlapping text labels
-library(lubridate, warn.conflicts = F) #make dealing with dates a little easier
-library(utils, warn.conflicts = F) #R utility functions
-library(lpSolve, warn.conflicts = F) #solver for linear / integer programs
-library(stats, warn.conflicts = F) #R statistical functions
-library(XML, warn.conflicts = F) #tools for parsing and generating XML
-library(binr, warn.conflicts = F) #cut numeric values into evenly distributed groups
+#load packages
+suppressMessages({
+  library(tidyverse) #metapackage
+  library(ggrepel) #automatically position non-overlapping text labels
+  library(lubridateF) #make dealing with dates a little easier
+  library(utils) #R utility functions
+  library(lpSolve) #solver for linear / integer programs
+  library(stats) #R statistical functions
+  library(binr) #cut numeric values into evenly distributed groups
+})
 
 #Inputs
-entries <- 150
-salary_filter <- 7400
+entries <- 100
+salary_filter <- 6600
 
 #Import CSVs
 golfers <- read.csv(paste0("./Results/golfers_",entries,".csv"))

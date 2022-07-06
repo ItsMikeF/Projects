@@ -5,7 +5,7 @@ library(tidyverse)
 folder <- list.dirs()[20]
 
 #course
-contest_course <- "Winged Foot GC"
+contest_course <- "TPC River Highlands"
 
 #Import csv
 course_rankings <- read.csv(paste0(folder, "/dg_course_table.csv"))

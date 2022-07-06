@@ -1,8 +1,12 @@
 #load packages
 suppressMessages({library(tidyverse)}) 
 
+#loop values
+start <- which(list.dirs() == "./Training_Data/2014")
+stop <- length(list.dirs())-1
+
 #set year folder
-folder <- list.dirs()[which(list.dirs() == "./Training_Data/2014")]
+folder <- list.dirs()[start]
 year <- substring(folder, nchar(folder)-3, nchar(folder))
 
 #obtain column names from week 1 files
@@ -41,12 +45,8 @@ dim_table <- data.frame()
 qbs <- list()
 qbs_list <- list()
 
-#loop values
-start <- which(list.dirs() == "./Training_Data/2014")
-stop <- length(list.dirs())-1
-
 #loop for all years into list
-for (j in which(list.dirs() == "./Training_Data/2014"):(length(list.dirs())-1)) {
+for (j in start:stop) {
   
   folder <- list.dirs()[j]
   year <- substring(folder, nchar(folder)-3, nchar(folder))
@@ -85,19 +85,19 @@ for (j in which(list.dirs() == "./Training_Data/2014"):(length(list.dirs())-1)) 
   
   rownames(dim_table) <- c("passing_summary", "passing_pressure", "passing_concept", "passing_depth", "time_in_pocket")
   
-  qbs[[j-(which(list.dirs() == "./Training_Data/2014")-1)]] <- qbs_list
+  qbs[[j-(start-1)]] <- qbs_list
   
 }
 
 #write nested years list to csv
-for (j in which(list.dirs() == "./Training_Data/2014"):(length(list.dirs())-1)) {
+for (j in start:stop) {
   
   folder <- list.dirs()[j]
   year <- substring(folder, nchar(folder)-3, nchar(folder))
   
   for(i in 1:17){
     
-    write.table(tibble(qbs[[j-(which(list.dirs() == "./Training Data/2014")-1)]][[i]]), 
+    write.table(tibble(qbs[[j-(start-1)]][[i]]), 
                 file = "./Training_Data/position_groups/qbs.csv", sep = ",", 
                 col.names = !file.exists("./Training Data/position_groups/qbs.csv"), 
                 append = T, row.names = F)

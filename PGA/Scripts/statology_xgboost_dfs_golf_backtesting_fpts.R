@@ -1,10 +1,9 @@
 #Load Packages
-library(tidyverse)  #Metapackage
-library(xgboost, warn.conflicts = F)
-library(readr, warn.conflicts = F)
-library(stringr, warn.conflicts = F)
-library(caret, warn.conflicts = F)
-library(car, warn.conflicts = F)
+suppressMessages({
+  library(tidyverse) #Metapackage
+  library(xgboost) #extreme gradient boosting
+  library(caret) #classification and regression training
+})
 
 #make this example reproducible
 set.seed(0)
@@ -42,10 +41,10 @@ xgb_test = xgb.DMatrix(data = test_x, label = test_y)
 watchlist = list(train=xgb_train, test=xgb_test)
 
 #fit XGBoost model and display training and testing data at each round
-model <- xgb.train(data = xgb_train, max.depth = 2, watchlist=watchlist, nrounds = 100, print_every_n = 2)
+model <- xgb.train(data = xgb_train, max.depth = 3, watchlist=watchlist, nrounds = 20, print_every_n = 1)
 
 #define final model
-final <- xgboost(data = xgb_train, max.depth = 2, nrounds = 15, print_every_n = 1)
+final <- xgboost(data = xgb_train, max.depth = 3, nrounds = 9, print_every_n = 1)
 
 #use model to make predictions on test data
 pred_y <- round(predict(final, xgb_test), digits = 1)
