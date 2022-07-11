@@ -8,8 +8,6 @@ suppressMessages({
 pbp <- load_pbp(seasons = 2014:2021)
 pbp$year <- as.numeric(substr(pbp$game_date, 1, 4))
 
-names <- tibble(names(pbp))
-
 #sort for qb pbp
 qb_pbp <- pbp %>% 
   group_by(passer ,posteam, game_date, defteam, week) %>% 
@@ -38,18 +36,19 @@ qb_pbp <- pbp %>%
            big_py * 3, 
          year = as.numeric(substr(game_date, 1, 4)), 
          week_minus1 = week - 1, 
-         merge = paste0(unlist(strsplit(passer, "[.]"))[2], year, week_minus1))
+         merge = paste0(unlist(strsplit(passer, "[.]"))[2], year, week_minus1), 
+         merge_def = paste0(defteam, year, week_minus1))
 
 #load pff qb
-qbs <- read.csv("./Training_Data/position_groups/qbs.csv") %>%
+qbs_pff <- read.csv("./Training_Data/position_groups/qbs.csv") 
+
+qbs_pff_test <- qbs_pff %>%
   mutate(name = player) %>% 
   separate(name, into = c("first_name", "last_name"), sep=" ") %>% 
-  mutate(merge = paste0(last_name, year, week)) %>% 
-  left_join(qb_pbp, by = c("merge"))
+  mutate(merge = paste0(last_name, year, week))
 
 #load pff def files
-def <- read.csv("./Training_Data/position_groups/def.csv")
-names <- tibble(names(def))
+def <- read_csv("./Training_Data/position_groups/def.csv")
 
 #sort pff def
 def_pass <- def %>% 
@@ -88,4 +87,10 @@ def_pass <- def %>%
     
     rhs_pressures = round(weighted.mean(rhs_prp, rhs_pass_rush_snaps, na.rm = T), digits = 2),
     rhs_prp = round(weighted.mean(rhs_prp, rhs_pass_rush_snaps, na.rm = T), digits = 2)
-  )
+  ) %>% 
+  mutate(merge_def = paste0(team_name, year, week))
+
+#merge all qb data
+qbs <- qb_pbp %>% 
+  left_join(qbs_pff_test, by = c("merge")) %>% 
+  left_join(def_pass, by = c("merge_def"))

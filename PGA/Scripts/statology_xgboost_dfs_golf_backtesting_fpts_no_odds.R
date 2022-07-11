@@ -9,18 +9,18 @@ suppressMessages({
 set.seed(0)
 
 #split into training (80%) and testing set (20%)
-data <- read.csv("./Results/golfers_results_no_odds.csv") %>% 
+data <- read_csv("./Results/golfers_results_no_odds.csv") %>% 
   drop_na(total_pts)
 parts = createDataPartition(data$total_pts, p = .8, list = F)
 train = data[parts, ]
 test = data[-parts, ]
 
 #define predictor and response variables in training set
-train_x <- data.matrix(train %>% select(ceil, Salary, residuals, AvgPointsPerGame, win, top_20))
+train_x <- data.matrix(train %>% select(ceil, Salary, AvgPointsPerGame, residuals, win))
 train_y <- train$total_pts
 
 #define predictor and response variables in testing set
-test_x <- data.matrix(test %>% select(ceil, Salary, residuals, AvgPointsPerGame, win, top_20))
+test_x <- data.matrix(test %>% select(ceil, Salary, AvgPointsPerGame, residuals, win))
 test_y <- test$total_pts
 
 #define final training and testing sets
