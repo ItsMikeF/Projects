@@ -16,11 +16,11 @@ train = data[parts, ]
 test = data[-parts, ]
 
 #define predictor and response variables in training set
-train_x <- data.matrix(train %>% select(ceil, Salary, AvgPointsPerGame, residuals, win))
+train_x <- data.matrix(train %>% select(ceil, Salary, proj_own, value, make_cut, win, course_fit_total_adj, final_prediction, total_points))
 train_y <- train$total_pts
 
 #define predictor and response variables in testing set
-test_x <- data.matrix(test %>% select(ceil, Salary, AvgPointsPerGame, residuals, win))
+test_x <- data.matrix(test %>% select(ceil, Salary, proj_own, value, make_cut, win, course_fit_total_adj, final_prediction, total_points))
 test_y <- test$total_pts
 
 #define final training and testing sets
@@ -34,7 +34,7 @@ watchlist = list(train=xgb_train, test=xgb_test)
 model <- xgb.train(data = xgb_train, max.depth = 2, watchlist=watchlist, nrounds = 40, print_every_n = 1)
 
 #define final model
-final <- xgboost(data = xgb_train, max.depth = 2, nrounds = 32, print_every_n = 1)
+final <- xgboost(data = xgb_train, max.depth = 2, nrounds = 27, print_every_n = 1)
 
 #use model to make predictions on test data
 pred_y <- round(predict(final, xgb_test), digits = 1)

@@ -7,10 +7,9 @@ library(RCurl)
 library(data.table)
 
 #Define inputs
-url <- "https://datagolf.com/course-table?sort_cat=scoring&sort=adj_par_4_score&diff=hardest"
-url <- "https://www.theguardian.com/world/2017/jun/26/angela-merkel-and-donald-trump-head-for-clash-at-g20-summit"
-css1 <- "div.data.course-col.selectorgadget_selected"
-css2 <- ".parent-expanded"
+url <- "https://sportsbook.draftkings.com/leagues/baseball/mlb?category=home-run-derby&subcategory=highest-exit-velocity"
+css1 <- ".sportsbook-outcome-cell__label"
+css2 <- ".default-color"
 
 #Read html page
 webpage <- read_html(url)

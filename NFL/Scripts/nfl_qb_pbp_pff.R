@@ -94,3 +94,13 @@ def_pass <- def %>%
 qbs <- qb_pbp %>% 
   left_join(qbs_pff_test, by = c("merge")) %>% 
   left_join(def_pass, by = c("merge_def"))
+
+names <- tibble(names(qbs))
+names
+
+qbs_select <- qbs %>% 
+  select(grades_pass.x, attempts, pressure_dropbacks_percent, pressure_grades_pass, deep_big_time_throws, 
+         grades_defense, true_pass_set_grades_pass_rush_defense, grades_coverage_defense, man_grades_coverage_defense, 
+         man_yards_per_coverage_snap, prp, 
+         fpts) %>% 
+  drop_na()

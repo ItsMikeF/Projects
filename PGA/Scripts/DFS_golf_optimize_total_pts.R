@@ -2,7 +2,7 @@
 suppressMessages({
   library(tidyverse) #metapackage
   library(ggrepel) #automatically position non-overlapping text labels
-  library(lubridateF) #make dealing with dates a little easier
+  library(lubridate) #make dealing with dates a little easier
   library(utils) #R utility functions
   library(lpSolve) #solver for linear / integer programs
   library(stats) #R statistical functions
@@ -10,15 +10,15 @@ suppressMessages({
 })
 
 #Inputs
-entries <- 100
-salary_filter <- 6600
+entries <- 20
+salary_filter <- 6500
 
 #Import CSVs
 golfers <- read.csv(paste0("./Results/golfers_",entries,".csv"))
 
 #Optimal Lineup
 optimal <- lp(direction = "max", 
-              objective.in = golfers$total_pts, 
+              objective.in = golfers$course_fit, 
               rbind(golfers$Salary, golfers$Salary, golfers$one), 
               c("<=", ">=", "="), 
               c("50000", "49500", "6"), 
@@ -52,8 +52,8 @@ dlist_df <- data.frame()
 for (i in 1:entries) {
   
   optimal <- lp(direction = "max", 
-                objective.in = golfers2$total_pts, 
-                rbind(golfers2$Salary, golfers2$Salary, golfers2$one, golfers2$total_pts), 
+                objective.in = golfers2$course_fit, 
+                rbind(golfers2$Salary, golfers2$Salary, golfers2$one, golfers2$course_fit), 
                 c("<=", ">=", "=", "<"), 
                 c("50000", "49500", "6", fpts_limit-.01),
                 binary.vec = c(1:dim(golfers2)[1]))
@@ -64,7 +64,7 @@ for (i in 1:entries) {
                         across(where(is.numeric), sum), 
                         across(where(is.character), ~"")))
   
-  fpts_limit <- optimal_lineup$total_pts[7]
+  fpts_limit <- optimal_lineup$course_fit[7]
   
   optimal_list[[i]] <- optimal_lineup
   
@@ -92,7 +92,7 @@ for (i in 1:entries) {
   
   golfers2 <- golfers2 %>% filter(filter == 0)
   
-  golfers2 <- golfers2[,-c(26:29)]
+  golfers2 <- golfers2[,-c(55:58)]
 }
 
 optimal_table <- do.call("rbind", optimal_list)
@@ -100,13 +100,13 @@ optimal_table <- do.call("rbind", optimal_list)
 #Lineup Check
 entries_wp <- data.frame()
 for (m in 1:entries) {
-  entries_wp[m,1] <- optimal_table$total_pts[(m*7)]
+  entries_wp[m,1] <- optimal_table$course_fit[(m*7)]
 }
 names(entries_wp) <- "Lineup WP"
 
 #Check ownership
 ownership_table <- golfers %>% 
-  select(Name, ID, Salary, ceil, fpts, total_pts, odds_open, odds_close, odds_delta_per, odds_rank, win, residuals, proj_own, own_change)
+  select(Name, ID, Salary, ceil, fpts, course_fit, total_points, final_prediction, win, residuals, course_fit, proj_own_avg, own_change)
 
 for(i in 1:dim(golfers)[1]){
   ownership_table$own[i] <- sum(str_count(optimal_table$Name, ownership_table$Name[i])) / entries

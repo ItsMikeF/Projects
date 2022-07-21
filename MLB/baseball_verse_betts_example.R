@@ -29,6 +29,8 @@ for (i in 15:22) {
 betts_years <- unlist(betts_years)
 betts_years
 
+get(betts_years[1])
+
 #bind rows
 betts <- bind_rows(betts_15,betts_16,betts_17,betts_18,betts_19,betts_20,betts_21,betts_22) %>%
   mutate(Year = as.factor(substr(game_date,1,4))) %>%

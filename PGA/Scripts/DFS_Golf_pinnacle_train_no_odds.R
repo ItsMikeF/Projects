@@ -16,18 +16,21 @@ tournaments <- {c("2022-04-10 The Masters",
                  "2022-06-12 RBC Canadian Open", 
                  "2022-06-19 US Open", 
                  "2022-06-26 Travelers Championship", 
-                 "2022-07-03 John Deere Classic")}
+                 "2022-07-03 John Deere Classic", 
+                 "2022-07-10 Genesis Scottish Open", 
+                 "2022-07-17 Open Championship")}
 
 #deletes file if it exists
 if (file.exists("./Results/golfers_results_no_odds.csv")) {
   unlink("./Results/golfers_results_no_odds.csv")
-  cat("The file is deleted")
+  cat("The file is deleted.")
 } else {
-  cat("file not found")
+  cat("The file was not found.")
 }
 
 #write training data
-for (i in 1:length(tournaments)) {
+for (i in c(5,8:length(tournaments))) {
+  print(paste("Start",tournaments[i]))
   #find latest training data folder
   folder <- paste0("./Training_data/",tournaments[i])
   
@@ -42,6 +45,18 @@ for (i in 1:length(tournaments)) {
   #import rotogrinders
   rg <- read.csv(paste0(folder, "/", list.files(path = folder, pattern = "projections_draftkings_golf"))) %>% 
     select(name, fpts, proj_own, ceil, floor)
+  
+  #import dg projections
+  dg_proj <- read.csv(paste0(folder, "/", list.files(path = folder, pattern = "draftkings_main_projections"))) %>%
+    select(dk_name, scoring_points, finish_points, total_points, value, projected_ownership)
+  
+  #import dg decomposition
+  decomp <- read.csv(paste0(folder, "/", list.files(path = folder, pattern = "dg_decomposition"))) %>%
+    select(player_name, baseline, age, age_adj, true_sg_adj, timing_adj, sg_category_adj, course_history_adj, driving_dist_adj, driving_acc_adj, 
+           fit_other_adj, course_fit_total_adj, final_prediction) %>%
+    separate(player_name, into = c("last", "first"), sep = ",") %>% 
+    unite("Player", first:last, sep = " ") %>% 
+    mutate(Player = trimws(Player))
   
   #import data golf model predictions
   cam <- read.csv(paste0(folder, "/", list.files(path = folder, pattern = "-model"))) %>%
@@ -64,11 +79,14 @@ for (i in 1:length(tournaments)) {
     mutate(Player = trimws(Player)) %>% 
     select(Player, ownership, total_pts)
   
+  
   #Create golfer tibble
   own_multiplier <- 100/100
   
   golfers <- golf_salaries %>% 
     left_join(rg, by=c("Name" = "name")) %>% 
+    left_join(dg_proj, by = c("Name" = "dk_name")) %>%
+    left_join(decomp, by =c("Name" = "Player")) %>%
     left_join(cam, by=c("Name" = "Golfer")) %>% 
     left_join(results, by = c("Name" = "Player")) %>% 
     drop_na() %>% 
@@ -80,6 +98,7 @@ for (i in 1:length(tournaments)) {
                                proj_own + own_change >= 40 ~ 40), 
            date = date, 
            tournament = tournament)
+  print(paste("End",tournaments[i]))
   
   write.table(golfers, file = "./Results/golfers_results_no_odds.csv", sep = ",", col.names = !file.exists("./Results/golfers_results_no_odds.csv"), append = T, row.names = F)
 }

@@ -4,12 +4,12 @@ library(tidyverse)
 #find folder
 folder <- list.dirs()[20]
 
-#course
-contest_course <- "TPC River Highlands"
-
 #Import csv
 course_rankings <- read.csv(paste0(folder, "/dg_course_table.csv"))
 skill <- read.csv(paste0(folder, "/dg_skill_ratings.csv"))
+
+#course
+contest_course <- "TPC Twin Cities"
 
 #add course_rankings
 course_rankings$yardage_rank <- rank(-course_rankings$yardage)
