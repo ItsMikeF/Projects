@@ -1,0 +1,92 @@
+---
+title: "uv_hourly_test"
+output: html_document
+date: '2022-07-25'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+load packages
+```{r}
+suppressMessages({
+  library(tidyverse) 
+})
+```
+
+load uv data
+```{r}
+uv <- read_csv("./data/uv_hourly.csv")
+```
+
+linear model of the uv data
+```{r}
+lm <- summary(lm(uv$uv ~ uv$hour + I(uv$hour^2) + I(uv$hour^3)+ I(uv$hour^4)+ I(uv$hour^5)+ I(uv$hour^6)))
+```
+
+The r squared value is `r lm$r.squared`.
+
+import coefficients into a formula to calculate the uv index
+```{r}
+poly_calc <- function(x){
+  df <- as_tibble(lm$coefficients)
+  return(round(
+    (df$Estimate[7]*x^6) +
+    (df$Estimate[6]*x^5) +
+    (df$Estimate[5]*x^4) +
+    (df$Estimate[4]*x^3) +
+    (df$Estimate[3]*x^2) +
+    (df$Estimate[2]*x^1) +
+    (df$Estimate[1]*x^0) 
+  , digits = 2))
+}
+
+uv <- uv %>% 
+  mutate(uv_poly = poly_calc(hour))
+
+largest <- uv %>% 
+  arrange(-uv) %>% 
+  slice(1) %>% 
+  pull(hour)
+
+library(gt)
+uv_gt <- gt(uv) %>% 
+  tab_header(
+    title = "Hourly UV Index", 
+    subtitle = "calcuated with 7th order polynomial expression"
+  ) %>% 
+  tab_source_note("Source: WillyWeather") %>% 
+  tab_footnote(
+    footnote = md("The UV is highest"), 
+    locations = cells_body(
+      columns = hour,
+      rows = hour == largest
+    )
+  )
+uv_gt
+
+```
+
+```{r}
+ggplot(uv, aes(x = hour, y = uv)) +
+  geom_point() +
+  labs(
+    x = "Time of Day", 
+    y = "UV Index", 
+    title = "UV Index vs Time of Day", 
+    caption = "Data from WillyWeather"
+  ) +
+  theme_minimal() +
+  geom_smooth(method = "loess", se = F, color ="red")
+```
+
+Lets try some python code!
+```{R}
+library(reticulate)
+use_python("C:/Users/mikef/AppData/Local/Programs/Python/Python310/python.exe")
+```
+
+```{python}
+print("hello world")
+```

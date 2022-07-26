@@ -2,6 +2,7 @@
 suppressMessages({
   library(tidyverse) #metapackage
   library(nflverse) #functions to efficiently access NFL pbp data
+  library(reshape2)
 })
 
 pbp <- load_pbp(seasons = 2018:2021)
@@ -9,21 +10,49 @@ pbp <- load_pbp(seasons = 2018:2021)
 names <- tibble(names(pbp))
 
 qbs <- pbp %>% 
-  group_by(passer, passer_id) %>% 
-  summarise(epa = round(sum(epa, na.rm = T), digits = 0), 
+  filter(pass == 1 | rush == 1) %>% 
+  filter(down %in% 1:4) %>% 
+  group_by(id) %>% 
+  summarise(name = first(name),
+            team = last(posteam),
+            epa = round(sum(epa, na.rm = T), digits = 0), 
             qb_epa = round(sum(qb_epa, na.rm = T), digits = 0), 
             cpoe = round(mean(cpoe, na.rm = T), digits = 2),
-            dropbacks = sum(qb_dropback)) %>% 
+            dropbacks = sum(qb_dropback),
+            plays = n()) %>% 
   arrange(-qb_epa) %>%
-  slice_head(n=10)
+  filter(plays > 200) %>% 
+  slice_max(qb_epa, n = 10)
 
-qbs %>% 
-  arrange(-qb_epa)
+ggplot(qbs, aes(x = reorder(id, -qb_epa), y = qb_epa)) +
+  geom_col(aes(color = team, fill = team), width = 0.5) +
+  scale_color_nfl(type = "secondary") +
+  scale_fill_nfl(alpha = 0.4) +
+  labs(
+    title = "2020 NFL Quarterback EPA per Play",
+    y = "EPA/play"
+  ) +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(
+    plot.title = element_text(face = "bold"),
+    plot.title.position = "plot",
+    
+    # it's obvious what the x-axis is so we remove the title
+    axis.title.x = lement_blank(),
+    
+    # this line triggers the replacement of gsis ids with player headshots
+    axis.text.x = element_nfl_headshot(size = 1)
+  )
 
-geom_nfl_headshots(data = qbs)
+pbp_sort <- pbp %>% 
+  filter(pass == 1 | rush == 1) %>%
+  filter(down %in% 1:4) %>% 
+  filter(name %in% qbs$name)
 
-ggplot(df, aes(x = a, y = b)) +
-  geom_nfl_headshots(aes(player_gsis = player_gsis), height = 0.2) +
-  geom_label(aes(label = player_name), nudge_y = -0.35, alpha = 0.5) +
-  coord_cartesian(xlim = c(0.75, 3.25), ylim = c(0.7, 3.25)) +
-  theme_void()
+pbp_sort_test <- pbp_sort %>% 
+  filter(name == "P.Mahomes") 
+
+ggplot(pbp_sort, aes(qb_dropback,epa)) +
+  geom_point(aes(cumsum(pbp_sort_test$qb_dropback), cumsum(pbp_sort_test$epa)))
+
+plot(cumsum(pbp_sort_test$qb_dropback), cumsum(pbp_sort_test$epa))

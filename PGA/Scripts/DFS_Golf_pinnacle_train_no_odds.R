@@ -18,7 +18,8 @@ tournaments <- {c("2022-04-10 The Masters",
                  "2022-06-26 Travelers Championship", 
                  "2022-07-03 John Deere Classic", 
                  "2022-07-10 Genesis Scottish Open", 
-                 "2022-07-17 Open Championship")}
+                 "2022-07-17 Open Championship", 
+                 "2022-07-24 3M Open")}
 
 #deletes file if it exists
 if (file.exists("./Results/golfers_results_no_odds.csv")) {

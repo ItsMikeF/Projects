@@ -1,0 +1,174 @@
+---
+title: "soccer_learn"
+output: html_document
+date: '2022-07-25'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Lets test out some soccer packages!
+
+First we load in the packages
+```{r}
+suppressMessages({
+  library(tidyverse) #metapackage
+  library(gt) #Easily Create Presentation-Ready Display Tables
+  library(ggsci) #Scientific Journal and Sci-Fi Themed Color Palettes for 'ggplot2'
+  library(reshape2) #flexibly Reshape Data
+  library(ggrepel) #Automatically Position Non-Overlapping Text Labels with 'ggplot2'
+  
+  library(worldfootballR) #extract and clean world soccer data
+  library(engsoccerdata) #English and European Soccer Results
+  library(socceR) #Evaluating Sport Tournament Predictions
+  library(ggsoccer) #Plot Soccer Event Data
+  library(footBayes) #Fitting Bayesian and MLE Football Models
+  library(itscalledsoccer) #American Soccer Analysis API Client
+  library(FPLdata) #Read in Fantasy Premier League Data
+  library(EUfootball) #Football Match Data of European Leagues
+})
+```
+
+Lets check out FPL dataset
+```{r}
+fpl_data <- FPLdata()
+names(fpl_data)
+```
+Lets now sort for player level season long data
+```{r}
+fpl_player <- fpl_data %>%
+  unite(name ,first_name, second_name, sep = " ") %>% 
+  group_by(name) %>%
+  summarise(
+    "minutes" = sum(minutes),
+    "mean_next_gw_points" = round(mean(next_gw_points, na.rm = T), digits = 2), 
+    "form" = round(mean(form, na.rm = T), digits = 2),
+    "dream team" = max(dreamteam_count),
+    "points_per_game" = round(mean(points_per_game, na.rm = T), digits =2), 
+    "creativity" = round(mean(creativity, na.rm = T), digits =0),
+    "influence" = round(mean(influence, na.rm = T), digits =0),
+    "threat" = round(mean(threat, na.rm = T), digits =0)) %>%
+  filter(minutes > 0.25 * max(minutes)) %>% 
+  mutate(actual_vs_expected = points_per_game-mean_next_gw_points) %>% 
+  arrange(-actual_vs_expected) 
+head(fpl_player)
+```
+
+Lets take a look to see which players over performed the most
+```{r}
+fpl_player %>% 
+  select(name, minutes, mean_next_gw_points, points_per_game, actual_vs_expected) %>% 
+  head(15) %>% 
+  gt(rowname_col = "name") %>% 
+  tab_header(
+    title = "Top 15 2021/2022 FPL Overperformers", 
+    subtitle = "Sorted by actual_vs_expected, filtered out minutes <20%") %>% 
+  tab_source_note(
+    source_note = "next_gw_points (next gameweek points) value for each player given their attributes in the current week.") %>% 
+  tab_stubhead(label = "name") %>% 
+  tab_source_note(source_note = "Twitter: @its_MikeF | Data from FPLdata") 
+```
+
+Lets see if threat or activity rank correlated
+```{r}
+normalize <- function(x){
+  return( (x - min(x,na.rm = T))/( max(x, na.rm = T) - min(x, na.rm = T)) )
+}
+
+fpl_player_norm <- fpl_player
+
+for(i in 2:length(fpl_player_norm)){
+  fpl_player_norm[,i] = normalize(fpl_player_norm[,i])
+}
+
+fpl_player_norm <- fpl_player_norm[,2:9]
+
+fpl_player_norm %>%
+  cor() %>%
+  melt() %>%
+  ggplot(aes(Var1, Var2, fill=value)) +
+  geom_tile(color='white') +
+  scale_fill_distiller(palette = 'GnBu', direction = 1) +
+  geom_text(aes(label=paste(round(value,2)*100,'%')), size=2.5, color='black') +
+  labs(x='',y='',fill='correlations', title='Relationship between fpl variables') +
+  theme(axis.text.x = element_text(angle = 90, vjust = .5))
+```
+Lets check out the **worldfootballr** package
+```{r}
+fb_big5_advanced_season_stats <- fb_big5_advanced_season_stats(
+season_end_year = 2022,
+stat_type = "standard",
+team_or_player = "player",
+time_pause = 3
+)
+```
+
+The statistic type options (stat_type) include:
+"standard", "shooting", "passing", "passing_types", "gca", "defense", "possession", "playing_time", "misc", "keepers", "keepers_adv"
+
+```{r}
+fb <- fb_big5_advanced_season_stats %>% 
+  select(Squad, Comp, Player, Nation, Pos, Age, MP_Playing, Starts_Playing, Min_Playing, Gls, Ast, PK, PKatt, xG_Per, npxG_Per, xA_Per) %>% 
+  mutate(npxG_plus_xA_per = npxG_Per + xA_Per, 
+         npxG_plus_xA_per_min = round(npxG_plus_xA_per * Min_Playing / max(Min_Playing), digits = 3)) %>% 
+  arrange(-npxG_plus_xA_per_min) %>% 
+  separate(Player, into = c("first_name", "last_name"), sep = " ")
+
+```
+
+Lets take a look the FPL 2022/2023 player list 
+```{r}
+epl_ff_2022_players <- read.csv("./00_raw_data/epl_ff_2022_players.csv")
+
+test <- epl_ff_2022_players %>% 
+  left_join(fb, by=c("Player"="last_name")) %>% 
+  drop_na() %>% 
+  filter(Min_Playing > 100) %>% 
+  mutate(residuals = round(residuals(loess(Draft.Rank ~ npxG_plus_xA_per_min)), digits = 2))
+```
+Be warned, drop_na is removing about 200 players!
+
+Now lets sort the data
+```{r}
+test %>% 
+  select(Player, Team, Draft.Rank, Points, npxG_plus_xA_per_min) %>% 
+  arrange(-npxG_plus_xA_per_min) %>% 
+  head(15) %>% 
+  gt(rowname_col = "Player") %>% 
+  tab_header(
+    title = "Top 15 2021/2022 npxG_plus_xA_per_min") %>% 
+  tab_source_note(
+    source_note = "") %>% 
+  tab_stubhead(label = "name") %>% 
+  tab_source_note(source_note = "Twitter: @its_MikeF | Data from FBref") 
+```
+
+Lets plot the data
+```{r}
+{test %>%
+    ggplot(aes(x = Draft.Rank, y = npxG_plus_xA_per_min)) +
+    geom_smooth(method=loess, se=F) +
+    geom_point(alpha = 0.7, cex = 3) +
+    geom_text_repel(aes(label=Player)) +
+    labs(x = "Draft.Rank",
+         y = "npxG_plus_xA_per_min",
+         title = "2022/2023 Value Finder",
+         caption = "Twitter: Its_MikeF | Data: FBRef") +
+    theme_bw() +
+    theme(plot.title = element_text(size = 14, hjust = 0.5, face = "bold")) +
+    scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
+    scale_x_continuous(breaks = scales::pretty_breaks(n = 10))
+  }
+```
+
+```{r}
+fb_big5_advanced_season_stats_defense <- fb_big5_advanced_season_stats(
+season_end_year = 2022,
+stat_type = "defense",
+team_or_player = "player"
+)
+
+
+```
+stat_name = c("Accurate long balls per 90","Big chances created", "Clean sheets", "Clearances per 90","FotMob rating","Goals prevented", "xG + xA per 90")

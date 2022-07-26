@@ -13,7 +13,7 @@ suppressMessages({
   library(officer) #manipulation of word and pptx 
   library(janitor) #clearning dirty data
   library(stringr) #simple consistent wrappers for common string operations
-  library(reshape2)
+  library(reshape2) #flexibly Reshape Data
 })
 
 #entries
