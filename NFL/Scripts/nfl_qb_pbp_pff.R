@@ -104,3 +104,5 @@ qbs_select <- qbs %>%
          man_yards_per_coverage_snap, prp, 
          fpts) %>% 
   drop_na()
+qbs_select[,which(as.numeric())]
+unlist(lapply(qbs_select, is.numeric))

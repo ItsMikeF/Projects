@@ -1,19 +1,14 @@
 #goal is to submit an competition entry for kaggle comp on spaceship titanic
 
 #load packages
-suppressMessages({
-  
-})
-
-#load packages
 library(tidyverse) #Metapackage
 library(xgboost)
 library(stringr)
 library(caret)
 
 #load csvs
-test <- read.csv("./data/test.csv", stringsAsFactors = F)
-train <- read.csv("./data/train.csv", stringsAsFactors = F)
+test <- read.csv("./data/spaceship_titanic/test.csv")
+train <- read.csv("./data/spaceship_titanic/train.csv")
 sample_submission_example <- read.csv("./data/sample_submission.csv")
 
 #eda

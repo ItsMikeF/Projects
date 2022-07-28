@@ -1,0 +1,50 @@
+---
+title: "cc_summary"
+output: html_document
+date: "2022-07-27"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+lets take a look at 2021
+```{r}
+suppressForeignCheck({
+  library(tidyverse) #ggplot2, dplyr, tidyr, readr, purrr, tibble, forcats
+  library(lubridate)
+})
+
+```
+
+```{r}
+csr <- read_csv(paste0("./00_data/", list.files(path = "./00_data/",pattern = "9603")))
+zon <- read_csv(paste0("./00_data/", list.files(path = "./00_data/",pattern = "4163")))
+```
+lets break down the csr spending in 2021
+```{r}
+colnames(csr) <- gsub(" ", "_", colnames(csr))
+
+csr_category <- csr %>% 
+  filter(Type == "Sale") %>% 
+  group_by(Category) %>% 
+  summarise(total = sum(Amount)) %>% 
+  arrange(total) 
+csr_category
+```
+
+lets look at total spending on the Amazon card
+```{r}
+colnames(zon) <- gsub(" ", "_", colnames(zon))
+
+zon_category <- zon %>% 
+  filter(Type =="Sale") %>% 
+  #mutate(year = str_sub(transaction_date,-1,-4)) %>% 
+  group_by(Category) %>% 
+  summarise(total = sum(Amount)) %>% 
+  arrange(total) 
+
+zon_category 
+```
+

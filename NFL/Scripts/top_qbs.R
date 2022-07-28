@@ -38,7 +38,7 @@ ggplot(qbs, aes(x = reorder(id, -qb_epa), y = qb_epa)) +
     plot.title.position = "plot",
     
     # it's obvious what the x-axis is so we remove the title
-    axis.title.x = lement_blank(),
+    axis.title.x = element_blank(),
     
     # this line triggers the replacement of gsis ids with player headshots
     axis.text.x = element_nfl_headshot(size = 1)
@@ -47,7 +47,8 @@ ggplot(qbs, aes(x = reorder(id, -qb_epa), y = qb_epa)) +
 pbp_sort <- pbp %>% 
   filter(pass == 1 | rush == 1) %>%
   filter(down %in% 1:4) %>% 
-  filter(name %in% qbs$name)
+  filter(name %in% qbs$name) %>% 
+  select(id, name, posteam, epa, qb_epa, cpoe, qb_dropback)
 
 pbp_sort_test <- pbp_sort %>% 
   filter(name == "P.Mahomes") 
@@ -55,4 +56,46 @@ pbp_sort_test <- pbp_sort %>%
 ggplot(pbp_sort, aes(qb_dropback,epa)) +
   geom_point(aes(cumsum(pbp_sort_test$qb_dropback), cumsum(pbp_sort_test$epa)))
 
+ggplot() +
+  geom_line(data = pbp_sort %>% filter(name == qbs$name[1]),
+            aes(x = cumsum(qb_dropback),
+                y = cumsum(epa), 
+                colour = name)) +
+  geom_line(data = pbp_sort %>% filter(name == qbs$name[2]),
+            aes(x = cumsum(qb_dropback),
+                y = cumsum(epa), 
+                colour = name)) +
+  geom_line(data = pbp_sort %>% filter(name == qbs$name[3]),
+            aes(x = cumsum(qb_dropback),
+                y = cumsum(epa),
+                colour = name)) +
+  geom_line(data = pbp_sort %>% filter(name == qbs$name[4]),
+            aes(x = cumsum(qb_dropback),
+                y = cumsum(epa), 
+                colour = name)) +
+  geom_line(data = pbp_sort %>% filter(name == qbs$name[5]),
+            aes(x = cumsum(qb_dropback),
+                y = cumsum(epa), 
+                colour = name)) +
+  geom_line(data = pbp_sort %>% filter(name == qbs$name[6]),
+            aes(x = cumsum(qb_dropback),
+                y = cumsum(epa), 
+                colour = name)) +
+  geom_line(data = pbp_sort %>% filter(name == qbs$name[7]),
+            aes(x = cumsum(qb_dropback),
+                y = cumsum(epa), 
+                colour = name)) +
+  geom_line(data = pbp_sort %>% filter(name == qbs$name[8]),
+            aes(x = cumsum(qb_dropback),
+                y = cumsum(epa), 
+                colour = name)) +
+  geom_line(data = pbp_sort %>% filter(name == qbs$name[9]),
+            aes(x = cumsum(qb_dropback),
+                y = cumsum(epa), 
+                colour = name)) +
+  geom_line(data = pbp_sort %>% filter(name == qbs$name[10]),
+            aes(x = cumsum(qb_dropback),
+                y = cumsum(epa), 
+                colour = name))
+  
 plot(cumsum(pbp_sort_test$qb_dropback), cumsum(pbp_sort_test$epa))
