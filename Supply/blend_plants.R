@@ -1,6 +1,8 @@
+#load packages
 library(tidyverse)
 library(usmap)
 
+#import data
 blend_plants <- read_csv("blend_plants.csv")
 
 plot_usmap(regions = "counties") + 
@@ -39,7 +41,7 @@ plot_usmap(data = state_data,
 
 state_data
 
-plot_usmap(data = state_data %>% filter(total_amount < 200000),
+plot_usmap(data = state_data %>% filter(total_amount < 2000000 & total_amount >0),
            values = "total_amount",
            color = "blue") + 
   scale_fill_continuous(low = "white",

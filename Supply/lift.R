@@ -38,16 +38,17 @@ lift$state[lift$city == "NEWARK - ELIZABETH"] <- "New Jersey"
 lift <- lift %>% 
   left_join(states, by=c("state"))
 
-#date
-lift$del_conf_date <- as.Date(lift$del_conf_date)
+#change date formats
+lift$del_conf_date <- as.Date(lift$del_conf_date, tryFormats = "%d/%m/%Y")
 lift$required_del._date <- as.Date(lift$required_del._date, tryFormats = "%d/%m/%Y")
+lift$pricing_date <- as.Date(lift$pricing_date, tryFormats = "%d/%m/%Y")
 
-lift$month <- substr(lift$required_del._date,6,7)
-lift$year <- substr(lift$required_del._date,1,4)
+lift$month <- as.numeric(substr(lift$required_del._date,6,7))
+lift$year <- as.numeric(substr(lift$required_del._date,1,4))
 
 #by port 
 lift_port <- lift %>% 
-  group_by(port_name) %>% 
+  group_by(city) %>% 
   summarise(
     total_weight = sum(net_weight),
     total_amount = sum(net_amount)
@@ -58,7 +59,7 @@ lift_port$total_weight <- formatC(lift_port$total_weight, format = "d", big.mark
 lift_port$total_amount <- formatC(lift_port$total_amount, format = "d", big.mark = ",")
 
 gt_lift_port <- lift_port %>% 
-  top_n(10) %>% 
+  #top_n(10) %>% 
   gt(rowname_col = "port_name") %>% 
   tab_header(
     title = "Top 10 Port Lifting Data",
@@ -76,6 +77,7 @@ lift_product <- lift %>%
     total_amount = sum(net_amount)
   ) %>% 
   arrange(-total_amount)
+lift_product
 
 #by plants
 lift_plants <- lift %>% 
@@ -92,14 +94,23 @@ lift_plants <- lift %>%
 lift_plants$total_weight <- formatC(lift_plants$total_weight, format = "d", big.mark = ",")
 lift_plants$total_amount <- formatC(lift_plants$total_amount, format = "d", big.mark = ",")
 
+lift_plants
+
 #by customer
 lift_customer <- lift %>% 
   group_by(customer_name) %>% 
   summarise(
+    deliveries = n(),
     total_weight = sum(net_weight),
     total_amount = sum(net_amount)
   ) %>% 
+  mutate(amount_per_delivery = round(total_amount / deliveries, digits = 0)) %>% 
   arrange(-total_amount)
+
+lift_customer$total_weight <- formatC(lift_customer$total_weight, format = "d", big.mark = ",")
+lift_customer$total_amount <- formatC(lift_customer$total_amount, format = "d", big.mark = ",")
+lift_customer$amount_per_delivery <- formatC(lift_customer$amount_per_delivery, format = "d", big.mark = ",")
+lift_customer
 
 #by state
 lift_state <- lift %>% 
@@ -112,7 +123,7 @@ lift_state
 
 #by month
 lift_month <- lift %>% 
-  group_by(month) %>% 
+  group_by(city, month, year) %>% 
   summarise(
     total_amount = sum(net_amount)
   ) %>% 
