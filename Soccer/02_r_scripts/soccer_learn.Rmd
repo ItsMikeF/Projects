@@ -18,6 +18,8 @@ suppressMessages({
   library(ggsci) #Scientific Journal and Sci-Fi Themed Color Palettes for 'ggplot2'
   library(reshape2) #flexibly Reshape Data
   library(ggrepel) #Automatically Position Non-Overlapping Text Labels with 'ggplot2'
+  library(webshot)
+  library(DescTools) # Tools for Descriptive Statistics
   
   library(worldfootballR) #extract and clean world soccer data
   library(engsoccerdata) #English and European Soccer Results
@@ -39,17 +41,35 @@ Lets now sort for player level season long data
 ```{r}
 fpl_player <- fpl_data %>%
   unite(name ,first_name, second_name, sep = " ") %>% 
-  group_by(name) %>%
+  group_by(name, web_name) %>%
   summarise(
-    "minutes" = sum(minutes),
+    "minutes" = max(minutes),
+    "chance_of_playing_this_round" = round(mean(chance_of_playing_this_round, na.rm = T), digits = 2),
     "mean_next_gw_points" = round(mean(next_gw_points, na.rm = T), digits = 2), 
+    "bps" = max(bps, na.rm = T), 
+    
     "form" = round(mean(form, na.rm = T), digits = 2),
+    "value_form" = round(mean(value_form, na.rm = T), digits = 2),
+    "value_season" = max(value_season, na.rm = T),
+    
     "dream team" = max(dreamteam_count),
     "points_per_game" = round(mean(points_per_game, na.rm = T), digits =2), 
+    
     "creativity" = round(mean(creativity, na.rm = T), digits =0),
+    "creativity_rank" = round(min(creativity_rank, na.rm = T), digits =0),
+    
     "influence" = round(mean(influence, na.rm = T), digits =0),
-    "threat" = round(mean(threat, na.rm = T), digits =0)) %>%
-  filter(minutes > 0.25 * max(minutes)) %>% 
+    "influence_rank" = round(min(influence_rank, na.rm = T), digits =0),
+    
+    "threat" = round(mean(threat, na.rm = T), digits =0),
+    "threat_rank" = round(min(threat_rank, na.rm = T), digits =0),
+    
+    "clean_sheets" = round(sum(clean_sheets, na.rm = T), digits =0), 
+    "value_season" = max(value_season, na.rm = T), 
+    
+    "saves" = max(saves, na.rm = T), 
+    "corners_and_indirect_freekicks_order" = round(mean(corners_and_indirect_freekicks_order, na.rm = T),digits = 1)) %>%
+  #filter(minutes > 0.25 * max(minutes)) %>% 
   mutate(actual_vs_expected = points_per_game-mean_next_gw_points) %>% 
   arrange(-actual_vs_expected) 
 head(fpl_player)
@@ -73,16 +93,16 @@ fpl_player %>%
 Lets see if threat or activity rank correlated
 ```{r}
 normalize <- function(x){
-  return( (x - min(x,na.rm = T))/( max(x, na.rm = T) - min(x, na.rm = T)) )
+  return((x - min(x,na.rm = T))/( max(x, na.rm = T) - min(x, na.rm = T)))
 }
 
 fpl_player_norm <- fpl_player
 
-for(i in 2:length(fpl_player_norm)){
+fpl_player_norm <- fpl_player_norm[-c(1,2,4,20)]
+
+for(i in 1:length(fpl_player_norm)){
   fpl_player_norm[,i] = normalize(fpl_player_norm[,i])
 }
-
-fpl_player_norm <- fpl_player_norm[,2:9]
 
 fpl_player_norm %>%
   cor() %>%
@@ -116,18 +136,66 @@ fb <- fb_big5_advanced_season_stats %>%
   separate(Player, into = c("first_name", "last_name"), sep = " ")
 
 ```
-
 Lets take a look the FPL 2022/2023 player list 
 ```{r}
-epl_ff_2022_players <- read.csv("./00_raw_data/epl_ff_2022_players.csv")
+ff <- read.csv("./00_raw_data/fpl_players.csv")
 
-test <- epl_ff_2022_players %>% 
+#AscToChar("<e9>")
+#strsplit(AscToChar(ff$Player[4]), split=NULL)
+
+ff <- ff %>% 
   left_join(fb, by=c("Player"="last_name")) %>% 
   drop_na() %>% 
-  filter(Min_Playing > 100) %>% 
-  mutate(residuals = round(residuals(loess(Draft.Rank ~ npxG_plus_xA_per_min)), digits = 2))
+  filter(Min_Playing > 10) %>% 
+  mutate(residuals = round(residuals(loess(Draft.Rank ~ npxG_plus_xA_per_min)), digits = 2)) %>% 
+  arrange(-npxG_plus_xA_per_min)
+
+ff <- ff %>% 
+  select(Player, Team, Age, Pos.x, Draft.Rank, npxG_plus_xA_per_min, residuals)
+
+names(ff)[4] <- "Pos"
+
+ff_for <- ff %>% 
+  filter(Pos == "F")
+
+ff_mid <- ff %>% 
+  filter(Pos == "M")
+
+ff_def <- ff %>% 
+  filter(Pos == "D")
+
+ff_gk <- ff %>% 
+  filter(Pos == "GK")
+
 ```
 Be warned, drop_na is removing about 200 players!
+
+```{r}
+ff_fpl_players <- fpl_player %>% 
+  left_join(ff, by=c("web_name"="Player")) 
+
+ff_forwards <- ff_fpl_players %>% 
+  filter(Pos == "F") %>% 
+  select(name, web_name, Team, Age, Draft.Rank, bps, mean_next_gw_points, points_per_game, influence, npxG_plus_xA_per_min, actual_vs_expected) %>% 
+  unique()
+
+ff_mids <- ff_fpl_players %>% 
+  filter(Pos == "M") %>% 
+  select(name, web_name, Team, Age, Draft.Rank, bps, mean_next_gw_points, points_per_game, influence, npxG_plus_xA_per_min, actual_vs_expected, corners_and_indirect_freekicks_order) %>% 
+  unique()
+
+ff_defenders <- ff_fpl_players %>% 
+  filter(Pos == "D") %>% 
+  select(name, web_name, Team, Age, Draft.Rank, bps, minutes, mean_next_gw_points, points_per_game, influence, npxG_plus_xA_per_min, actual_vs_expected, clean_sheets, corners_and_indirect_freekicks_order) %>% 
+  unique()
+
+ff_goalies <- ff_fpl_players %>% 
+  filter(Pos == "GK") %>% 
+  select(name, web_name, Team, Age, Draft.Rank,bps, value_season, clean_sheets, saves) %>% 
+  unique()
+
+```
+
 
 Now lets sort the data
 ```{r}

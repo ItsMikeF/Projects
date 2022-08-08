@@ -2,6 +2,9 @@
 suppressMessages({
   library(tidyverse) #metapackage
   library(nflverse) #functions to efficiently access NFL pbp data
+  library(reshape2) #flexibly Reshape Data
+  library(ggrepel) #Automatically Position Non-Overlapping Text Labels with 'ggplot2'
+  
 })
 
 #load pbp
@@ -99,10 +102,22 @@ names <- tibble(names(qbs))
 names
 
 qbs_select <- qbs %>% 
-  select(grades_pass.x, attempts, pressure_dropbacks_percent, pressure_grades_pass, deep_big_time_throws, 
-         grades_defense, true_pass_set_grades_pass_rush_defense, grades_coverage_defense, man_grades_coverage_defense, 
+  select(grades_pass.x, attempts, btt_rate, twp_rate, blitz_grades_pass, no_blitz_grades_pass, pressure_dropbacks_percent, pressure_grades_pass, deep_big_time_throws, 
+         grades_defense, true_pass_set_grades_pass_rush_defense, grades_coverage_defense, man_grades_coverage_defense, man_catch_rate, 
          man_yards_per_coverage_snap, prp, 
          fpts) %>% 
-  drop_na()
-qbs_select[,which(as.numeric())]
-unlist(lapply(qbs_select, is.numeric))
+  drop_na() %>% 
+  mutate(across(where(is.character),as.numeric))
+head(qbs_select)
+
+qbs_select_cor <- qbs_select[,c(5:21)]
+
+qbs_select_cor %>% 
+  cor() %>%
+  melt() %>%
+  ggplot(aes(Var1, Var2, fill=value)) +
+  geom_tile(color='white') +
+  scale_fill_distiller(palette = 'GnBu', direction = 1) +
+  geom_text(aes(label=paste(round(value,2)*100,'%')), size=2.5, color='black') +
+  labs(x='',y='',fill='correlations', title='Relationship between QBs variables') +
+  theme(axis.text.x = element_text(angle = 90, vjust = .5))

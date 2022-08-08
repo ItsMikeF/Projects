@@ -46,8 +46,8 @@ lift$pricing_date <- as.Date(lift$pricing_date, tryFormats = "%d/%m/%Y")
 lift$month <- as.numeric(substr(lift$required_del._date,6,7))
 lift$year <- as.numeric(substr(lift$required_del._date,1,4))
 
-#by port 
-lift_port <- lift %>% 
+#by city 
+lift_city <- lift %>% 
   group_by(city) %>% 
   summarise(
     total_weight = sum(net_weight),
@@ -55,10 +55,10 @@ lift_port <- lift %>%
   ) %>% 
   arrange(-total_amount) 
 
-lift_port$total_weight <- formatC(lift_port$total_weight, format = "d", big.mark = ",")
-lift_port$total_amount <- formatC(lift_port$total_amount, format = "d", big.mark = ",")
+lift_city$total_weight <- formatC(lift_city$total_weight, format = "d", big.mark = ",")
+lift_city$total_amount <- formatC(lift_city$total_amount, format = "d", big.mark = ",")
 
-gt_lift_port <- lift_port %>% 
+gt_lift_city <- lift_city %>% 
   #top_n(10) %>% 
   gt(rowname_col = "port_name") %>% 
   tab_header(
@@ -67,7 +67,19 @@ gt_lift_port <- lift_port %>%
   ) %>% 
   tab_stubhead(label = "port") 
 
-gt_lift_port
+gt_lift_city
+
+#by city and customer
+lift_city_customer <- lift %>% 
+  group_by(city, customer_name) %>% 
+  summarise(
+    n = n(),
+    total_weight = sum(net_weight),
+    total_amount = sum(net_amount), 
+    amount_per_delivery = round(total_amount / n, digits = 0)
+  ) %>% 
+  arrange(-total_amount)
+lift_city_customer
 
 #by product 
 lift_product <- lift %>% 
@@ -78,6 +90,16 @@ lift_product <- lift %>%
   ) %>% 
   arrange(-total_amount)
 lift_product
+
+#by product and customer
+lift_product_customer <- lift %>% 
+  group_by(product_name, customer_name) %>% 
+  summarise(
+    total_weight = sum(net_weight),
+    total_amount = sum(net_amount)
+  ) %>% 
+  arrange(-total_amount)
+lift_product_customer
 
 #by plants
 lift_plants <- lift %>% 

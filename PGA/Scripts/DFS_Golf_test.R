@@ -91,11 +91,11 @@ dg_skill <- read.csv(paste0(folder, "/", "dg_skill_ratings.csv")) %>%
 
 #Create golfer tibble
 own_multiplier <- 100/entries
-driv_dis <- 0.4
-driv_acc <- 0.5
-app <- 0.2
+driv_dis <- 0.2
+driv_acc <- 0.8
+app <- 0.3
 arg <- 0.4
-putt <- 0.5
+putt <- 0.2
 course <- data.frame(driv_dis, driv_acc, app, arg, putt) 
 course[2,] <- round(course/rowSums(course), digits = 2)
 

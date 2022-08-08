@@ -6,7 +6,7 @@ suppressMessages({
 })
 
 #split into training (80%) and testing set (20%)
-data <- qbs_select[5:16]
+data <- qbs_select[5:dim(qbs_select)[2]]
 parts = createDataPartition(data$fpts, p = .8, list = F)
 train = data[parts, ]
 test = data[-parts, ]

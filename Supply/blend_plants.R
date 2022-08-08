@@ -25,6 +25,8 @@ usmap::plot_usmap(include = c(.pacific, .south_region),
                   exclude = c("AK","HI"))
 
 #lets try to modify it
+data = statepop
+
 state_data <- data %>% 
   left_join(lift_state, by=c("abbr"="abbrev"))
 

@@ -1,13 +1,16 @@
-#Import packages
-library(tidyverse)
-library(rvest)
-library(XML)
-library(httr)
-library(RCurl)
-library(data.table)
+#load packages
+suppressMessages({
+  library(tidyverse)
+  library(rvest) # Easily Harvest (Scrape) Web Pages
+  library(XML) # Tools for Parsing and Generating XML Within R and S-Plus
+  library(httr) # Tools for Working with URLs and HTTP
+  library(RCurl) # General Network (HTTP/FTP/...) Client Interface for R
+  library(data.table) # Extension of 'data.frame'
+})
+
 
 #Define inputs
-url <- "https://sportsbook.draftkings.com/leagues/baseball/mlb?category=home-run-derby&subcategory=highest-exit-velocity"
+url <- "https://sportsbook.draftkings.com/leagues/soccer/england---premier-league?category=player-futures&subcategory=team-top-goalscorer"
 css1 <- ".sportsbook-outcome-cell__label"
 css2 <- ".default-color"
 
@@ -18,7 +21,6 @@ getHTMLLinks(webpage)
 
 #Extract paragraphs
 webpage %>%
-  # extract paragraphs
   html_nodes("p") %>%
 
 #Read text nodes

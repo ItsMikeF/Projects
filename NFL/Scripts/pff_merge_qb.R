@@ -10,33 +10,43 @@ folder <- list.dirs()[start]
 year <- substring(folder, nchar(folder)-3, nchar(folder))
 
 #obtain column names from week 1 files
+#passing summary
 passing_summary <- read.csv(paste0(folder,"/passing_summary (1).csv"))
 passing_summary_cols <- colnames(passing_summary)
 
+#passing pressure
 passing_pressure <- read.csv(paste0(folder,"/passing_pressure (1).csv"))
 passing_pressure_cols <- colnames(passing_pressure)
 passing_pressure_cols <- passing_pressure_cols[
   -which(passing_pressure_cols %in% c("blitz_grades_pass_route",
                                       "no_blitz_grades_pass_route",
                                       "no_pressure_grades_pass_route",
-                                      "pressure_grades_pass_route"))]
+                                      "pressure_grades_pass_route"))
+  ]
 
+#passing concept
 passing_concept <- read.csv(paste0(folder,"/passing_concept (1).csv"))
 passing_concept_cols <- colnames(passing_concept)
 passing_concept_cols <- passing_concept_cols[
   -which(passing_concept_cols %in% c("no_screen_grades_pass_route",
                                      "npa_grades_pass_route",
                                      "pa_grades_pass_route", 
-                                     "screen_grades_pass_route"))]
+                                     "screen_grades_pass_route"))
+  ]
+
+#passing depth
+which(passing_depth_cols %in% passing_concept_cols)
 
 passing_depth <- read.csv(paste0(folder,"/passing_depth (1).csv"))
 passing_depth_cols <- colnames(passing_depth)
 
+#time in pocket
 time_in_pocket <- read.csv(paste0(folder,"/time_in_pocket (1).csv"))
 time_in_pocket_cols <- colnames(time_in_pocket)
 time_in_pocket_cols <- time_in_pocket_cols[
   -which(time_in_pocket_cols %in% c("less_grades_pass_route",
-                                    "more_grades_pass_route"))]
+                                    "more_grades_pass_route"))
+  ]
 
 #table of number of columns
 dim_table <- data.frame()

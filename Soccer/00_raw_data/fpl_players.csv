@@ -1,0 +1,559 @@
+Player,Team,Draft Rank,Points,Pos
+Alisson,Liverpool,92,176,GK
+Lloris,Spurs,93,158,GK
+Ederson,Man City,94,155,GK
+Sá,Wolves,164,146,GK
+Fabianski,West Ham,166,136,GK
+Ramsdale,Arsenal,167,135,GK
+De Gea,Man Utd,168,132,GK
+Schmeichel,Leicester,170,131,GK
+Mendy,Chelsea,171,130,GK
+Pope,Newcastle,172,130,GK
+Martínez,Aston Villa,173,129,GK
+Sánchez,Brighton,282,126,GK
+Guaita,Crystal Palace,286,119,GK
+Pickford,Everton,288,116,GK
+Meslier,Leeds,292,106,GK
+Dubravka,Newcastle,296,96,GK
+Raya,Brentford,297,95,GK
+McCarthy,Southampton,332,55,GK
+Butland,Crystal Palace,362,30,GK
+Arrizabalaga,Chelsea,377,19,GK
+Leno,Fulham,391,10,GK
+Areola,West Ham,408,2,GK
+Travers,Bournemouth,420,0,GK
+Johnstone,Crystal Palace,430,0,GK
+Rodák,Fulham,436,0,GK
+Samba,Nott'm Forest,451,0,GK
+Henderson,Nott'm Forest,458,0,GK
+Bazunu,Southampton,460,0,GK
+Strakosha,Brentford,473,0,GK
+Forster,Spurs,491,57,GK
+Darlow,Newcastle,494,20,GK
+Begovi?,Everton,496,13,GK
+Kelleher,Liverpool,499,8,GK
+Steffen,Man City,501,7,GK
+Ward,Leicester,507,3,GK
+Steele,Brighton,509,2,GK
+Klaesson,Leeds,510,2,GK
+Caballero,Southampton,513,2,GK
+Olsen,Aston Villa,514,1,GK
+Turner,Arsenal,516,0,GK
+Dennis,Bournemouth,518,0,GK
+Balcombe,Brentford,521,0,GK
+Gazzaniga,Fulham,525,0,GK
+Ortega,Man City,532,0,GK
+Heaton,Man Utd,533,0,GK
+Smith,Wolves,537,0,GK
+Lis,Southampton,538,0,GK
+Austin,Spurs,540,0,GK
+Carson,Man City,541,0,GK
+Iversen,Leicester,547,0,GK
+Adrián,Liverpool,548,0,GK
+Scherpen,Brighton,552,0,GK
+Šarki?,Wolves,553,0,GK
+Hennessey,Nott'm Forest,555,4,GK
+Matthews,Crystal Palace,556,0,GK
+Alexander-Arnold,Liverpool,26,208,D
+Cancelo,Man City,33,201,D
+Robertson,Liverpool,34,186,D
+Van Dijk,Liverpool,47,183,D
+Matip,Liverpool,62,170,D
+Laporte,Man City,63,160,D
+James,Chelsea,64,141,D
+Dias,Man City,65,141,D
+Chilwell,Chelsea,85,55,D
+Thiago Silva,Chelsea,95,130,D
+Alonso,Chelsea,96,128,D
+Stones,Man City,122,70,D
+Periši?,Spurs,154,0,D
+Koulibaly,Chelsea,159,0,D
+Cash,Aston Villa,162,147,D
+Gabriel,Arsenal,163,146,D
+Coady,Wolves,165,138,D
+Dier,Spurs,169,132,D
+Cucurella,Brighton,174,126,D
+Cresswell,West Ham,175,115,D
+Tierney,Arsenal,176,106,D
+Davies,Spurs,177,105,D
+Emerson Royal,Spurs,178,102,D
+Targett,Newcastle,179,101,D
+Chalobah,Chelsea,180,99,D
+Semedo,Wolves,182,94,D
+Dawson,West Ham,183,90,D
+Azpilicueta,Chelsea,186,87,D
+Walker,Man City,188,85,D
+Digne,Aston Villa,189,83,D
+Canós,Brentford,190,81,D
+Dallas,Leeds,191,80,D
+Varane,Man Utd,196,75,D
+Maguire,Man Utd,199,69,D
+Telles,Man Utd,201,67,D
+Doherty,Spurs,202,67,D
+Romero,Spurs,206,63,D
+Zinchenko,Arsenal,210,59,D
+Aké,Man City,217,54,D
+Shaw,Man Utd,219,46,D
+Konaté,Liverpool,231,33,D
+Sarr,Chelsea,233,30,D
+Trippier,Newcastle,237,28,D
+Diego Carlos,Aston Villa,249,0,D
+Kristensen,Leeds,263,0,D
+Aguerd,West Ham,270,0,D
+Lenglet,Spurs,273,0,D
+Hickey,Brentford,275,0,D
+Andersen,Crystal Palace,283,124,D
+Guéhi,Crystal Palace,284,123,D
+Jansson,Brentford,285,122,D
+Mings,Aston Villa,287,118,D
+Mitchell,Crystal Palace,289,109,D
+Henry,Brentford,290,108,D
+White,Arsenal,291,107,D
+Kilman,Wolves,293,106,D
+Reguilón,Spurs,294,104,D
+Keane,Everton,295,102,D
+Veltman,Brighton,298,95,D
+Bednarek,Southampton,299,94,D
+Sánchez,Spurs,300,93,D
+Dunk,Brighton,301,92,D
+Burn,Newcastle,302,92,D
+Pinnock,Brentford,303,90,D
+Schär,Newcastle,304,88,D
+Aït-Nouri,Wolves,305,87,D
+Tarkowski,Everton,306,83,D
+Walker-Peters,Southampton,307,82,D
+Ajer,Brentford,308,81,D
+Livramento,Southampton,309,80,D
+Coleman,Everton,310,79,D
+Konsa,Aston Villa,311,78,D
+Llorente,Leeds,312,77,D
+Tomiyasu,Arsenal,313,75,D
+Castagne,Leicester,314,75,D
+Lamptey,Brighton,315,74,D
+Ward,Crystal Palace,316,73,D
+Coufal,West Ham,317,70,D
+Söyüncü,Leicester,318,66,D
+Lindelöf,Man Utd,319,66,D
+Zouma,West Ham,320,66,D
+Holgate,Everton,321,62,D
+Cooper,Leeds,323,60,D
+Webster,Brighton,324,59,D
+Clyne,Crystal Palace,325,59,D
+Krafth,Newcastle,327,58,D
+Salisu,Southampton,328,58,D
+R.Sessegnon,Spurs,329,56,D
+Ayling,Leeds,330,55,D
+Amartey,Leicester,331,55,D
+Dalot,Man Utd,333,54,D
+Thomas,Leicester,334,50,D
+Tavares,Arsenal,335,49,D
+Cédric,Arsenal,336,48,D
+Duffy,Brighton,337,48,D
+Johnson,West Ham,339,48,D
+Lascelles,Newcastle,340,47,D
+Godfrey,Everton,341,45,D
+Chambers,Aston Villa,343,42,D
+Mykolenko,Everton,344,42,D
+Tsimikas,Liverpool,345,42,D
+Roerslev,Brentford,346,41,D
+Wan-Bissaka,Man Utd,347,41,D
+Ogbonna,West Ham,348,40,D
+Evans,Leicester,349,39,D
+Manquillo,Newcastle,352,38,D
+Perraud,Southampton,353,38,D
+Jonny,Wolves,354,38,D
+Struijk,Leeds,357,35,D
+Ricardo,Leicester,358,35,D
+Diop,West Ham,363,30,D
+Holding,Arsenal,364,29,D
+Justin,Leicester,365,29,D
+Masuaku,West Ham,366,29,D
+Mina,Everton,368,24,D
+Koch,Leeds,370,23,D
+Bech,Brentford,372,22,D
+Firpo,Leeds,373,22,D
+Gomez,Liverpool,374,22,D
+Hause,Aston Villa,375,20,D
+Ritchie,Newcastle,376,20,D
+Lyanco,Southampton,380,19,D
+Fofana,Leicester,382,17,D
+Boly,Wolves,383,17,D
+Clark,Newcastle,386,14,D
+Stephens,Southampton,389,12,D
+Fernández,Newcastle,390,11,D
+Lewis,Newcastle,392,10,D
+Fredericks,Bournemouth,395,7,D
+Pablo Marí,Arsenal,411,0,D
+Saliba,Arsenal,413,0,D
+Smith,Bournemouth,416,0,D
+Stacey,Bournemouth,417,0,D
+Mepham,Bournemouth,419,0,D
+Kelly,Bournemouth,421,0,D
+Zemura,Bournemouth,422,0,D
+Ampadu,Chelsea,428,0,D
+Ream,Fulham,431,0,D
+Bryan,Fulham,433,0,D
+Tosin,Fulham,434,0,D
+Tete,Fulham,437,0,D
+Robinson,Fulham,439,0,D
+Botman,Newcastle,446,0,D
+Cook,Nott'm Forest,448,0,D
+McKenna,Nott'm Forest,453,0,D
+Worrall,Nott'm Forest,454,0,D
+Laryea,Nott'm Forest,455,0,D
+Mbe Soh,Nott'm Forest,456,0,D
+Biancone,Nott'm Forest,459,0,D
+Bella-Kotchap,Southampton,461,0,D
+Niakhaté,Nott'm Forest,466,0,D
+Richards,Nott'm Forest,469,0,D
+Collins,Wolves,470,55,D
+Malacia,Man Utd,471,0,D
+Spence,Spurs,474,0,D
+Toffolo,Nott'm Forest,475,0,D
+Augustinsson,Aston Villa,476,0,D
+Mee,Brentford,477,74,D
+Martínez,Man Utd,478,0,D
+Mbabu,Fulham,479,0,D
+Vinagre,Everton,481,0,D
+Richards,Crystal Palace,486,0,D
+Hill,Bournemouth,489,0,D
+Young,Aston Villa,490,50,D
+B.Williams,Man Utd,492,36,D
+Tanganga,Spurs,493,29,D
+Tomkins,Crystal Palace,495,17,D
+Vestergaard,Leicester,497,11,D
+Valery,Southampton,498,9,D
+Branthwaite,Everton,500,7,D
+Dummett,Newcastle,502,7,D
+Toti,Wolves,503,6,D
+Kenedy,Chelsea,504,4,D
+Bertrand,Leicester,505,4,D
+Jones,Man Utd,506,4,D
+Rodon,Spurs,508,3,D
+Hjelde,Leeds,511,2,D
+Bailly,Man Utd,512,2,D
+Ferguson,Crystal Palace,515,1,D
+Guilbert,Aston Villa,517,0,D
+Goode,Brentford,519,0,D
+Thompson,Brentford,520,0,D
+Roberts,Brighton,522,0,D
+Patterson,Everton,523,0,D
+Nkounkou,Everton,524,0,D
+Kongolo,Fulham,526,0,D
+Brunt,Leicester,527,0,D
+N.Williams,Nott'm Forest,528,0,D
+Ramsay,Liverpool,529,0,D
+Mbete,Man City,530,0,D
+Wilson-Esbrand,Man City,531,0,D
+Dräger,Nott'm Forest,534,0,D
+Panzo,Nott'm Forest,535,0,D
+Bueno,Wolves,536,0,D
+Ashby,West Ham,539,1,D
+Phillips,Liverpool,542,0,D
+Van den Berg,Liverpool,543,0,D
+Davies,Liverpool,544,0,D
+Drameh,Leeds,545,0,D
+R.Williams,Liverpool,546,0,D
+Emerson,Chelsea,549,1,D
+Van Hecke,Brighton,550,0,D
+Clarke,Brighton,551,0,D
+Stevens,Brentford,554,1,D
+Kesler Hayden,Aston Villa,557,0,D
+Mosquera,Wolves,558,0,D
+Salah,Liverpool,1,265,M
+Son,Spurs,2,258,M
+De Bruyne,Man City,3,196,M
+Sterling,Chelsea,7,163,M
+Fernandes,Man Utd,8,151,M
+Bowen,West Ham,12,206,M
+Maddison,Leicester,14,181,M
+Saka,Arsenal,15,179,M
+Mount,Chelsea,16,169,M
+Foden,Man City,17,137,M
+Mahrez,Man City,18,135,M
+Kulusevski,Spurs,21,99,M
+Luis Díaz,Liverpool,23,64,M
+Gündogan,Man City,29,124,M
+Sancho,Man Utd,30,91,M
+Bernardo,Man City,35,155,M
+Zaha,Crystal Palace,36,150,M
+Raphinha,Leeds,37,145,M
+Barnes,Leicester,39,137,M
+Grealish,Man City,42,86,M
+Coutinho,Aston Villa,43,83,M
+Ward-Prowse,Southampton,48,159,M
+Trossard,Brighton,49,141,M
+Ødegaard,Arsenal,50,131,M
+Tielemans,Leicester,51,120,M
+Saint-Maximin,Newcastle,52,116,M
+Rashford,Man Utd,57,63,M
+Sinisterra,Leeds,60,0,M
+Eriksen,Man Utd,61,43,M
+Gallagher,Chelsea,66,140,M
+Benrahma,West Ham,67,138,M
+Rodri,Man City,68,127,M
+Smith Rowe,Arsenal,69,125,M
+Harrison,Leeds,71,117,M
+Martinelli,Arsenal,72,110,M
+Buendía,Aston Villa,73,107,M
+Jorginho,Chelsea,74,106,M
+James,Leeds,75,91,M
+Lucas Moura,Spurs,77,87,M
+Rodrigo,Leeds,78,85,M
+Joelinton,Newcastle,79,83,M
+Hwang,Wolves,80,81,M
+Ziyech,Chelsea,81,79,M
+Pulisic,Chelsea,82,77,M
+Bruno Guimarães,Newcastle,84,67,M
+Fábio Vieira,Arsenal,86,0,M
+Wilson,Fulham,88,0,M
+Lingard,Nott'm Forest,91,29,M
+Fornals,West Ham,97,117,M
+Soucek,West Ham,98,114,M
+McGinn,Aston Villa,99,110,M
+Henderson,Liverpool,100,110,M
+Ramsey,Aston Villa,101,109,M
+Højbjerg,Spurs,102,109,M
+Gray,Everton,103,106,M
+Nørgaard,Brentford,104,101,M
+Gordon,Everton,105,100,M
+Fabinho,Liverpool,106,97,M
+Neves,Wolves,107,95,M
+Mac Allister,Brighton,108,93,M
+Fred,Man Utd,109,93,M
+Wissa,Brentford,110,92,M
+Lanzini,West Ham,111,92,M
+Janelt,Brentford,112,90,M
+A.Doucouré,Everton,113,90,M
+Elyounoussi,Southampton,114,90,M
+Groß,Brighton,115,88,M
+Redmond,Southampton,117,79,M
+Iwobi,Everton,118,78,M
+Fraser,Newcastle,119,78,M
+Ayew,Crystal Palace,120,77,M
+Olise,Crystal Palace,121,73,M
+Podence,Wolves,123,70,M
+Thiago,Liverpool,124,69,M
+Townsend,Everton,125,66,M
+Mwepu,Brighton,127,58,M
+Bergwijn,Spurs,130,55,M
+Bentancur,Spurs,131,52,M
+Hudson-Odoi,Chelsea,132,49,M
+Pépé,Arsenal,133,45,M
+Dele,Everton,135,35,M
+Eze,Crystal Palace,136,31,M
+Van de Beek,Man Utd,137,31,M
+Neto,Wolves,139,22,M
+Brooks,Bournemouth,141,0,M
+Lowe,Bournemouth,142,0,M
+Christie,Bournemouth,144,0,M
+Billing,Bournemouth,145,0,M
+Anthony,Bournemouth,146,0,M
+Kebano,Fulham,149,0,M
+De Cordova-Reid,Fulham,150,0,M
+Aaronson,Leeds,152,0,M
+Carvalho,Liverpool,153,0,M
+Adama,Wolves,155,0,M
+Gibbs-White,Wolves,156,0,M
+Aribo,Southampton,157,0,M
+Lewis-Potter,Brentford,158,0,M
+McNeil,Everton,161,84,M
+Rice,West Ham,181,95,M
+Douglas Luiz,Aston Villa,184,89,M
+Romeu,Southampton,185,88,M
+Schlupp,Crystal Palace,187,86,M
+Kanté,Chelsea,192,79,M
+Willock,Newcastle,193,79,M
+Kovacic,Chelsea,194,76,M
+Dendoncker,Wolves,195,76,M
+Partey,Arsenal,197,71,M
+Dewsbury-Hall,Leicester,198,70,M
+McTominay,Man Utd,200,68,M
+Bissouma,Spurs,203,66,M
+Keita,Liverpool,204,65,M
+Shelvey,Newcastle,205,63,M
+March,Brighton,207,61,M
+Klich,Leeds,208,61,M
+Xhaka,Arsenal,209,60,M
+Elanga,Man Utd,211,59,M
+Almirón,Newcastle,212,59,M
+Allan,Everton,213,58,M
+S.Armstrong,Southampton,214,57,M
+Jensen,Brentford,215,54,M
+McArthur,Crystal Palace,216,54,M
+Loftus-Cheek,Chelsea,218,52,M
+Lallana,Brighton,220,44,M
+Chamberlain,Liverpool,221,42,M
+Ndidi,Leicester,222,41,M
+Albrighton,Leicester,223,40,M
+Jones,Liverpool,224,40,M
+Phillips,Man City,225,39,M
+Bailey,Aston Villa,226,37,M
+Onyeka,Brentford,227,35,M
+Pérez,Leicester,228,35,M
+Hughes,Crystal Palace,229,34,M
+Roberts,Leeds,230,34,M
+Ghoddos,Brentford,232,30,M
+Vlasic,West Ham,235,30,M
+Tella,Southampton,236,29,M
+Caicedo,Brighton,238,27,M
+Chiquinho,Wolves,239,20,M
+Barkley,Chelsea,240,14,M
+Traoré,Aston Villa,241,13,M
+Djenepo,Southampton,242,13,M
+Davies,Everton,243,12,M
+Elliott,Liverpool,244,12,M
+Walcott,Southampton,245,12,M
+Maitland-Niles,Arsenal,246,0,M
+Nelson,Arsenal,247,0,M
+Marquinhos,Arsenal,248,0,M
+El Ghazi,Aston Villa,250,0,M
+Kamara,Aston Villa,251,0,M
+Stanislas,Bournemouth,252,0,M
+Marcondes,Bournemouth,253,0,M
+Lerma,Bournemouth,254,0,M
+Cook,Bournemouth,255,0,M
+Dembélé,Bournemouth,256,0,M
+Mitoma,Brighton,257,0,M
+Cairney,Fulham,259,0,M
+Knockaert,Fulham,260,0,M
+Cavaleiro,Fulham,261,0,M
+Palhinha,Fulham,262,0,M
+Roca,Leeds,264,0,M
+Lolley,Nott'm Forest,265,0,M
+Yates,Nott'm Forest,266,0,M
+Xande Silva,Nott'm Forest,267,0,M
+Mighten,Nott'm Forest,269,0,M
+Moutinho,Wolves,271,96,M
+Adams,Leeds,272,0,M
+Rothwell,Bournemouth,274,0,M
+C.Doucouré,Crystal Palace,276,0,M
+O'Brien,Nott'm Forest,277,0,M
+Mangala,Nott'm Forest,278,0,M
+Tavernier,Bournemouth,279,0,M
+Bryan,Spurs,280,9,M
+Praet,Leicester,281,0,M
+Murphy,Newcastle,322,62,M
+Moder,Brighton,326,58,M
+S.Longstaff,Newcastle,338,48,M
+Diallo,Southampton,342,44,M
+Forshaw,Leeds,350,38,M
+Milner,Liverpool,351,38,M
+Soumaré,Leicester,355,36,M
+Baptiste,Brentford,356,35,M
+Skipp,Spurs,359,34,M
+Winks,Spurs,360,33,M
+Sambi,Arsenal,361,32,M
+Elneny,Arsenal,367,27,M
+Mendy,Leicester,369,24,M
+Nakamba,Aston Villa,371,22,M
+Milivojevic,Crystal Palace,378,19,M
+Shackleton,Leeds,379,19,M
+André Gomes,Everton,381,18,M
+Chukwuemeka,Aston Villa,384,16,M
+Sanson,Aston Villa,387,13,M
+Alzate,Brighton,388,13,M
+Palmer,Man City,393,9,M
+Choudhury,Leicester,394,8,M
+Dasilva,Brentford,396,7,M
+Cundle,Wolves,398,7,M
+Summerville,Leeds,399,6,M
+Sarmiento,Brighton,400,5,M
+Smallbone,Southampton,401,5,M
+Iroegbunam,Aston Villa,402,4,M
+Riedewald,Crystal Palace,403,4,M
+Rak-Sakyi,Crystal Palace,404,4,M
+Gbamin,Everton,405,3,M
+Bate,Leeds,406,3,M
+McAtee,Man City,407,2,M
+Torreira,Arsenal,412,0,M
+Philogene-Bidace,Aston Villa,415,0,M
+Pearson,Bournemouth,418,0,M
+Bidstrup,Brentford,424,0,M
+Richards,Brighton,425,0,M
+Koz?owski,Brighton,426,0,M
+Gilmour,Chelsea,427,0,M
+Ebiowei,Crystal Palace,429,0,M
+Chalobah,Fulham,432,0,M
+Reed,Fulham,435,0,M
+Onomah,Fulham,438,0,M
+Gyabi,Leeds,441,0,M
+Lavia,Southampton,442,0,M
+Andreas,Fulham,443,0,M
+Pellistri,Man Utd,444,0,M
+Hendrick,Newcastle,445,0,M
+Arter,Nott'm Forest,447,0,M
+Colback,Nott'm Forest,450,0,M
+Cafú,Nott'm Forest,452,0,M
+Ojeda,Nott'm Forest,457,0,M
+White,Spurs,462,0,M
+Sarr,Spurs,463,0,M
+Devine,Spurs,464,0,M
+Downes,West Ham,468,0,M
+Francois,Fulham,472,0,M
+Coventry,West Ham,480,0,M
+Hammond,Nott'm Forest,482,0,M
+Anderson,Newcastle,483,0,M
+Iqbal,Man Utd,484,0,M
+Amad,Man Utd,485,0,M
+Harris,Fulham,487,0,M
+Kane,Spurs,4,192,F
+Haaland,Man City,5,0,F
+Ronaldo,Man Utd,6,159,F
+Vardy,Leicester,9,133,F
+Diogo Jota,Liverpool,10,175,F
+Darwin,Liverpool,11,0,F
+Richarlison,Spurs,13,125,F
+Jesus,Arsenal,19,120,F
+Havertz,Chelsea,20,112,F
+Calvert-Lewin,Everton,22,64,F
+Werner,Chelsea,24,62,F
+Firmino,Liverpool,25,62,F
+Antonio,West Ham,27,140,F
+Watkins,Aston Villa,28,131,F
+Wilson,Newcastle,31,75,F
+Bamford,Leeds,32,28,F
+Toney,Brentford,38,139,F
+Ings,Aston Villa,40,106,F
+Jiménez,Wolves,41,101,F
+Nketiah,Arsenal,44,55,F
+Martial,Man Utd,45,0,F
+Scamacca,West Ham,46,0,F
+Adams,Southampton,53,103,F
+Maupay,Brighton,54,98,F
+Welbeck,Brighton,55,89,F
+Iheanacho,Leicester,56,80,F
+Mitrovi?,Fulham,58,0,F
+Álvarez,Man City,59,0,F
+Mbeumo,Brentford,70,119,F
+Wood,Newcastle,76,91,F
+Daka,Leicester,83,70,F
+Solanke,Bournemouth,87,0,F
+Johnson,Nott'm Forest,89,0,F
+Awoniyi,Nott'm Forest,90,0,F
+Edouard,Crystal Palace,116,87,F
+Mateta,Crystal Palace,126,61,F
+Benteke,Crystal Palace,128,58,F
+A.Armstrong,Southampton,129,57,F
+Gelhardt,Leeds,134,43,F
+Fabio Silva,Wolves,138,30,F
+Davis,Aston Villa,140,0,F
+Moore,Bournemouth,143,0,F
+Undav,Brighton,147,0,F
+Broja,Chelsea,148,0,F
+Muniz,Fulham,151,0,F
+Mara,Southampton,160,0,F
+Rondón,Everton,234,30,F
+Enciso,Brighton,258,0,F
+Surridge,Nott'm Forest,268,0,F
+Greenwood,Leeds,385,15,F
+Gayle,Newcastle,397,7,F
+Delap,Man City,409,1,F
+Scarlett,Spurs,410,1,F
+Archer,Aston Villa,414,0,F
+Forss,Brentford,423,0,F
+Stansfield,Fulham,440,0,F
+Taylor,Nott'm Forest,449,0,F
+Parrott,Spurs,465,0,F
+Plange,Crystal Palace,467,0,F
+Dervi?o?lu,Brentford,488,0,F
