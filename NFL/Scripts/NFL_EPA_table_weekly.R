@@ -1,8 +1,9 @@
-library(nflfastR)
-library(tidyverse)
-library(ggrepel)
-
-setwd("C://Users//Mike Francis//Documents")
+#load packages
+suppressMessages({
+  library(nflfastR)
+  library(tidyverse)
+  library(ggrepel)
+})
 
 ###Defense EPA Table###
 

@@ -3,6 +3,13 @@
 #load packages
 suppressMessages({
   library(tidyverse) #metapackage
+  library(gt) #Easily Create Presentation-Ready Display Tables
+  library(ggsci) #Scientific Journal and Sci-Fi Themed Color Palettes for 'ggplot2'
+  library(reshape2) #flexibly Reshape Data
+  library(ggrepel) #Automatically Position Non-Overlapping Text Labels with 'ggplot2'
+  library(webshot)
+  library(DescTools) # Tools for Descriptive Statistics
+  
   library(worldfootballR) #extract and clean world soccer data
   library(engsoccerdata) #English and European Soccer Results
   library(socceR) #Evaluating Sport Tournament Predictions
