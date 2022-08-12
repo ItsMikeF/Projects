@@ -19,7 +19,9 @@ tournaments <- {c("2022-04-10 The Masters",
                  "2022-07-03 John Deere Classic", 
                  "2022-07-10 Genesis Scottish Open", 
                  "2022-07-17 Open Championship", 
-                 "2022-07-24 3M Open")}
+                 "2022-07-24 3M Open", 
+                 "2022-07-31 Rocket Mortgage Classic", 
+                 "2022-08-07 Wyndham Championshio")}
 
 #deletes file if it exists
 if (file.exists("./Results/golfers_results_no_odds.csv")) {

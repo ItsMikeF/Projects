@@ -18,37 +18,38 @@ suppressMessages({
   library(EUfootball) #Football Match Data of European Leagues
 })
 
-player_url <- "https://fbref.com/en/players/a1d5bd30/Marcus-Rashford"
+player_url <- "https://fbref.com/en/players/c0c7ff58/Fabian-Ruiz-Pena"
 
-rashford <- fb_player_season_stats(player_url, stat_type = "standard", time_pause = 3)
+player <- fb_player_season_stats(player_url, stat_type = "standard", time_pause = 3)
 
-rashford <- rashford %>% 
+player <- player %>% 
   mutate(npxG_plus_xA_per_min = xG_Per_Minutes + xA_Per_Minutes)
 
-ggplot(data = rashford %>% filter(Comp == "1. Premier League"), aes(x=Age, y=npxG_plus_xA_per_min)) +
-  geom_bar(stat = "identity", aes(fill=npxG_plus_xA_per_min)) +
+ggplot(data = player , aes(x=Age, y=npxG_plus_xA_per_min)) +
+  geom_bar(stat = "identity", aes(x= Age, fill=Comp)) +
   geom_text_repel(aes(label = paste(Min_Time, "minutes"))) +
   labs(
-    title = "Marcus Rashford Career",
-    subtitle = "Team: Manchester United / League: Premier League",
+    title = paste(player[1,1] ,"Career"),
+    subtitle = "Team: Napoli / League: Serie A",
     caption = "Data from FBRef"
   ) +
   scale_x_continuous()
 
 #group by
-rashford_group <- rashford %>% 
+player_group <- player %>% 
   group_by(Age) %>% 
-  summarise(matches = sum(MP_Time, na.rm = T), 
+  summarise(matches = sum(MP, na.rm = T), 
             minutes = sum(Min_Time, na.rm = T),
             goals = sum(Gls, na.rm = T),
             npxG_plus_xA_per_min = sum(npxG_plus_xA_per_min, na.rm = T))
-rashford_group
+player_group
 
-ggplot(data = rashford_group, aes(x=Age, y=npxG_plus_xA_per_min)) +
+ggplot(data = player_group, aes(x=Age, y=npxG_plus_xA_per_min)) +
   geom_bar(stat = "identity", aes(fill=npxG_plus_xA_per_min)) +
   geom_text_repel(aes(label = paste(minutes, "minutes"))) +
   labs(
-    title = "Marcus Rashford Career",
-    subtitle = "Team: Manchester United / League: Premier League",
+    title = paste(player[1,1] ,"Career"),
+    subtitle = "Team: Napoli / League: Serie A",
     caption = "Data from FBRef"
   ) 
+
