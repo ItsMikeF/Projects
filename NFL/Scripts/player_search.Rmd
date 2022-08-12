@@ -33,6 +33,7 @@ player_search <- function(name){
     group_by(year) %>% 
     summarise(
       team = team_name,
+      run_plays = run_plays,
       grades_offense = grades_offense, 
       grades_run = grades_run, 
       grades_pass_route = grades_pass_route,
@@ -59,7 +60,7 @@ player_search <- function(name){
     tab_header(paste(name, "Summary")) %>% 
     tab_spanner(
       label = "Grades", 
-      columns = c(grades_offense, grades_run, grades_pass_route)
+      columns = c(run_plays,grades_offense, grades_run, grades_pass_route)
     ) %>% 
     tab_spanner(
       label = "Rushing", 
@@ -89,5 +90,5 @@ player_search <- function(name){
     tab_header(paste(name, "Summary"))
 }
 
-player_search("Kareem Hunt")
+player_search("Derrick Henry")
 ```
