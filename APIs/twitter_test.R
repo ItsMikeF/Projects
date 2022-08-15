@@ -1,19 +1,21 @@
 #https://cran.r-project.org/web/packages/rtweet/vignettes/intro.html
 
-library("httpuv")
-library("rtweet")
-library("ggplot2")
+#load packages
+library(tidyverse) #ggplot2, dplyr, tidyr, readr, purrr, tibble, stringr, forcats, 
+library(rtweet) #calls designed to collect and organize Twitter data
+library(httpuv) #HTTP and WebSocket Server Library
 
-api_key <- "22ARgC9Ar7U4zTbw9N1S1fRm1"
-api_secret_key <- "2Kft725b9qTwm4bFmxnv3yuiv9a4ectMoS6jloZwxKbXgnnRJ8"
+#You'll need to run this function once per computer
+#so that rtweet can use your personal Twitter account.
+auth_setup_default()
+
+#add the keys
+api_key <- "61108922-fcovElctrgVepoeZURjpYVWjX3bFuGvZVdNkvj2vd"
+api_secret_key <- "BJi9x2qjvUDo8hgqqoVySEpyBexaCKUvq1GZHX4y1nA69"
 
 ## search for 18000 tweets using the rstats hashtag
 rt <- search_tweets(
-  "#rstats", n = 18000, include_rts = FALSE
-)
-
-nfl_rt <- search_tweets(
-  "Darnell Mooney", n=100, include_rts = F
+  "#rstats", n = 100, include_rts = F
 )
 
 names <- tibble(names(nfl_rt))
@@ -45,10 +47,12 @@ me_fds <- get_friends("Its_MikeF")
 me_fds_data <- lookup_users(me_fds$user_id) %>% 
   select(user_id, created_at, screen_name, text, source)
 
-pyq <- lookup_users("its_mikef") %>% 
-  select(user_id, screen_name, followers_count, friends_count, favourites_count)
+pyq <- lookup_users("its_mikef")
 pyq$followers_count
 pyq$verified
+
+pyq_select <- pyq %>% 
+  select(id, screen_name, followers_count, friends_count, favourites_count)
 
 ## get user IDs of accounts followed by CNN
 tmls <- get_timelines(c("cnn", "BBCWorld", "foxnews"), n = 320)
@@ -77,3 +81,6 @@ mjf <- get_favorites("Its_MikeF", n= 12)
 sf <- get_trends("new york")
 
 usrs <- search_users("#rstats", n = 10)
+
+gf <- get_followers(user = "Its_MikeF")
+mjf$id[1]

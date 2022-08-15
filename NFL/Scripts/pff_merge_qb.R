@@ -58,47 +58,6 @@ qbs_list <- list()
 pbe <- list()
 pbe_list <- list()
 
-#lets write some functions
-fun_outer <- function(j){
-  folder <- list.dirs()[j]
-  year <- substring(folder, nchar(folder)-3, nchar(folder))
-  
-  fun_inner <- function(i){
-    print(paste("Year:",year, "week:", i))
-    
-    passing_summary <- read.csv(paste0(folder,"/passing_summary (", i,").csv")) %>% 
-      select(passing_summary_cols)
-    dim_table[1,i] <- dim(passing_summary)[2]
-    
-    passing_pressure <- read.csv(paste0(folder,"/passing_pressure (", i,").csv")) %>% 
-      select(passing_pressure_cols[c(2,7:length(passing_pressure_cols))])
-    dim_table[2,i] <- dim(passing_pressure)[2]
-    
-    passing_concept <- read.csv(paste0(folder,"/passing_concept (", i,").csv")) %>% 
-      select(passing_concept_cols[c(2,6:length(passing_concept_cols))])
-    dim_table[3,i] <- dim(passing_concept)[2]
-    
-    passing_depth <- read.csv(paste0(folder,"/passing_depth (", i,").csv")) %>% 
-      select(passing_depth_cols[c(2,8:length(passing_depth_cols))])
-    dim_table[4,i] <- dim(passing_depth)[2]
-    
-    time_in_pocket <- read.csv(paste0(folder,"/time_in_pocket (", i,").csv")) %>% 
-      select(time_in_pocket_cols[c(2,6:length(time_in_pocket_cols))])
-    dim_table[5,i] <- dim(time_in_pocket)[2]
-    
-    qbs_list[[i]] <- list(passing_summary, passing_pressure, passing_concept, passing_depth, time_in_pocket) %>% 
-      reduce(left_join, by = "player_id")
-    
-    pbe_list[[i]] <- read.csv(paste0(folder,"/line_pass_blocking_efficiency (", i,").csv"))
-    
-    qbs_list[[i]]$year <- year
-    qbs_list[[i]]$week <- i
-    print(paste("Year:",year, "Week:", i, ", # of Columns:",dim(qbs_list[[i]])[2]))
-  }
-}
-
-lapply(1:17, fun_outer)
-
 #loop for all years into list
 for (j in start:stop) {
   
