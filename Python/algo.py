@@ -39,3 +39,4 @@ print(df)
 #lets do it again, this time with a list comprehension and a lambda function
 df['err'] = [lambda x: (x['y_pred'][i] - x['y'][i])**2 for i in range(len(df))]
 print(df)
+

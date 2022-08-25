@@ -4,7 +4,7 @@ suppressMessages({
   library(nflverse) #functions to efficiently access NFL pbp data
 })
 
-pbp <- nflreadr::load_pbp(2020) %>% 
+pbp <- nflreadr::load_pbp(2021) %>% 
   dplyr::filter(season_type == "REG") %>%
   dplyr::filter(!is.na(posteam) & (rush == 1 | pass == 1))
 
@@ -41,7 +41,7 @@ ggplot2::ggplot(combined, aes(x = off_epa, y = def_epa)) +
     x = "Offense EPA/play",
     y = "Defense EPA/play",
     caption = "Data: @nflfastR",
-    title = "2020 NFL Offensive and Defensive EPA per Play"
+    title = "2021 NFL Offensive and Defensive EPA per Play"
   ) +
   ggplot2::theme_minimal() +
   ggplot2::theme(
@@ -56,7 +56,7 @@ ggplot2::ggplot(qbs, aes(x = reorder(id, -qb_epa), y = qb_epa)) +
   nflplotR::scale_color_nfl(type = "secondary") +
   nflplotR::scale_fill_nfl(alpha = 0.4) +
   ggplot2::labs(
-    title = "2020 NFL Quarterback EPA per Play",
+    title = "2021 NFL Quarterback EPA per Play",
     y = "EPA/play"
   ) +
   ggplot2::theme_minimal() +
@@ -67,4 +67,29 @@ ggplot2::ggplot(qbs, aes(x = reorder(id, -qb_epa), y = qb_epa)) +
     axis.title.x = ggplot2::element_blank(),
     # this line triggers the replacement of gsis ids with player headshots
     axis.text.x = element_nfl_headshot(size = 1)
+  )
+
+df <- mtcars |> 
+  dplyr::mutate(
+    team = sample(c("LAC", "BUF", "DAL", "ARI"), nrow(mtcars), TRUE),
+    player = sample(c("00-0033873", "00-0035228", "00-0036355", "00-0019596"), nrow(mtcars), TRUE)
+  )
+
+ggplot(df, aes(x = mpg, y = disp)) +
+  geom_point() +
+  facet_wrap(vars(team)) +
+  labs(
+    title = tools::toTitleCase("These are random teams and data"),
+    subtitle = "I just want to show how the nflplotR theme elements work",
+    caption = "https://github.com/nflverse/nflseedR/raw/master/man/figures/caption.png"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title.position = "plot",
+    plot.title = ggplot2::element_text(face = "bold"),
+    axis.title = element_blank(),
+    # make wordmarks of team abbreviations
+    strip.text = element_nfl_wordmark(size = 1),
+    # load image from url in caption
+    plot.caption = element_path(hjust = 1, size = 0.4)
   )

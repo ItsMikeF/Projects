@@ -5,6 +5,9 @@ suppressMessages({
   library(caret) #classification and regression training
 })
 
+#https://www.nflfastr.com/articles/beginners_guide.html
+fit2 <- lm(wins ~ prior_point_diff, data = data)
+
 #split into training (80%) and testing set (20%)
 data <- qbs_select[5:dim(qbs_select)[2]]
 parts = createDataPartition(data$fpts, p = .8, list = F)

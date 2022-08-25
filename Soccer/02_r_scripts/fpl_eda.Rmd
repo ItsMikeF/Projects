@@ -1,0 +1,118 @@
+---
+title: "soccer_learn"
+output: html_document
+date: '2022-07-25'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Lets test out some soccer packages!
+
+First we load in the packages
+```{r}
+suppressMessages({
+  library(tidyverse) #metapackage
+  library(gt) #Easily Create Presentation-Ready Display Tables
+  library(ggsci) #Scientific Journal and Sci-Fi Themed Color Palettes for 'ggplot2'
+  library(reshape2) #flexibly Reshape Data
+  library(ggrepel) #Automatically Position Non-Overlapping Text Labels with 'ggplot2'
+  library(webshot)
+  library(DescTools) # Tools for Descriptive Statistics
+  library(ggimage) #geom layer for visualizing image files
+  library(jpeg) #read and write jpeg files
+  
+  library(worldfootballR) #extract and clean world soccer data
+  library(engsoccerdata) #English and European Soccer Results
+  library(socceR) #Evaluating Sport Tournament Predictions
+  library(ggsoccer) #Plot Soccer Event Data
+  library(footBayes) #Fitting Bayesian and MLE Football Models
+  library(itscalledsoccer) #American Soccer Analysis API Client
+  library(FPLdata) #Read in Fantasy Premier League Data
+  library(EUfootball) #Football Match Data of European Leagues
+})
+```
+
+Lets check out FPL dataset
+```{r}
+fpl_data <- FPLdata()
+```
+Lets now sort for player level season long data
+```{r}
+fpl_player <- fpl_data %>%
+  unite(name ,first_name, second_name, sep = " ") %>% 
+  group_by(name, web_name) %>%
+  summarise(
+    "minutes" = max(minutes),
+    "chance_of_playing_this_round" = round(mean(chance_of_playing_this_round, na.rm = T), digits = 2),
+    "mean_next_gw_points" = round(mean(next_gw_points, na.rm = T), digits = 2), 
+    "bps" = max(bps, na.rm = T), 
+    
+    "form" = round(mean(form, na.rm = T), digits = 2),
+    "value_form" = round(mean(value_form, na.rm = T), digits = 2),
+    "value_season" = max(value_season, na.rm = T),
+    
+    "dream team" = max(dreamteam_count),
+    "points_per_game" = round(mean(points_per_game, na.rm = T), digits =2), 
+    
+    "creativity" = round(mean(creativity, na.rm = T), digits =0),
+    "creativity_rank" = round(min(creativity_rank, na.rm = T), digits =0),
+    
+    "influence" = round(mean(influence, na.rm = T), digits =0),
+    "influence_rank" = round(min(influence_rank, na.rm = T), digits =0),
+    
+    "threat" = round(mean(threat, na.rm = T), digits =0),
+    "threat_rank" = round(min(threat_rank, na.rm = T), digits =0),
+    
+    "clean_sheets" = round(sum(clean_sheets, na.rm = T), digits =0), 
+    "value_season" = max(value_season, na.rm = T), 
+    
+    "saves" = max(saves, na.rm = T), 
+    "corners_and_indirect_freekicks_order" = round(mean(corners_and_indirect_freekicks_order, na.rm = T),digits = 1)) %>%
+  #filter(minutes > 0.25 * max(minutes)) %>% 
+  mutate(actual_vs_expected = points_per_game-mean_next_gw_points) %>% 
+  arrange(-actual_vs_expected) %>% 
+  ungroup()
+head(fpl_player)
+```
+
+Lets take a look to see which players over performed the most
+```{r}
+fpl_player %>% 
+  select(name, minutes, mean_next_gw_points, points_per_game, actual_vs_expected) %>% 
+  head(15) %>% 
+  gt(rowname_col = "name") %>% 
+  tab_header(
+    title = "Top 15 2022/2023 FPL Overperformers", 
+    subtitle = "Sorted by actual_vs_expected, filtered out minutes <20%") %>% 
+  tab_source_note(
+    source_note = "next_gw_points (next gameweek points) value for each player given their attributes in the current week.") %>% 
+  tab_stubhead(label = "name") %>% 
+  tab_source_note(source_note = "Twitter: @its_MikeF | Data from FPLdata") 
+```
+
+Lets see if threat or activity rank correlated
+```{r}
+normalize <- function(x){
+  return((x - min(x,na.rm = T))/( max(x, na.rm = T) - min(x, na.rm = T)))
+}
+
+fpl_player_norm <- fpl_player
+
+fpl_player_norm <- fpl_player_norm[-c(1,2,4,20)]
+
+for(i in 1:length(fpl_player_norm)){
+  fpl_player_norm[,i] = normalize(fpl_player_norm[,i])
+}
+
+fpl_player_norm %>%
+  cor() %>%
+  melt() %>%
+  ggplot(aes(Var1, Var2, fill=value)) +
+  geom_tile(color='white') +
+  scale_fill_distiller(palette = 'GnBu', direction = 1) +
+  geom_text(aes(label=paste(round(value,2)*100,'%')), size=2.5, color='black') +
+  labs(x='',y='',fill='correlations', title='Relationship between fpl variables') +
+  theme(axis.text.x = element_text(angle = 90, vjust = .5))
+```

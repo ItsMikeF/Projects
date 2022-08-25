@@ -21,7 +21,9 @@ tournaments <- {c("2022-04-10 The Masters",
                  "2022-07-17 Open Championship", 
                  "2022-07-24 3M Open", 
                  "2022-07-31 Rocket Mortgage Classic", 
-                 "2022-08-07 Wyndham Championshio")}
+                 "2022-08-07 Wyndham Championshio", 
+                 "2022-08-14 FedEx St. Jude Championship",
+                 "2022-08-21 BMW Championship")}
 
 #deletes file if it exists
 if (file.exists("./Results/golfers_results_no_odds.csv")) {
@@ -81,7 +83,6 @@ for (i in c(5,8:length(tournaments))) {
     unite("Player", first:last, sep = " ") %>% 
     mutate(Player = trimws(Player)) %>% 
     select(Player, ownership, total_pts)
-  
   
   #Create golfer tibble
   own_multiplier <- 100/100

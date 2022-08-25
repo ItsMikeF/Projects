@@ -9,6 +9,8 @@ suppressMessages({
   library(ggrepel) #Automatically Position Non-Overlapping Text Labels with 'ggplot2'
   library(webshot)
   library(DescTools) # Tools for Descriptive Statistics
+  library(ggimage) #geom layer for visualizing image files
+  library(jpeg) #read and write jpeg files
   
   library(worldfootballR) #extract and clean world soccer data
   library(engsoccerdata) #English and European Soccer Results
@@ -20,14 +22,35 @@ suppressMessages({
   library(EUfootball) #Football Match Data of European Leagues
 })
 
+#load the fpl data
 fpl_data <- FPLdata()
-head(fpl_data)
+names <- tibble(names(fpl_data)) 
 
+#sort data for current season and gameweek
+test <- fpl_data %>% 
+  mutate(year = as.numeric(str_sub(correct_as_of_time, 1, 4)), 
+         month = as.numeric(str_sub(correct_as_of_time, 6, 7))) %>% 
+  drop_na(chance_of_playing_next_round) %>% 
+  filter(year == 2022 & month == 8 & gameweek == 2 & chance_of_playing_next_round > 75) %>% 
+  arrange(-next_gw_points) %>% 
+  slice_head(n=25)
+
+#plot top 25 
+test %>% 
+  ggplot(aes(x=ict_index_rank, y=next_gw_points)) +
+  geom_point(alpha=0.6) + 
+  #geom_image(aes(image=photo)) +
+  geom_text_repel(aes(label=web_name))
+
+#readJPEG(test$photo[1])
+
+#fpl example from documentation
 fpl_data %>%
   group_by(web_name) %>%
   summarise("mean_next_gw_points" = mean(next_gw_points, na.rm = TRUE)) %>%
   arrange(-mean_next_gw_points)
 
+#plot npxg_plus_xa for fpl draft
 {test %>%
     ggplot(aes(x = Draft.Rank, y = npxG_plus_xA_per_min)) +
     geom_smooth(method=loess, se=F) +

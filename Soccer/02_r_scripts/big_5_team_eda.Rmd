@@ -1,0 +1,116 @@
+---
+title: "big_5_team_eda"
+output: html_document
+date: "2022-08-17"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+First we load in the packages
+```{r}
+suppressMessages({
+  library(tidyverse) #metapackage
+  library(gt) #Easily Create Presentation-Ready Display Tables
+  library(ggsci) #Scientific Journal and Sci-Fi Themed Color Palettes for 'ggplot2'
+  library(reshape2) #flexibly Reshape Data
+  library(ggrepel) #Automatically Position Non-Overlapping Text Labels with 'ggplot2'
+  library(webshot)
+  library(DescTools) # Tools for Descriptive Statistics
+  library(ggimage) #geom layer for visualizing image files
+  library(jpeg) #read and write jpeg files
+  library(rsvg) #Render SVG Images into PDF, PNG, (Encapsulated) PostScript, or Bitmap Arrays
+  
+  library(worldfootballR) #extract and clean world soccer data
+  library(engsoccerdata) #English and European Soccer Results
+  library(socceR) #Evaluating Sport Tournament Predictions
+  library(ggsoccer) #Plot Soccer Event Data
+  library(footBayes) #Fitting Bayesian and MLE Football Models
+  library(itscalledsoccer) #American Soccer Analysis API Client
+  library(FPLdata) #Read in Fantasy Premier League Data
+  library(EUfootball) #Football Match Data of European Leagues
+})
+```
+
+Lets take a look at the EPL team data
+```{r}
+fb_big5_team <- fb_big5_advanced_season_stats(
+  season_end_year = 2023,
+  stat_type = "standard",
+  team_or_player = "team",
+  time_pause = 3
+)
+```
+
+load data from FBref
+```{r}
+fb_big5_team_epl <- fb_big5_team %>% 
+  #filter(Team_or_Opponent == "team") %>% 
+  filter(Comp == "Premier League") %>% 
+  rename_with(tolower) %>% 
+  rename_with(~ gsub("[+]", "_plus_", .x))
+
+```
+
+plot the data from fbref
+```{r}
+plot <- fb_big5_team_epl %>% 
+  ggplot(aes(x=squad, y= npxg_plus_xa_per, fill=team_or_opponent)) +
+  geom_bar(stat = "identity", position = position_dodge()) + 
+  labs(
+    title = "2022/2023 EPL Offense",
+    subtitle = "non penalty xGoals plus xAssists / minutes",
+    caption = "Twitter: @Its_MikeF \n Data from FBRef"
+  ) +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+plot
+
+#ggsave(filename = "./03_plots/plot.png", height = 9, width = 16)
+```
+
+lets try to make an xg / xga table
+```{r}
+
+xg_table <- data.frame()
+
+for (i in 1:20) {
+  xg_table[i,1] <- fb_big5_team_epl$squad[i*2]
+  xg_table[i,2] <- fb_big5_team_epl$npxg_plus_xa_per[(i*2)-1]
+  xg_table[i,3] <- fb_big5_team_epl$npxg_plus_xa_per[i*2]
+}
+
+names(xg_table) <- c("squad", "xg", "xga")
+
+crests <- read.csv("./00_raw_data/football_crests.csv")
+
+xg_table <- xg_table %>% 
+  left_join(crests, by=c("squad"="Team"))
+
+#trying to plot the data with the team crests
+xg_table %>% 
+  ggplot(aes(x=xg, y=xga, label=squad,
+        image="https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg")) +
+  geom_hline(yintercept = mean(xg_table$xga), color="red", linetype="dashed", alpha=0.5) +
+  geom_vline(xintercept = mean(xg_table$xg), color="red", linetype="dashed", alpha=0.5) +
+  #geom_point() +
+  geom_image() +
+  #geom_image(aes(image=URL)) + scale_size_identity() +
+  geom_text_repel(aes(label=squad)) +
+  scale_y_reverse() +
+  labs(
+    title = "EPL npxg_plus_xa_per Table", 
+    caption = "Data from FBRef"
+  )
+
+#https://askubuntu.com/questions/1265192/not-able-to-open-svg-files-xml-parse-error
+#https://www.invertedwinger.com/football-analytics-using-r-and-fbref-data-part-2/
+```
+
+```{r}
+ggplot(data.frame(),
+  aes(x=1, y=1,
+        image="https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg")) +
+  geom_image()
+```
+
