@@ -8,7 +8,10 @@ suppressMessages({
   library(rvest) #easily harvest (scrape) web pages
   library(janitor) #simple little tools for examining and cleaning dirty data
   library(ggrepel) #automatically position non-overlapping text labels with ggplot2
+  library(tictoc) #Functions for Timing R Scripts, as Well as Implementations of Stack and List Structures
 })
+
+tic("Program Time")
 
 #css tags to be used
 css1 <- ".fw-medium .AnchorLink" #starters
@@ -130,8 +133,7 @@ pff_rb_select <- pff_rb %>%
 
 #left join rb_team with pff_rb_select
 plot_rb <- rb_team %>% 
-  left_join(pff_rb_select, by=c("player")) %>% 
-  drop_na()
+  left_join(pff_rb_select, by=c("player")) 
 
 #change player full name in pff df to pbp name format
 plot_rb <- plot_rb %>% 
@@ -177,3 +179,5 @@ plot_rb_pbp %>%
     The PFF Elusive Rating distills the success and impact of a runner with the ball independently of the blocking in front of him by looking at how hard he was to bring down.",
     y = "Elusiveness Rating"
   )
+
+toc()

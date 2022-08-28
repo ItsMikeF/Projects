@@ -1,13 +1,18 @@
-#scrape epsn site for player data
+#scrape nfl injuries from espn.com
 import requests
 from bs4 import BeautifulSoup
+import pandas as pd
+import numpy as np
 
-
-def get_player_data(url):
-    #get player data from espn site
+def get_injuries(url):
     r = requests.get(url)
     soup = BeautifulSoup(r.text, 'html.parser')
-    player_data = soup.find_all('tr', class_='player-	player-table-row')
-    print(player_data)
-    
-get_player_data('https://www.espn.com/nba/stats/player/_/stat/scoring/sort/avgPointsPerGame/year/2019/seasontype/2')
+    table = soup.find('table', {'class': 'tablehead'})
+    rows = table.find_all('tr')
+    rows = rows[1:]
+    injuries = []
+    for row in rows:
+        cells = row.find_all('td')
+        injuries.append([cell.text for cell in cells])
+    return injuries
+get_injuries('https://www.espn.com/nfl/injuries')
