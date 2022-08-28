@@ -7,6 +7,7 @@ suppressMessages({
   library(nflverse) #nflfastr nflseedr nfl4th nflreadr nflplotr
   library(rvest) #easily harvest (scrape) web pages
   library(janitor) #simple little tools for examining and cleaning dirty data
+  library(ggrepel) #automatically position non-overlapping text labels with ggplot2
 })
 
 #css tags to be used
@@ -30,58 +31,6 @@ teams <- teams[-c(17,27,30,33),]
 #fix Washington names
 teams$team_abbr[32] <- "WSH"
 teams$team_name[32] <- "Washington-Commanders"
-
-#scrape one team
-{
-url <- "https://www.espn.com/nfl/team/depth/_/name/buf/buffalo-bills" 
-
-#scrape webpage with rvest
-webpage <- read_html(url)
-
-#make depth chart as a list
-depth_chart <- css %>% 
-  map(function (css){
-    html <- html_nodes(webpage,css)
-    text <- trimws(html_text(html)) %>% as_tibble()
-  })
-
-len <- length(depth_chart[[3]][[1]])
-
-positions <- depth_chart[[3]][[1]][seq(2, len, 2)]
-positions <- tibble(positions[1:12])
-
-off <- depth_chart[[1]][c(1:12),]
-
-depth_off <- cbind(positions,off)
-}
-
-#scrape every team into a list with for loop
-{
-depth_off <- list()
-
-for (i in 1:32) {
-  print(teams$team_abbr[i])
-  url <- paste0("https://www.espn.com/nfl/team/depth/_/name/",teams$team_abbr[i],"/",teams$team_name[i])
-  
-  #scrape webpage with rvest
-  webpage <- read_html(url)
-  
-  depth_chart <- css %>% 
-    map(function (css){
-      html <- html_nodes(webpage,css)
-      text <- trimws(html_text(html)) %>% as_tibble()
-    })
-  
-  len <- length(depth_chart[[3]][[1]])
-  
-  positions <- depth_chart[[3]][[1]][seq(2, len, 2)]
-  positions <- tibble(positions[1:12])
-  
-  off <- depth_chart[[1]][c(1:12),]
-  
-  depth_off[[i]] <- cbind(positions,off)
-}
-}
 
 #purrr map every offensive roster into a list
 i <- 1:32
@@ -108,8 +57,6 @@ depth_off <- i %>%
     off <- depth_chart[[1]][c(1:12),]
     cbind(positions,off, teams$team_abbr[i])
  } )
-
-rm(depth_off)
 
 #create a data frame of the rosters from the list 
 nfl_depth <- Reduce(full_join,depth_off)
@@ -188,7 +135,8 @@ plot_rb <- rb_team %>%
 
 #change player full name in pff df to pbp name format
 plot_rb <- plot_rb %>% 
-  mutate(name = paste(substr(player,1,1),str_extract(player, '[^ ]+$'),sep = ".")) 
+  mutate(name = paste(substr(player,1,1),str_extract(player, '[^ ]+$'),sep = "."), 
+         cat = paste0(name, team)) 
 
 #load pbp data for player ids
 pbp <- nflreadr::load_pbp(2021) %>% 
@@ -206,30 +154,26 @@ pbp_rbs <- pbp %>%
     rushing_yards = sum(rushing_yards, na.rm = T),
     rush_att = sum(rush_attempt, na.rm = T)
   ) %>% 
-  arrange(-rushing_yards)
+  arrange(-rushing_yards) %>% 
+  mutate(cat = paste0(name, team))
 
 #join plot_rb with pbp_rbs for ids and stats
-plot_rb <- plot_rb %>% 
-  left_join(pbp_rbs, by=c("name")) 
+plot_rb_pbp <- plot_rb %>% 
+  left_join(pbp_rbs, by=c("cat")) %>% 
+  drop_na()
 
-#lets plot it
-ggplot2::ggplot(plot_rb, aes(x = reorder(player, -rblk), y = elusive_rating)) +
-  ggplot2::geom_col(aes(color = team.y, fill = team.y), width = 0.5) +
-  nflplotR::geom_nfl_headshots(aes(player_gsis = id), width = 0.075, vjust = 0.45) +
-  nflplotR::scale_color_nfl(type = "secondary") +
-  nflplotR::scale_fill_nfl(alpha = 0.4) +
-  ggplot2::labs(
-    title = "2022 RB",
-    y = "Elusiveness Rating", 
-    caption = "Data from PFF"
-  ) +
-  ggplot2::ylim(0, 0.4) +
-  ggplot2::theme_minimal() +
-  ggplot2::theme(
-    plot.title = ggplot2::element_text(face = "bold"),
-    plot.title.position = "plot",
-    # it's obvious what the x-axis is so we remove the title
-    axis.title.x = ggplot2::element_blank(),
-    # this line triggers the replacement of team abbreviations with logos
-    axis.text.x = element_nfl_logo(size = 1)
+#rb plot
+plot_rb_pbp %>% 
+  ggplot(aes(x = rblk, y = elusive_rating)) +
+  geom_vline(xintercept = mean(plot_rb_pbp$rblk), color="red",linetype="dashed", alpha=0.5) +
+  geom_hline(yintercept = mean(plot_rb_pbp$elusive_rating), color="red",linetype="dashed", alpha=0.5) +
+  #geom_nfl_logos(aes(team_abbr=team.x), width=0.065, alpha=0.7) +
+  geom_nfl_headshots(aes(player_gsis = id), width = 0.075, vjust = 0.45) +
+  geom_label_repel(aes(label = player)) +
+  xlab("Avg IOL 2021 RBLK Grades") +
+  labs(
+    title = "2022 RB Review",
+    caption = "2021 IOL Grade based on starting LG, C, RG on 2022 ESPN Depth Chart. \n 
+    The PFF Elusive Rating distills the success and impact of a runner with the ball independently of the blocking in front of him by looking at how hard he was to bring down.",
+    y = "Elusiveness Rating"
   )
