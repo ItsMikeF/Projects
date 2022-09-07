@@ -1,33 +1,32 @@
 #lets read the coinbase api
+#https://docs.cloud.coinbase.com/exchange/reference/exchangerestapi_getcurrencies-1
 
 #load packages
 suppressMessages({
+  library(tidyverse)
   library(httr)
   library(jsonlite)
 })
 
-api_key <- "4b9c53aa369df200e9952d0c006baf32"
-url <- "https://api.pro.coinbase.com/"
+#api info
+api_url <- "https://api.pro.coinbase.com/"
+api_key <- "32238cfdd0d5f253df7563c558369239"
+api_secret <- "bfSKL67rAIbm8ya2kdLGb0iBD6tm4ss/CE8G1I6c/zD08edDHQLgYfEyj8nn7CzbXU9Tk4CavjcPmZ6yFJxKzg=="
+api_passphrase <- "jo0geecqg"
 
-query_string <- list(all=T)
+#copied code, status 200!
+url <- "https://api.exchange.coinbase.com/currencies"
 
-response <- VERB("GET", url, add_headers(
-  'CB-ACCESS-KEY' = api_key,
-  'X-RapidAPI-Host' = 'odds.p.rapidapi.com'),
-  query = query_string,
-  content_type("application/json"))
+response <- VERB("GET", url, content_type("application/octet-stream"), accept("application/json"))
 
-#code snippet from rapid api
-library(httr)
+content <- content(response, "parse")
 
-url <- "https://odds.p.rapidapi.com/v4/sports"
+data <- fromJSON(content, flatten = TRUE)
 
-queryString <- list(all = "true")
+#work with the data
+df <- list()
 
-response <- VERB("GET", url, add_headers(
-  'X-RapidAPI-Key' = 'b34680a5eamsh5c39b8cf066dd0ap1e8d93jsnc9e5097b3c8c',
-  'X-RapidAPI-Host' = 'odds.p.rapidapi.com'),
-  query = queryString,
-  content_type("application/octet-stream"))
-
-content(response, "parse")
+for (i in 1:length(content)) {
+  df[i] <- content[[i]][[1]]
+}
+cryptos <- as.data.frame(unlist(df))

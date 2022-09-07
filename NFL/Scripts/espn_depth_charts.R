@@ -11,7 +11,7 @@ suppressMessages({
   library(tictoc) #Functions for Timing R Scripts, as Well as Implementations of Stack and List Structures
 })
 
-tic("Program Time")
+# 1.0 scrape and clean depth charts -------------------------------------------------
 
 #css tags to be used
 css1 <- ".fw-medium .AnchorLink" #starters
@@ -61,9 +61,46 @@ depth_off <- i %>%
     cbind(positions,off, teams$team_abbr[i])
  } )
 
+depth_off <- setNames(depth_off, teams$team_abbr)
+
 #create a data frame of the rosters from the list 
 nfl_depth <- Reduce(full_join,depth_off)
 names(nfl_depth) <- c("pos", "player", "team")
+
+depth_off2 <- i %>% 
+  map(function (i) {
+    print(teams$team_abbr[i])
+    url <- paste0("https://www.espn.com/nfl/team/depth/_/name/",teams$team_abbr[i],"/",teams$team_name[i])
+    
+    #scrape webpage with rvest
+    webpage <- read_html(url)
+    
+    depth_chart <- css %>% 
+      map(function (css){
+        html <- html_nodes(webpage,css2)
+        text <- trimws(html_text(html)) %>% as_tibble()
+      })
+    
+    len <- length(depth_chart[[3]][[1]])
+    
+    positions <- depth_chart[[3]][[1]][seq(2, len, 2)]
+    positions <- tibble(positions[1:12])
+    
+    off <- depth_chart[[1]][c(1:12),]
+    cbind(positions,off, teams$team_abbr[i])
+  } )
+depth_off2 <- setNames(depth_off2, teams$team_abbr)
+
+#create a data frame of the rosters from the list 
+nfl_depth2 <- Reduce(full_join,depth_off2)
+names(nfl_depth2) <- c("pos", "player", "team")
+
+# 2.0 add injury report to starters ---------------------------------------
+
+nfl_depth_inj <- nfl_depth %>% 
+  left_join(injuries %>% select(name, status, comment), by=c("player"="name"))
+
+# 3.0 separate into positions and load data -----------------------------------
 
 #separate into position groups
 qb1 <- nfl_depth[seq(1,dim(nfl_depth)[1],12),]
@@ -180,4 +217,83 @@ plot_rb_pbp %>%
     y = "Elusiveness Rating"
   )
 
-toc()
+#lets look at the OT groups
+
+#left join pff ol data to iol
+ot_grades <- ot %>% 
+  left_join(pff_ol, by = c("player"))
+
+#summarise the iol data
+ot_team <- ot_grades %>% 
+  group_by(team) %>% 
+  summarise(
+    grades_pass_block.x = round(weighted.mean(grades_pass_block.x, non_spike_pass_block.x, na.rm=T), digits = 1),
+    
+    pass_snaps = sum(snap_counts_pass_block.x, na.rm = T),
+    pbe = round(weighted.mean(pbe.x, non_spike_pass_block.x, na.rm=T), digits = 1),
+    pressures_allowed = sum(true_pass_set_pressures_allowed, na.rm=T),
+    
+    tps_snaps = sum(true_pass_set_non_spike_pass_block, na.rm=T), 
+    tps_pbe = round(weighted.mean(true_pass_set_pbe, true_pass_set_non_spike_pass_block, na.rm=T), digits = 1),
+    tps_pressures_allowed = sum(true_pass_set_pressures_allowed, na.rm=T)
+  )
+
+#join qb and ot dfs
+qb_team <- qb1 %>% 
+  left_join(ot_team, by=c("team"))
+
+#load qb data
+pff_qb <- read.csv("./Training_Data/position_groups/qbs.csv") %>% 
+  filter(year == max(year) & week == max(week)) 
+
+pff_qb <- read.csv("./Training_Data/2021/passing_summary (22).csv")
+
+#sort for elu
+pff_qb_select <- pff_qb %>% 
+  select(player, grades_pass, btt_rate, twp_rate, avg_depth_of_target, 
+         avg_time_to_throw, grades_run, pressure_to_sack_rate, player_game_count, attempts, yards, ypa) %>% 
+  mutate(ttt_run_grade = round(avg_time_to_throw*grades_run, digits = 1))
+
+#left join rb_team with pff_rb_select
+plot_qb <- qb_team %>% 
+  left_join(pff_qb_select, by=c("player")) 
+
+#change player full name in pff df to pbp name format
+plot_qb <- plot_qb %>% 
+  mutate(name = paste(substr(player,1,1),str_extract(player, '[^ ]+$'),sep = "."), 
+         cat = paste0(name, team))
+
+#load pbp data for player ids
+pbp_qbs <- pbp %>%
+  filter(pass == 1) %>%
+  filter(down %in% 1:4) %>%
+  group_by(id) %>%
+  summarise(
+    name = first(name),
+    team = last(posteam),
+    plays = n(),
+    passing_yards = sum(passing_yards, na.rm = T),
+    pass_attempt = sum(pass_attempt, na.rm = T)
+  ) %>% 
+  arrange(-passing_yards) %>% 
+  mutate(cat = paste0(name, team))
+
+#join plot_rb with pbp_rbs for ids and stats
+plot_qb_pbp <- plot_qb %>% 
+  left_join(pbp_qbs, by=c("cat")) %>% 
+  drop_na()
+
+#qb plot
+plot_qb_pbp %>% 
+  ggplot(aes(x = grades_pass_block.x, y = grades_pass)) +
+  geom_vline(xintercept = mean(plot_qb_pbp$grades_pass_block.x, na.rm=T), color="red",linetype="dashed", alpha=0.5) +
+  geom_hline(yintercept = mean(plot_qb_pbp$grades_pass, na.rm=T), color="red",linetype="dashed", alpha=0.5) +
+  #geom_nfl_logos(aes(team_abbr=team.x), width=0.065, alpha=0.7) +
+  geom_nfl_headshots(aes(player_gsis = id), width = 0.075, vjust = 0.45) +
+  geom_label_repel(aes(label = player)) +
+  xlab("Avg OT 2021 PBLK Grades") +
+  labs(
+    title = "2022 QB Review",
+    caption = "2021 OT Grade based on starting LT and RT on 2022 ESPN Depth Chart.",
+    y = "QB Passing Grade"
+  )

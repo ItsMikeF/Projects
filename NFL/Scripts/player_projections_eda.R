@@ -1,4 +1,4 @@
-#lets take a look at pff season long sos metrics
+#lets look at player projections
 
 #load packages
 suppressMessages({
@@ -8,38 +8,80 @@ suppressMessages({
   library(ggrepel) #Automatically Position Non-Overlapping Text Labels with 'ggplot2'
 })
 
+# 1.0 projections --------------------------------------------------------------
+
 #load the projections
-pff_projections <- read.csv("./season_projections/projections.csv")
+projections_pff <- read.csv("./season_projections/projections_pff.csv") %>% 
+  select(playerName, position, fantasyPoints, fantasyPointsRank)
 
-#filter for what we want
-projections <- pff_projections %>% 
-  select(c(1:8))
+projections_udd <- read.csv("./season_projections/projections_underdog.csv") %>% 
+  mutate(name = paste(firstName, lastName)) %>% 
+  select(name, adp, projectedPoints, positionRank, slotName, teamName)
 
-#find unique positions
-unique(projections$position)
-length(unique(projections$position))
+#aggregate projections
+projections <- projections_pff %>% 
+  left_join(projections_udd, by=c("playerName"="name")) %>% 
+  rename(pos=position, 
+         pff=fantasyPoints, 
+         underdog=projectedPoints) %>% 
+    mutate(avg = round(((pff + underdog)/2),digits=1),
+           adp = as.numeric(adp)) %>% 
+  select(playerName, pos, adp, avg, pff, underdog, teamName) %>% 
+  arrange(adp)
 
 #filter by the 6 positions
-qbs <- projections %>% filter(position == "qb") %>% 
-  mutate(residuals = round(residuals(loess(fantasyPoints ~ fantasyPointsRank)), digits = 2))
+pos <- unique(projections$pos)
 
-rbs <- projections %>% filter(position == "rb") %>% 
-  mutate(residuals = round(residuals(loess(fantasyPoints ~ fantasyPointsRank)), digits = 2))
+qbs <- projections %>% filter(pos == "qb")
+rbs <- projections %>% filter(pos == "rb") 
+wrs <- projections %>% filter(pos == "wr")
+tes <- projections %>% filter(pos == "te")
 
-wrs <- projections %>% filter(position == "wr") %>% 
-  mutate(residuals = round(residuals(loess(fantasyPoints ~ fantasyPointsRank)), digits = 2))
+#sleeper only
+#ks <- projections %>% filter(pos == "k") 
+#dst <- projections %>% filter(pos == "dst")
 
-tes <- projections %>% filter(position == "te") %>% 
-  mutate(residuals = round(residuals(loess(fantasyPoints ~ fantasyPointsRank)), digits = 2))
 
-ks <- projections %>% filter(position == "k") %>% 
-  mutate(residuals = round(residuals(loess(fantasyPoints ~ fantasyPointsRank)), digits = 2))
+# 2.0 picks -------------------------------------------------------------------
 
-dst <- projections %>% filter(position == "dst") %>% 
-  mutate(residuals = round(residuals(loess(fantasyPoints ~ fantasyPointsRank)), digits = 2))
+#define constants
+league_size <- 12
+rounds <- 18
+picks <- vector()
+
+#define function to determine pick positions based on first pick
+draft_positions <- function(i) {
+  picks[1] <<- i
+  
+  for (j in 1:ceiling(rounds/2)) {
+    #assign the picks to a vector
+    picks[j*2] <<- i+j*(2*length(seq(i,12,by=1))-1)+(j-1)*(2*i-1)
+    picks[j*2+1] <<-i+j*(2*length(seq(i,12,by=1))-1)+j*(2*i-1)
+  }
+  #filters out picks beyond the draft size
+  picks <<- picks[picks %in% 1:(league_size*rounds)]
+}
+
+draft_positions(1)
+picks
+draft_picks <- projections[picks,]
+draft_picks
+sum(draft_picks$avg)
+
+#create a table of the picks and compare all sums of the avg proj points
+k <- 1:12
+
+picks_table <- k %>% 
+  map(function (k) {
+    draft_positions(k)
+  } )
+
+sum(picks_table[[1]]$avg)
+
+# 3.0 plots -------------------------------------------------------------------
 
 #plot it
-ggplot(qbs, aes(x=fantasyPointsRank, y=fantasyPoints), size=residuals) +
+ggplot(qbs, aes(x=adp, y=avg)) +
   geom_point() + 
   geom_text_repel(aes(label=playerName)) +
   geom_smooth(method = "loess", se=F) + 
@@ -49,12 +91,33 @@ ggplot(qbs, aes(x=fantasyPointsRank, y=fantasyPoints), size=residuals) +
     caption = "Twitter: Its_MikeF \n Data from Pro Football Focus"
   )
 
-
-#facet warp plot
-ggplot(projections, aes(x=fantasyPointsRank, y=fantasyPoints), size=residuals) +
+#plot it
+ggplot(rbs, aes(x=adp, y=avg)) +
   geom_point() + 
   geom_text_repel(aes(label=playerName)) +
-  facet_wrap(vars(position)) +
+  geom_smooth(method = "loess", se=F) + 
+  theme_dark() +
+  labs(
+    title = "2022/2023 Fantasy Draft Value", 
+    caption = "Twitter: Its_MikeF \n Data from Pro Football Focus"
+  )
+
+#plot it
+ggplot(wrs, aes(x=adp, y=avg)) +
+  geom_point() + 
+  geom_text_repel(aes(label=playerName)) +
+  geom_smooth(method = "loess", se=F) + 
+  theme_dark() +
+  labs(
+    title = "2022/2023 Fantasy Draft Value", 
+    caption = "Twitter: Its_MikeF \n Data from Pro Football Focus"
+  )
+
+#facet warp plot
+ggplot(projections, aes(x=adp, y=avg)) +
+  geom_point() + 
+  geom_text_repel(aes(label=playerName)) +
+  facet_wrap(vars(pos)) +
   geom_smooth(method = "loess", se=F) + 
   theme_dark() +
   labs(

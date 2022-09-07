@@ -4,12 +4,12 @@ suppressMessages({
   library(cfbfastR)
   })
 
-#load data
+#run the following to add the key to the Renviron
 #usethis::edit_r_environ()
-cfbd_key <- "lDpblntVUpUafh2geyo/tqM6QMErJgcl8FnpnugstY7wBLPmllehGfB/EYknH0VV"
+#cfbd_key <- "lDpblntVUpUafh2geyo/tqM6QMErJgcl8FnpnugstY7wBLPmllehGfB/EYknH0VV"
 
 #team
-cfb_team <- cfbd_game_team_stats(2019, team = "LSU")
+cfb_team <- cfbd_game_team_stats(2021, team = "LSU")
 
 #write player data to nested years list
 cfb_player <- list()

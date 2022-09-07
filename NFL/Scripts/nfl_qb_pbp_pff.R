@@ -145,6 +145,8 @@ qbs <- qb_pbp %>%
 names <- tibble(names(qbs))
 names
 
+#write.csv(qbs, file = "pbp_pff_qbs.csv")
+
 qbs_select <- qbs %>% 
   select(grades_pass.x, attempts.x, btt_rate, twp_rate, blitz_grades_pass, no_blitz_grades_pass, pressure_dropbacks_percent, pressure_grades_pass, deep_big_time_throws, pbe, 
          grades_defense, true_pass_set_grades_pass_rush_defense, grades_coverage_defense, man_grades_coverage_defense, man_catch_rate, 
