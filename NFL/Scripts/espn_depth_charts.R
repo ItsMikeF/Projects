@@ -1,5 +1,6 @@
 #web scrape depth charts from espn
 #made via https://stackoverflow.com/questions/56739863/web-scraping-image-url-for-a-series-of-events-in-espn-play-by-play
+#run this script 2nd
 
 #load packages
 suppressMessages({
@@ -114,7 +115,7 @@ ot <- nfl_depth %>%
   filter(pos == "LT" | pos == "RT")
 
 #load pff offensive line data
-pff_ol <- read_csv("./Training_Data/position_groups/ols.csv") %>% 
+pff_ol <- read.csv("./Training_Data/position_groups/ols.csv") %>% 
   filter(year == max(year) & week == max(week))
 
 #left join pff ol data to iol
@@ -155,67 +156,7 @@ pfr_rush <- tables[[5]] %>%
 pfr_rush$tm <- gsub(" ", "-", pfr_rush$tm)
 pfr_rush$tm[32] <- "Washington-Commanders"
 
-#join rb and iol dfs
-rb_team <- rb1 %>% 
-  left_join(iol_team, by=c("team"))
-
-#load rb data
-pff_rb <- read_csv("./Training_Data/position_groups/rbs.csv") %>% 
-  filter(year == max(year) & week == max(week))
-
-#sort for elu
-#The PFF "Elusive Rating" distills the success and impact of a runner with the ball independently of the blocking in front of him by looking at how hard he was to bring down.
-pff_rb_select <- pff_rb %>% 
-  select(player, attempts, player_game_count, designed_yards, elusive_rating)
-
-#left join rb_team with pff_rb_select
-plot_rb <- rb_team %>% 
-  left_join(pff_rb_select, by=c("player")) 
-
-#change player full name in pff df to pbp name format
-plot_rb <- plot_rb %>% 
-  mutate(name = paste(substr(player,1,1),str_extract(player, '[^ ]+$'),sep = "."), 
-         cat = paste0(name, team)) 
-
-#load pbp data for player ids
-pbp <- nflreadr::load_pbp(2021) %>% 
-  dplyr::filter(season_type == "REG") %>%
-  dplyr::filter(!is.na(posteam) & (rush == 1 | pass == 1))
-
-pbp_rbs <- pbp %>%
-  filter(rush == 1) %>%
-  filter(down %in% 1:4) %>%
-  group_by(id) %>%
-  summarise(
-    name = first(name),
-    team = last(posteam),
-    plays = n(),
-    rushing_yards = sum(rushing_yards, na.rm = T),
-    rush_att = sum(rush_attempt, na.rm = T)
-  ) %>% 
-  arrange(-rushing_yards) %>% 
-  mutate(cat = paste0(name, team))
-
-#join plot_rb with pbp_rbs for ids and stats
-plot_rb_pbp <- plot_rb %>% 
-  left_join(pbp_rbs, by=c("cat")) %>% 
-  drop_na()
-
-#rb plot
-plot_rb_pbp %>% 
-  ggplot(aes(x = rblk, y = elusive_rating)) +
-  geom_vline(xintercept = mean(plot_rb_pbp$rblk), color="red",linetype="dashed", alpha=0.5) +
-  geom_hline(yintercept = mean(plot_rb_pbp$elusive_rating), color="red",linetype="dashed", alpha=0.5) +
-  #geom_nfl_logos(aes(team_abbr=team.x), width=0.065, alpha=0.7) +
-  geom_nfl_headshots(aes(player_gsis = id), width = 0.075, vjust = 0.45) +
-  geom_label_repel(aes(label = player)) +
-  xlab("Avg IOL 2021 RBLK Grades") +
-  labs(
-    title = "2022 RB Review",
-    caption = "2021 IOL Grade based on starting LG, C, RG on 2022 ESPN Depth Chart. \n 
-    The PFF Elusive Rating distills the success and impact of a runner with the ball independently of the blocking in front of him by looking at how hard he was to bring down.",
-    y = "Elusiveness Rating"
-  )
+# 4.0 qb eda ---------------------------------------------------------
 
 #lets look at the OT groups
 
@@ -252,7 +193,7 @@ pff_qb <- read.csv("./Training_Data/2021/passing_summary (22).csv")
 pff_qb_select <- pff_qb %>% 
   select(player, grades_pass, btt_rate, twp_rate, avg_depth_of_target, 
          avg_time_to_throw, grades_run, pressure_to_sack_rate, player_game_count, attempts, yards, ypa) %>% 
-  mutate(ttt_run_grade = round(avg_time_to_throw*grades_run, digits = 1))
+  mutate(ttt_run_grade = round(avg_time_to_throw*grades_run/pressure_to_sack_rate, digits = 1))
 
 #left join rb_team with pff_rb_select
 plot_qb <- qb_team %>% 
@@ -262,6 +203,11 @@ plot_qb <- qb_team %>%
 plot_qb <- plot_qb %>% 
   mutate(name = paste(substr(player,1,1),str_extract(player, '[^ ]+$'),sep = "."), 
          cat = paste0(name, team))
+
+#load pbp data for player ids
+pbp <- nflreadr::load_pbp(2021) %>% 
+  dplyr::filter(season_type == "REG") %>%
+  dplyr::filter(!is.na(posteam) & (rush == 1 | pass == 1))
 
 #load pbp data for player ids
 pbp_qbs <- pbp %>%
@@ -281,7 +227,7 @@ pbp_qbs <- pbp %>%
 #join plot_rb with pbp_rbs for ids and stats
 plot_qb_pbp <- plot_qb %>% 
   left_join(pbp_qbs, by=c("cat")) %>% 
-  drop_na()
+  mutate(btt_twp = round(btt_rate / twp_rate, digits = 1)) #%>% drop_na() 
 
 #qb plot
 plot_qb_pbp %>% 
@@ -297,3 +243,81 @@ plot_qb_pbp %>%
     caption = "2021 OT Grade based on starting LT and RT on 2022 ESPN Depth Chart.",
     y = "QB Passing Grade"
   )
+
+# 5.0 rb eda ---------------------------------------------------------
+
+#join rb and iol dfs
+rb_team <- rb1 %>% 
+  left_join(iol_team, by=c("team"))
+
+#load rb data
+pff_rb <- read.csv("./Training_Data/position_groups/rbs.csv") %>% 
+  filter(year == max(year) & week == max(week))
+
+#manually add in missing data
+plot_rb[which(plot_rb=="Breece Hall",arr.ind = T)[1],19] <- 88.8
+plot_rb[which(plot_rb=="J.K. Dobbins",arr.ind = T)[1],19] <- 77.8
+plot_rb[which(plot_rb=="Travis Etienne Jr.",arr.ind = T)[1],19] <- 86.9
+plot_rb[which(plot_rb=="Cam Akers",arr.ind = T)[1],19] <- 45.5
+plot_rb[which(plot_rb=="Dameon Pierce",arr.ind = T)[1],19] <- 83.4
+
+#sort for elu
+#The PFF "Elusive Rating" distills the success and impact of a runner with the ball independently of the blocking in front of him by looking at how hard he was to bring down.
+pff_rb_select <- pff_rb %>% 
+  select(player, attempts, player_game_count, designed_yards, elusive_rating)
+
+#left join rb_team with pff_rb_select
+plot_rb <- rb_team %>% 
+  left_join(pff_rb_select, by=c("player")) 
+
+#change player full name in pff df to pbp name format
+plot_rb <- plot_rb %>% 
+  mutate(name = paste(substr(player,1,1),str_extract(player, '[^ ]+$'),sep = "."), 
+         cat = paste0(name, team)) 
+
+#filter pbp data for rbs
+pbp_rbs <- pbp %>%
+  filter(rush == 1) %>%
+  filter(down %in% 1:4) %>%
+  group_by(id) %>%
+  summarise(
+    name = first(name),
+    team = last(posteam),
+    plays = n(),
+    rushing_yards = sum(rushing_yards, na.rm = T),
+    rush_att = sum(rush_attempt, na.rm = T)
+  ) %>% 
+  arrange(-rushing_yards) %>% 
+  mutate(cat = paste0(name, team))
+
+#join plot_rb with pbp_rbs for ids and stats
+plot_rb_pbp <- plot_rb %>% 
+  left_join(pbp_rbs, by=c("cat")) #%>% drop_na()
+
+#rb plot
+plot_rb_pbp %>% 
+  ggplot(aes(x = rblk, y = elusive_rating)) +
+  geom_vline(xintercept = mean(plot_rb_pbp$rblk), color="red",linetype="dashed", alpha=0.5) +
+  geom_hline(yintercept = mean(plot_rb_pbp$elusive_rating), color="red",linetype="dashed", alpha=0.5) +
+  #geom_nfl_logos(aes(team_abbr=team.x), width=0.065, alpha=0.7) +
+  geom_nfl_headshots(aes(player_gsis = id), width = 0.075, vjust = 0.45) +
+  geom_label_repel(aes(label = player)) +
+  xlab("Avg IOL 2021 RBLK Grades") +
+  labs(
+    title = "2022 RB Review",
+    caption = "2021 IOL Grade based on starting LG, C, RG on 2022 ESPN Depth Chart. \n 
+    The PFF Elusive Rating distills the success and impact of a runner with the ball independently of the blocking in front of him by looking at how hard he was to bring down.",
+    y = "Elusiveness Rating"
+  )
+
+
+# 6.0 wr eda --------------------------------------------------------------
+
+
+
+# 7.0 te eda --------------------------------------------------------------
+
+
+# 8.0 def eda -------------------------------------------------------------
+
+

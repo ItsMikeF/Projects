@@ -15,12 +15,15 @@ suppressMessages({
 ourlads_urls <- read.csv("./data/ourlads_urls.csv") %>% 
   mutate(url = paste("https://www.ourlads.com/ncaa-football-depth-charts/depth-chart",team, key, sep = "/"))
 
+url <- ourlads_urls$url
+
 #start timer
 tic(msg = "Scrape all 112 depth charts")
 
 #combine all depth charts to a list
 depth_charts <- url %>% 
   map(function(url){
+    
     #define all values
     css1 <- "td:nth-child(3) a" #starters
     css2 <- "td:nth-child(5) a" #second strings
@@ -57,9 +60,11 @@ depth_charts <- url %>%
     lads_depth_chart <- cbind(pos, player1, player2)
   })
 
-depth_charts <- setNames(depth_charts, ourlads_urls$team[1:4])
+depth_charts <- setNames(depth_charts, ourlads_urls$team)
 
 toc()
+
+depth_charts$`central-florida`
 
 ###scrape one team for testing 
 {

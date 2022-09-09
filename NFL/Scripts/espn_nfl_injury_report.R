@@ -1,11 +1,12 @@
 #lets scrape the nfl injury report
+#run this script 1st
 
 #load packages
 suppressMessages({
   library(tidyverse) #ggplot2 dplyr tidyr readr stringr forcats purrr tibble
   library(nflverse) #nflfastr nflseedr nfl4th nflreadr nflplotr
   library(rvest) #easily harvest (scrape) web pages
-  library(janitor) #simple little tools for examining and cleaning dirty data
+  library(janitor) #simplea little tools for examining and cleaning dirty data
   library(ggrepel) #automatically position non-overlapping text labels with ggplot2
   library(tictoc) #Functions for Timing R Scripts, as Well as Implementations of Stack and List Structures
   library(gt) #Easily Create Presentation-Ready Display Tables

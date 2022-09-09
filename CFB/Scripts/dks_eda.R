@@ -17,29 +17,31 @@ cfb_teams_merge <- cfb_teams %>%
   mutate(school_mascot = paste(school, mascot))
 
 #read csv
-week <- 1
-dks <- read.csv(glue("./contests/2022_w{week}_sat/DKSalaries.csv"))
+week <- 2
+dks <- read.csv(glue("./contests/2022_w{week}/DKSalaries.csv"))
 
+#merge with team abbrev
 dks_merge <- dks %>% 
   left_join(cfb_teams_merge, by=c("TeamAbbrev"="abbreviation"))
 
+#load cfb schools
+cfb_schools <- read.csv("./data/cfb_schools.csv")
+
+dks_merge <- dks %>% 
+  left_join(cfb_schools, by=c("TeamAbbrev"="Abbrev"))
+
 #add dk odds
 dks_merge <- dks_merge %>% 
-  left_join(dk_odds, by=c("school"="teams"))
+  left_join(dk_odds, by=c("draftkings"="teams"))
 
 #slate eda
 teams <- unique(dks$TeamAbbrev)
 games <- length(teams)/2
 print(glue("{length(teams)/2} game slate"))
 
-#view the odds
-dk_odds_slate <- dk_odds %>% 
-  slice_head(n=(games*2)) %>% 
-  view(title = "Slate Odds")
-
 #qbs
 qbs <- dks_merge %>% filter(Position=="QB") %>% 
-  left_join(read.csv(glue("./contests/2022_w{week}_sat/passing_summary.csv")), 
+  left_join(read.csv(glue("./contests/2022_w{week}/passing_summary.csv")), 
                           by=c("Name"="player"))
 
 qbs_select <- qbs %>% 
@@ -51,7 +53,7 @@ qbs_select <- qbs %>%
 
 #rbs
 rbs <- dks_merge %>% filter(Position=="RB") %>% 
-  left_join(read.csv(glue("./contests/2022_w{week}_sat/rushing_summary.csv")), 
+  left_join(read.csv(glue("./contests/2022_w{week}/rushing_summary.csv")), 
             by=c("Name"="player"))
 
 rbs_select <- rbs %>% 
@@ -72,7 +74,7 @@ rbs_select <- rbs %>%
 
 #wrs
 wrs <- dks_merge %>% filter(Position=="WR") %>% 
-  left_join(read.csv(glue("./contests/2022_w{week}_sat/receiving_summary.csv")), 
+  left_join(read.csv(glue("./contests/2022_w{week}/receiving_summary.csv")), 
             by=c("Name"="player"))
 wrs %>% 
   select(Name, team_name, lines, totals, Salary, pass_plays, grades_offense, yprr) %>% 

@@ -21,9 +21,9 @@ teams <- html_text(html_elements(webpage, css1))
 lines <- html_text(html_elements(webpage, css2)) %>% as.numeric()
 totals<- html_text(html_elements(webpage, css3)) %>% as.numeric()
 
-dk_odds <- as.data.frame(cbind(teams, lines, totals))
-dk_odds$lines <- as.numeric(dk_odds$lines)
-dk_odds$totals <- as.numeric(dk_odds$totals)
+dk_odds <- as.data.frame(cbind(teams, lines, totals)) %>% 
+  mutate(lines = as.numeric(lines),
+         totals = as.numeric(totals))
 
 #view the odds
 dk_odds_slate <- dk_odds %>% 

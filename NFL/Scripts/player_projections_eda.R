@@ -1,4 +1,5 @@
 #lets look at player projections
+#run this script 3rd
 
 #load packages
 suppressMessages({
@@ -32,7 +33,12 @@ projections <- projections_pff %>%
 #filter by the 6 positions
 pos <- unique(projections$pos)
 
-qbs <- projections %>% filter(pos == "qb")
+#create dataframes for drafting
+#create qb dataframe
+qbs <- projections %>% filter(pos == "qb") %>% 
+  left_join(plot_qb_pbp, by=c("playerName"="player")) %>% 
+  select(playerName, teamName, adp, avg, pff, underdog, grades_pass, btt_twp, tps_pbe, ttt_run_grade, avg_depth_of_target, avg_time_to_throw, ttt_run_grade)
+
 rbs <- projections %>% filter(pos == "rb") 
 wrs <- projections %>% filter(pos == "wr")
 tes <- projections %>% filter(pos == "te")
@@ -40,7 +46,6 @@ tes <- projections %>% filter(pos == "te")
 #sleeper only
 #ks <- projections %>% filter(pos == "k") 
 #dst <- projections %>% filter(pos == "dst")
-
 
 # 2.0 picks -------------------------------------------------------------------
 
@@ -62,7 +67,7 @@ draft_positions <- function(i) {
   picks <<- picks[picks %in% 1:(league_size*rounds)]
 }
 
-draft_positions(1)
+draft_positions(2)
 picks
 draft_picks <- projections[picks,]
 draft_picks
