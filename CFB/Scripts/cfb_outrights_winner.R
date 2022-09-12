@@ -60,3 +60,25 @@ cfb_odds_logos %>%
         legend.position = "none", 
         axis.title.x = element_blank(), 
         axis.text.x = element_text(face="bold"))
+
+#need to figure out how to get the team logos on the x axis
+#plot top 10 teams
+cfb_odds_logos %>% 
+  slice_head(n=10) %>% 
+  ggplot(aes(x=reorder(teams,-implied), y=implied)) +
+  geom_col(aes(color=color, fill=alt_color)) +
+  geom_text(aes(label=implied), position = position_dodge(width = 0.9)) +
+  scale_x_discrete(name = NULL,
+                   labels = labels) +
+  geom_text_repel(aes(label=implied)) +
+  geom_image(aes(image=logo)) +
+  labs(
+    title = "Top 25 2022/23 CFB Winner Odds",
+    y = "Implied Odds",
+    caption = "Odds from DraftKings Sportsbook"
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(plot.title = element_text(face="bold"),
+        legend.position = "none", 
+        axis.title.x = element_blank(), 
+        axis.text.x = element_markdown())

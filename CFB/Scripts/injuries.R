@@ -1,4 +1,4 @@
-#get cfb injuries
+#get cfb injuries from covers.com
 
 #load packages
 suppressMessages({
@@ -11,11 +11,14 @@ suppressMessages({
   library(tictoc) #functions for timing r scripts
 })
 
-#define values
-url <- "https://www.covers.com/sport/football/ncaaf/injuries"
-css1 <- ".covers-CoversMatchups-Table a" #players
+injury_report <- function(url) {
+  css1 <- ".covers-CoversMatchups-Table a" #players
+  webpage <- read_html(url)
+  
+  injuries <- html_text(html_elements(webpage, css1)) %>% as.character() %>% 
+    str_replace_all("[\r\n]" , "")
+  injuries <- gsub(" ","",injuries)
+  injuries <<- injuries[-c(which(injuries == ""))]
+}
 
-#scrape the page
-webpage <- read_html(url)
-
-injuries <- html_text(html_elements(webpage, css1))
+injury_report("https://www.covers.com/sport/football/ncaaf/injuries")

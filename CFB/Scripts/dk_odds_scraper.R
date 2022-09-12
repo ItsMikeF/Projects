@@ -10,20 +10,23 @@ suppressMessages({
   library(ggimage) #use image in ggplot2
 })
 
-url <- "https://sportsbook.draftkings.com/leagues/football/ncaaf"
-webpage <- read_html(url)
+dk_scraper <- function(url) {
+  webpage <- read_html(url)
+  
+  css1 <- ".event-cell__name-text" #teams
+  css2 <- ".no-label .sportsbook-outcome-cell__line" #lines
+  css3 <- "span+ .sportsbook-outcome-cell__line" #totals
+  
+  teams <- html_text(html_elements(webpage, css1))
+  lines <- html_text(html_elements(webpage, css2)) %>% as.numeric()
+  totals<- html_text(html_elements(webpage, css3)) %>% as.numeric()
+  
+  dk_odds <<- as.data.frame(cbind(teams, lines, totals)) %>% 
+    mutate(lines = as.numeric(lines),
+           totals = as.numeric(totals))
+}
 
-css1 <- ".event-cell__name-text" #teams
-css2 <- ".no-label .sportsbook-outcome-cell__line" #lines
-css3 <- "span+ .sportsbook-outcome-cell__line" #totals
-
-teams <- html_text(html_elements(webpage, css1))
-lines <- html_text(html_elements(webpage, css2)) %>% as.numeric()
-totals<- html_text(html_elements(webpage, css3)) %>% as.numeric()
-
-dk_odds <- as.data.frame(cbind(teams, lines, totals)) %>% 
-  mutate(lines = as.numeric(lines),
-         totals = as.numeric(totals))
+dk_scraper("https://sportsbook.draftkings.com/leagues/football/ncaaf")
 
 #view the odds
 dk_odds_slate <- dk_odds %>% 
