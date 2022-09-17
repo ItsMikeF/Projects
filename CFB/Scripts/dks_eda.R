@@ -38,6 +38,16 @@ dk_scraper <- function(url) {
 
 dk_scraper("https://sportsbook.draftkings.com/leagues/football/ncaaf")
 
+
+# 1.1 Odds change ---------------------------------------------------------
+
+list.files(path = "./contests/2022_w3/odds/")
+length(list.files(path = "./contests/2022_w3/odds/"))
+
+test <- read.csv(paste0("./contests/2022_w3/odds/",list.files(path = "./contests/2022_w3/odds/")[1])) %>% 
+  left_join(read.csv(paste0("./contests/2022_w3/odds/",list.files(path = "./contests/2022_w3/odds/")[8])), by=c("teams")) %>% 
+  mutate(diff = lines.y-lines.x)
+
 # 2.0 Scrape cfb injuries -------------------------------------------------
 
 injury_report <- function(url) {
