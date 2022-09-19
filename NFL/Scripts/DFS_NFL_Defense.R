@@ -3,11 +3,11 @@ library(nflfastR) #functions to efficiently access NFL pbp data
 library(tidyverse) #metapackage
 library(ggrepel) #automatically position non-overlapping text labels with ggplot2
 
-# defense epa table -------------------------------------------------------
-year <- 2021
-nfl_2021 <- load_pbp(year)
+# 1.0 defense epa table -------------------------------------------------------
+year <- 2022
+nfl_2022 <- load_pbp(year)
 
-nfl_2021_def_pass <- nfl_2021 %>% 
+nfl_2022_def_pass <- nfl_2022 %>% 
   filter(pass == 1 &
            wp > .20 &
            wp < .80 &
@@ -17,12 +17,12 @@ nfl_2021_def_pass <- nfl_2021 %>%
             n_plays = n()) %>% 
   arrange(def_pass_epa)
 
-nfl_2021_def_pass$def_pass_epa_rank <- round(rank(nfl_2021_def_pass$def_pass_epa), digits = 0)
+nfl_2022_def_pass$def_pass_epa_rank <- round(rank(nfl_2022_def_pass$def_pass_epa), digits = 0)
 
-nfl_2021_def_pass$def_pass_epa_multiplier <- round(nfl_2021_def_pass$def_pass_epa / mean(nfl_2021_def_pass$def_pass_epa), digits = 2)
-nfl_2021_def_pass$def_pass_epa_sd <- round((nfl_2021_def_pass$def_pass_epa - weighted.mean(nfl_2021_def_pass$def_pass_epa, nfl_2021_def_pass$n_plays, na.rm=T)) / sd(nfl_2021_def_pass$def_pass_epa, na.rm = T), digits = 2)
+nfl_2022_def_pass$def_pass_epa_multiplier <- round(nfl_2022_def_pass$def_pass_epa / mean(nfl_2022_def_pass$def_pass_epa), digits = 2)
+nfl_2022_def_pass$def_pass_epa_sd <- round((nfl_2022_def_pass$def_pass_epa - weighted.mean(nfl_2022_def_pass$def_pass_epa, nfl_2022_def_pass$n_plays, na.rm=T)) / sd(nfl_2022_def_pass$def_pass_epa, na.rm = T), digits = 2)
 
-nfl_2021_def_rush <- nfl_2021 %>% 
+nfl_2022_def_rush <- nfl_2022 %>% 
   filter(rush == 1 &
            wp > .20 &
            wp < .80 &
@@ -32,33 +32,33 @@ nfl_2021_def_rush <- nfl_2021 %>%
             n_plays = n()) %>% 
   arrange(def_rush_epa)
 
-nfl_2021_def_rush$def_rush_epa_rank <- round(rank(nfl_2021_def_rush$def_rush_epa), digits = 0)
+nfl_2022_def_rush$def_rush_epa_rank <- round(rank(nfl_2022_def_rush$def_rush_epa), digits = 0)
 
-nfl_2021_def_rush$def_rush_epa_multiplier <- round(nfl_2021_def_rush$def_rush_epa / mean(nfl_2021_def_rush$def_rush_epa), digits = 2)
-nfl_2021_def_rush$def_rush_epa_sd <- round((nfl_2021_def_rush$def_rush_epa - weighted.mean(nfl_2021_def_rush$def_rush_epa, nfl_2021_def_rush$n_plays, na.rm=T)) / sd(nfl_2021_def_rush$def_rush_epa, na.rm = T), digits = 2)
+nfl_2022_def_rush$def_rush_epa_multiplier <- round(nfl_2022_def_rush$def_rush_epa / mean(nfl_2022_def_rush$def_rush_epa), digits = 2)
+nfl_2022_def_rush$def_rush_epa_sd <- round((nfl_2022_def_rush$def_rush_epa - weighted.mean(nfl_2022_def_rush$def_rush_epa, nfl_2022_def_rush$n_plays, na.rm=T)) / sd(nfl_2022_def_rush$def_rush_epa, na.rm = T), digits = 2)
 
-nfl_2021_def <- nfl_2021_def_pass %>% 
-  left_join(nfl_2021_def_rush, by = c('defteam')) 
+nfl_2022_def <- nfl_2022_def_pass %>% 
+  left_join(nfl_2022_def_rush, by = c('defteam')) 
 
-nfl_2021_def$total_plays <- nfl_2021_def$n_plays.x + nfl_2021_def$n_plays.y
+nfl_2022_def$total_plays <- nfl_2022_def$n_plays.x + nfl_2022_def$n_plays.y
 
-nfl_2021_def <- replace(nfl_2021_def, nfl_2021_def == 'LA', 'LAR')
+nfl_2022_def <- replace(nfl_2022_def, nfl_2022_def == 'LA', 'LAR')
 
-# defense epa plot --------------------------------------------------------
-nfl_2021_def <- nfl_2021_def %>% 
+# 1.1 defense epa plot --------------------------------------------------------
+nfl_2022_def <- nfl_2022_def %>% 
   left_join(teams_colors_logos, by = c('defteam' = 'team_abbr'))
 
-nfl_2021_def %>%
+nfl_2022_def %>%
   ggplot(aes(x = def_pass_epa, y = def_rush_epa)) +
-  geom_hline(yintercept = mean(nfl_2021_def$def_rush_epa), color = "red", linetype = "dashed", alpha=0.5) +
-  geom_vline(xintercept =  mean(nfl_2021_def$def_pass_epa), color = "red", linetype = "dashed", alpha=0.5) +
-  geom_point(color = nfl_2021_def$team_color, cex = nfl_2021_def$total_plays / (0.1*max(nfl_2021_def$total_plays)), alpha = .6) +
-  #geom_image(aes(image = team_logo_espn), size = nfl_2021_def$total_plays / (0.1*max(nfl_2021_def$total_plays)), asp = 16 / 9) +
+  geom_hline(yintercept = mean(nfl_2022_def$def_rush_epa), color = "red", linetype = "dashed", alpha=0.5) +
+  geom_vline(xintercept =  mean(nfl_2022_def$def_pass_epa), color = "red", linetype = "dashed", alpha=0.5) +
+  geom_point(color = nfl_2022_def$team_color, cex = nfl_2022_def$total_plays / (0.1*max(nfl_2022_def$total_plays)), alpha = .6) +
+  #geom_image(aes(image = team_logo_espn), size = nfl_2022_def$total_plays / (0.1*max(nfl_2022_def$total_plays)), asp = 16 / 9) +
   geom_text_repel(aes(label=defteam)) +
   scale_y_discrete(limits = rev) +
   labs(x = "Pass EPA Allowed",
        y = "Rush EPA Allowed",
-       title = paste("Def EPA Allowed, NFL Weeks 1-",(max(nfl_2021$week))),
+       title = paste("Def EPA Allowed, NFL Weeks 1-",(max(nfl_2022$week))),
        caption = "0.2 < wp < 0.8, half_secs > 120
        Twitter: Its_MikeF | Data: @nflfastR") +
   theme_bw() +
@@ -66,11 +66,11 @@ nfl_2021_def %>%
   scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
   scale_x_continuous(breaks = scales::pretty_breaks(n = 10))
 
-nfl_2021_def <- replace(nfl_2021_def, nfl_2021_def == 'JAX', 'JAC')
+nfl_2022_def <- replace(nfl_2022_def, nfl_2022_def == 'JAX', 'JAC')
 
 
-# offense epa table -------------------------------------------------------
-nfl_2021_off_pass <- nfl_2021 %>% 
+# 2.0 offense epa table -------------------------------------------------------
+nfl_2022_off_pass <- nfl_2022 %>% 
   filter(pass == 1 &
            wp > .20 &
            wp < .80 &
@@ -80,12 +80,12 @@ nfl_2021_off_pass <- nfl_2021 %>%
             n_plays = n()) %>% 
   arrange(off_pass_epa)
 
-nfl_2021_off_pass$off_pass_epa_rank <- round(rank(-nfl_2021_off_pass$off_pass_epa), digits = 0)
+nfl_2022_off_pass$off_pass_epa_rank <- round(rank(-nfl_2022_off_pass$off_pass_epa), digits = 0)
 
-nfl_2021_off_pass$off_pass_epa_multiplier <- round(nfl_2021_off_pass$off_pass_epa / mean(nfl_2021_off_pass$off_pass_epa), digits = 2)
-nfl_2021_off_pass$off_pass_epa_sd <- round((nfl_2021_off_pass$off_pass_epa - weighted.mean(nfl_2021_off_pass$off_pass_epa, nfl_2021_off_pass$n_plays, na.rm=T)) / sd(nfl_2021_off_pass$off_pass_epa, na.rm = T), digits = 2)
+nfl_2022_off_pass$off_pass_epa_multiplier <- round(nfl_2022_off_pass$off_pass_epa / mean(nfl_2022_off_pass$off_pass_epa), digits = 2)
+nfl_2022_off_pass$off_pass_epa_sd <- round((nfl_2022_off_pass$off_pass_epa - weighted.mean(nfl_2022_off_pass$off_pass_epa, nfl_2022_off_pass$n_plays, na.rm=T)) / sd(nfl_2022_off_pass$off_pass_epa, na.rm = T), digits = 2)
 
-nfl_2021_off_rush <- nfl_2021 %>% 
+nfl_2022_off_rush <- nfl_2022 %>% 
   filter(rush == 1 &
            wp > .20 &
            wp < .80 &
@@ -95,34 +95,34 @@ nfl_2021_off_rush <- nfl_2021 %>%
             n_plays = n()) %>% 
   arrange(off_rush_epa)
 
-nfl_2021_off_rush$off_rush_epa_rank <- round(rank(-nfl_2021_off_rush$off_rush_epa), digits = 0)
+nfl_2022_off_rush$off_rush_epa_rank <- round(rank(-nfl_2022_off_rush$off_rush_epa), digits = 0)
 
-nfl_2021_off_rush$off_rush_epa_multiplier <- round(nfl_2021_off_rush$off_rush_epa / mean(nfl_2021_off_rush$off_rush_epa), digits = 2)
-nfl_2021_off_rush$off_rush_epa_sd <- round((nfl_2021_off_rush$off_rush_epa - weighted.mean(nfl_2021_off_rush$off_rush_epa, nfl_2021_off_rush$n_plays, na.rm=T)) / sd(nfl_2021_off_rush$off_rush_epa, na.rm = T), digits = 2)
+nfl_2022_off_rush$off_rush_epa_multiplier <- round(nfl_2022_off_rush$off_rush_epa / mean(nfl_2022_off_rush$off_rush_epa), digits = 2)
+nfl_2022_off_rush$off_rush_epa_sd <- round((nfl_2022_off_rush$off_rush_epa - weighted.mean(nfl_2022_off_rush$off_rush_epa, nfl_2022_off_rush$n_plays, na.rm=T)) / sd(nfl_2022_off_rush$off_rush_epa, na.rm = T), digits = 2)
 
-nfl_2021_off <- nfl_2021_off_pass %>% 
-  left_join(nfl_2021_off_rush, by = c('posteam')) 
+nfl_2022_off <- nfl_2022_off_pass %>% 
+  left_join(nfl_2022_off_rush, by = c('posteam')) 
 
-nfl_2021_off$total_plays <- nfl_2021_off$n_plays.x + nfl_2021_off$n_plays.y
+nfl_2022_off$total_plays <- nfl_2022_off$n_plays.x + nfl_2022_off$n_plays.y
 
-nfl_2021_off <- replace(nfl_2021_off, nfl_2021_off == 'LA', 'LAR')
+nfl_2022_off <- replace(nfl_2022_off, nfl_2022_off == 'LA', 'LAR')
 
 
-# offense epa plot --------------------------------------------------------
-nfl_2021_off <- nfl_2021_off %>% 
+# 2.1 offense epa plot --------------------------------------------------------
+nfl_2022_off <- nfl_2022_off %>% 
   left_join(teams_colors_logos, by = c('posteam' = 'team_abbr'))
 
-nfl_2021_off %>%
+nfl_2022_off %>%
   ggplot(aes(x = off_pass_epa, y = off_rush_epa)) +
-  geom_hline(yintercept = mean(nfl_2021_off$off_rush_epa), color = "red", linetype = "dashed", alpha=0.5) +
-  geom_vline(xintercept =  mean(nfl_2021_off$off_pass_epa), color = "red", linetype = "dashed", alpha=0.5) +
-  geom_point(color = nfl_2021_off$team_color, cex = nfl_2021_off$total_plays / (0.1*max(nfl_2021_off$total_plays)), alpha = .6) +
-  #geom_image(aes(image = team_logo_espn), size = nfl_2021_off$total_plays / (0.1*max(nfl_2021_off$total_plays)), asp = 16 / 9) +
+  geom_hline(yintercept = mean(nfl_2022_off$off_rush_epa), color = "red", linetype = "dashed", alpha=0.5) +
+  geom_vline(xintercept =  mean(nfl_2022_off$off_pass_epa), color = "red", linetype = "dashed", alpha=0.5) +
+  geom_point(color = nfl_2022_off$team_color, cex = nfl_2022_off$total_plays / (0.1*max(nfl_2022_off$total_plays)), alpha = .6) +
+  #geom_image(aes(image = team_logo_espn), size = nfl_2022_off$total_plays / (0.1*max(nfl_2022_off$total_plays)), asp = 16 / 9) +
   geom_text_repel(aes(label=posteam)) +
   scale_y_discrete(limits = rev) +
   labs(x = "Pass EPA",
        y = "Rush EPA",
-       title = paste("OFF EPA, NFL Weeks 1-",(max(nfl_2021$week))),
+       title = paste("OFF EPA, NFL Weeks 1-",(max(nfl_2022$week))),
        caption = "0.2 < wp < 0.8, half_secs > 120
        Twitter: Its_MikeF | Data: @nflfastR") +
   theme_bw() +
@@ -130,11 +130,11 @@ nfl_2021_off %>%
   scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
   scale_x_continuous(breaks = scales::pretty_breaks(n = 10))
 
-nfl_2021_off <- replace(nfl_2021_off, nfl_2021_off == 'JAX', 'JAC')
+nfl_2022_off <- replace(nfl_2022_off, nfl_2022_off == 'JAX', 'JAC')
 
 
-# defense pff table -------------------------------------------------------
-nfl_pff_def <- read.csv("defense_summary.csv")
+# 3.0 defense pff table -------------------------------------------------------
+nfl_pff_def <- read.csv("./contests/2022_w2/pff/defense_summary.csv")
 
 nfl_pff_def_table <- nfl_pff_def %>%
   group_by(team_name) %>%
@@ -170,7 +170,7 @@ nfl_pff_def_table$prsh_sd <- round((nfl_pff_def_table$prsh - mean(nfl_pff_def_ta
 nfl_pff_def_table$cov_sd <- round((nfl_pff_def_table$cov - mean(nfl_pff_def_table$cov)) / sd(nfl_pff_def_table$cov), digits = 2)
 
 # defense coverage scheme -------------------------------------------------
-nfl_pff_defense_coverage_scheme <- read.csv("defense_coverage_scheme.csv")
+nfl_pff_defense_coverage_scheme <- read.csv("./contests/2022_w2/pff/defense_coverage_scheme.csv")
 
 nfl_pff_defense_coverage_scheme <- replace(nfl_pff_defense_coverage_scheme, nfl_pff_defense_coverage_scheme == 'ARZ', 'ARI')
 nfl_pff_defense_coverage_scheme <- replace(nfl_pff_defense_coverage_scheme, nfl_pff_defense_coverage_scheme == 'BLT', 'BAL')
@@ -207,9 +207,9 @@ defense_coverage_scheme$def_zone_grade_rank <- round(rank(-defense_coverage_sche
 defense_coverage_scheme$total_cov_snaps <- defense_coverage_scheme$man_snaps + defense_coverage_scheme$zone_snaps
 
 
-# defense blitz  ----------------------------------------------------------
-#https://www.pro-football-reference.com/years/2021/opp.htm
-sportsref_download <- read.csv("sportsref_download.csv")
+# 3.1 defense blitz  ----------------------------------------------------------
+#https://www.pro-football-reference.com/years/2022/opp.htm
+sportsref_download <- read.csv("./contests/2022_w2/sportsref_download.csv")
 
 sportsref_download$Bltz. <- round(as.numeric(sub("%","",sportsref_download$Bltz.))/100, digits = 3)
 sportsref_download$bltz_rank <- round(rank(-sportsref_download$Bltz.), digits = 0)

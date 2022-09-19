@@ -38,7 +38,6 @@ dk_scraper <- function(url) {
 
 dk_scraper("https://sportsbook.draftkings.com/leagues/football/ncaaf")
 
-
 # 1.1 Odds change ---------------------------------------------------------
 
 list.files(path = "./contests/2022_w3/odds/")
@@ -83,7 +82,7 @@ slate <- function(week) {
     select(dk_abbrev, draftkings)
   
   #remove games from next week
-  dk_odds <- dk_odds[c(1:158),]
+  dk_odds <- dk_odds[c(1:70),]
   
   #filter dk_odds to the slate
   dk_odds <- dk_odds[which(dk_odds$teams %in% slate_schools$draftkings),]
