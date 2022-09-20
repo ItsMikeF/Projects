@@ -18,7 +18,7 @@ names(pbp)
 pbp <- load_pbp(2021)
 names(pbp)
 
-pbp %>% 
+xg_leaders <- pbp %>% 
   filter(event_type %in% c("SHOT", "MISSED_SHOT", "GOAL")) %>% 
   group_by(player = event_player_1_name, id= event_player_1_id) %>% 
   summarize(
@@ -27,5 +27,7 @@ pbp %>%
     xg = round(sum(xg, na.rm = T),1), 
     .groups = "drop"
   ) %>% 
-  arrange(-xg) %>% 
-  slice_head(n=10)
+  arrange(-xg) #%>% slice_head(n=10) 
+
+xg_leaders$player <- str_replace(xg_leaders$player, "[.]"," ")
+

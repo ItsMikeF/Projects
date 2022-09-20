@@ -1,16 +1,20 @@
 #lets analyze the dfs slate
 
 #load packages
-library(nflfastR)
-library(tidyverse)
-library(ggrepel)
+suppressMessages({
+  library(nflfastR) #nflfastr nflseedr nflplotr
+  library(tidyverse) #ggplot2 dplyr tibble tidyr purrr forecats 
+  library(ggrepel) #automatically position non-overlapping text labels
+  library(glue) #interpreted literal strings
+})
 
 # 1.0 load and clean files ------------------------------------------------
 
+week <- 2
 
 # 1.1 load dk slate -------------------------------------------------------
 
-nfl_salaries <- read.csv("./contests/2022_w2/DKSalaries.csv")
+nfl_salaries <- read.csv(glue("./contests/2022_w{week}/DKSalaries.csv"))
 nfl_salaries <- replace(nfl_salaries, nfl_salaries == 'Eli Mitchell', 'Elijah Mitchell')
 
 
@@ -18,19 +22,16 @@ nfl_salaries <- replace(nfl_salaries, nfl_salaries == 'Eli Mitchell', 'Elijah Mi
 
 nfl_pff_dk_own <- read.csv("./contests/2022_w2/pff/dk-ownership.csv")
 
-
 # 1.3 load projections ----------------------------------------------------
 
 nfl_pff_projections <- read.csv("./contests/2022_w2/pff/projections.csv")
 nfl_pff_projections <- replace(nfl_pff_projections, nfl_pff_projections =='D.K. Metcalf','DK Metcalf')
-
 
 # 1.4 load qb data --------------------------------------------------------
 
 nfl_pff_qb <- read.csv("./contests/2022_w2/pff/passing_summary.csv")
 nfl_pff_passing_concept <- read.csv("./contests/2022_w2/pff/passing_concept.csv")
 nfl_pff_passing_pressure_blitz <- read.csv("./contests/2022_w2/pff/passing_pressure.csv")
-
 
 # 1.5 load wr data --------------------------------------------------------
 
@@ -202,7 +203,7 @@ nfl_qb_chart %>%
   geom_text_repel(aes(label=name_salary)) +
   labs(x = "Big Time Throw %",
        y = "Turnover Worthy Play %",
-       title = paste("QBs, NFL Weeks 1-",max(nfl_2021$week)),
+       title = paste("QBs, NFL Weeks 1-",max(nfl_2022$week)),
        caption = "Twitter: Its_MikeF | Data: PFF") +
   theme_bw() +
   theme(plot.title = element_text(size = 14, hjust = 0.5, face = "bold")) +
@@ -219,7 +220,7 @@ nfl_qb_chart %>%
   geom_text_repel(aes(label=name_salary_own)) +
   labs(x = "sum_sd",
        y = "fantasyPoints",
-       title = paste("QBs, NFL Weeks 1-",max(nfl_2021$week)),
+       title = paste("QBs, NFL Weeks 1-",max(nfl_2022$week)),
        caption = "Twitter: Its_MikeF | Data: PFF") +
   theme_bw() +
   theme(plot.title = element_text(size = 14, hjust = 0.5, face = "bold")) +
@@ -299,7 +300,29 @@ nfl_rb %>%
   scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
   scale_x_continuous(breaks = scales::pretty_breaks(n = 10))
 
-# 2.2 wr ------------------------------------------------------------------
+# 2.3 te ------------------------------------------------------------------
+
+nfl_te <- nfl_pff_chart_te_matchup %>% 
+  left_join(nfl_salaries, by = c('offPlayer' = 'Name')) %>% 
+  left_join(nfl_pff_dk_own, by = c('offPlayer' = 'player'))
+
+nfl_te <- nfl_te %>% 
+  select(offPlayer, 
+         TeamAbbrev,
+         Salary, 
+         ownership,
+         offYprr,
+         adv,
+         offRoutes,
+         offTr,
+         offGrade,
+         defPlayer, 
+         defGrade) %>% 
+  arrange(-offYprr) %>% 
+  drop_na() %>% 
+  view(title = "NFL TEs")
+
+# 2.4 wr ------------------------------------------------------------------
 
 nfl_wr <- nfl_salaries %>%
   left_join(nfl_pff_wr, by = c('Name' = 'player')) %>% 
@@ -386,7 +409,7 @@ nfl_reciever_salary$total_rec_salary_sd <- round((nfl_reciever_salary$total_rec_
 nfl_qb <- nfl_qb %>% 
   left_join(nfl_reciever_salary, by = c('TeamAbbrev' = 'TeamAbbrev'))
 
-# 2.3.2 wr chart ----------------------------------------------------------
+# 2.4.2 wr chart ----------------------------------------------------------
 
 nfl_wr %>%
   ggplot(aes(x = sum_sd , y = fantasyPoints)) +
@@ -397,35 +420,12 @@ nfl_wr %>%
   geom_text_repel(aes(label=name_salary_own)) +
   labs(x = "sum_sd",
        y = "fantasyPoints",
-       title = paste("WRs, NFL Weeks 1-",max(nfl_2021$week)),
+       title = paste("WRs, NFL Weeks 1-",max(nfl_2022$week)),
        caption = "Twitter: Its_MikeF | Data: PFF") +
   theme_bw() +
   theme(plot.title = element_text(size = 14, hjust = 0.5, face = "bold")) +
   scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
   scale_x_continuous(breaks = scales::pretty_breaks(n = 10))
-
-
-# 2.4 te ------------------------------------------------------------------
-
-nfl_te <- nfl_pff_chart_te_matchup %>% 
-  left_join(nfl_salaries, by = c('offPlayer' = 'Name')) %>% 
-  left_join(nfl_pff_dk_own, by = c('offPlayer' = 'player'))
-
-nfl_te <- nfl_te %>% 
-  select(offPlayer, 
-         TeamAbbrev,
-         Salary, 
-         ownership,
-         offYprr,
-         adv,
-         offRoutes,
-         offTr,
-         offGrade,
-         defPlayer, 
-         defGrade) %>% 
-  arrange(-offYprr) %>% 
-  drop_na() %>% 
-  view(title = "NFL TEs")
 
 # 2.5 defenses ------------------------------------------------------------
 
