@@ -9,6 +9,8 @@ suppressMessages({
   library(ggimage) #use image in ggplot2
   library(ggrepel) #auto position non-overlapping text labels with ggplot2
   library(ggtext) #improved text rendering support for ggplot2
+  library(fastRhockey)
+  library(hockeyR)
 })
 
 
