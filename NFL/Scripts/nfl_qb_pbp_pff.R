@@ -4,7 +4,7 @@ suppressMessages({
   library(nflverse) #functions to efficiently access NFL pbp data
   library(reshape2) #flexibly Reshape Data
   library(ggrepel) #Automatically Position Non-Overlapping Text Labels with 'ggplot2'
-  
+  library(glue) #interpreted literal strings
 })
 
 #load pbp
@@ -43,7 +43,7 @@ qb_pbp <- pbp %>%
          merge_off = paste0(posteam, year, week_minus1),
          merge_def = paste0(defteam, year, week_minus1))
 
-#load pff qb
+#load pff qb data
 qbs_pff <- read.csv("./Training_Data/position_groups/qbs.csv") 
 
 qbs_pff_test <- qbs_pff %>%
@@ -52,20 +52,20 @@ qbs_pff_test <- qbs_pff %>%
   mutate(merge = paste0(last_name, year, week)) %>% 
   filter(attempts > 10)
 
-#load pff def files
+#load pff def data
 def <- read_csv("./Training_Data/position_groups/def.csv")
 
 #sort pff def
 def_pass <- def %>% 
   group_by(team_name, year, week) %>% 
   summarise(
-    grades_defense = round(weighted.mean(grades_defense.x, snap_counts_run_defense, na.rm = T), digits = 2),
-    grades_pass_rush_defense = round(weighted.mean(grades_pass_rush_defense.x, snap_counts_run_defense, na.rm = T), digits = 2),
+    grades_defense = round(weighted.mean(grades_defense.x, snap_counts_defense, na.rm = T), digits = 2),
+    grades_pass_rush_defense = round(weighted.mean(grades_pass_rush_defense.x, snap_counts_pass_rush.x, na.rm = T), digits = 2),
     true_pass_set_grades_pass_rush_defense = round(weighted.mean(true_pass_set_grades_pass_rush_defense, true_pass_set_snap_counts_pass_rush, na.rm = T), digits = 2),
-    grades_coverage_defense = round(weighted.mean(grades_coverage_defense, snap_counts_run_defense, na.rm = T), digits = 2),
+    grades_coverage_defense = round(weighted.mean(grades_coverage_defense, snap_counts_coverage.x, na.rm = T), digits = 2),
     grades_tackle = round(weighted.mean(grades_tackle, snap_counts_defense, na.rm = T), digits = 2),
     
-    pass_rush_wins = round(weighted.mean(pass_rush_wins, snap_counts_pass_rush.y, na.rm = T), digits = 2),
+    pass_rush_wins = round(weighted.mean(pass_rush_wins, snap_counts_pass_rush.x, na.rm = T), digits = 2),
     true_pass_set_prp = round(weighted.mean(true_pass_set_prp, true_pass_set_snap_counts_pass_rush, na.rm = T), digits = 2),
     true_pass_set_pass_rush_wins = round(weighted.mean(true_pass_set_pass_rush_wins, true_pass_set_snap_counts_pass_rush, na.rm = T), digits = 2),
 
@@ -126,8 +126,7 @@ def_blitz_pos <- def_blitz_pos %>%
 
 def_blitz_pos %>% 
   filter(week==17 & year==2021) %>% 
-  arrange(-blitz) %>% 
-  view()
+  arrange(-blitz) 
 
 #pbe
 pbe <- read.csv("./Training_Data/position_groups/pbe.csv")

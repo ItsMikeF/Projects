@@ -11,7 +11,7 @@ logos <- nhl_team_logos
 teams <- espn_nhl_teams
 
 #fastRhockey
-pbp <- load_nhl_pbp(2022)
+pbp_fast <- load_nhl_pbp(2022)
 names(pbp)
 
 #hockeyR

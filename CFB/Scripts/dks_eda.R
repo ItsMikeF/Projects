@@ -13,7 +13,7 @@ suppressMessages({
   library(gt) #easiyl create presentation ready display tables
 })
 
-week <- 3
+week <- 4
 
 # 1.0 Scrape DraftKings odds ----------------------------------------------
 
@@ -40,11 +40,11 @@ dk_scraper("https://sportsbook.draftkings.com/leagues/football/ncaaf")
 
 # 1.1 Odds change ---------------------------------------------------------
 
-list.files(path = "./contests/2022_w3/odds/")
-length(list.files(path = "./contests/2022_w3/odds/"))
+list.files(path = glue("./contests/2022_w{week}/odds/"))
+a <- length(list.files(path = glue("./contests/2022_w{week}/odds/")))
 
-test <- read.csv(paste0("./contests/2022_w3/odds/",list.files(path = "./contests/2022_w3/odds/")[1])) %>% 
-  left_join(read.csv(paste0("./contests/2022_w3/odds/",list.files(path = "./contests/2022_w3/odds/")[8])), by=c("teams")) %>% 
+odds_delta <- read.csv(paste0(glue("./contests/2022_w{week}/odds/"),list.files(path = glue("./contests/2022_w{week}/odds/"))[1])) %>% 
+  left_join(read.csv(paste0(glue("./contests/2022_w{week}/odds/"),list.files(path = glue("./contests/2022_w{week}/odds/"))[2])), by=c("teams")) %>% 
   mutate(diff = lines.y-lines.x)
 
 # 2.0 Scrape cfb injuries -------------------------------------------------
@@ -111,7 +111,7 @@ slate(week)
 
 defense <- function(week) {
   #load pff def files
-  def <- read.csv(glue("./contests/2022_w{week}/defense_summary.csv"))
+  def <- read.csv(glue("./contests/2022_w{week}/pff/defense_summary.csv"))
   
   #sort pff def
   def <<- def %>% 
@@ -143,7 +143,7 @@ dks <- dks %>%
 # 5.0 Qbs  ----------------------------------------------------------------
 
 qbs <- dks %>% filter(Position=="QB") %>% 
-  left_join(read.csv(glue("./contests/2022_w{week}/passing_summary.csv")), 
+  left_join(read.csv(glue("./contests/2022_w{week}/pff/passing_summary.csv")), 
                           by=c("Name"="player"))
 
 qbs_select <- qbs %>% 
@@ -162,7 +162,7 @@ qbs_select <- qbs %>%
 # 6.0 Rbs -----------------------------------------------------------------
 
 rbs <- dks %>% filter(Position=="RB") %>% 
-  left_join(read.csv(glue("./contests/2022_w{week}/rushing_summary.csv")), 
+  left_join(read.csv(glue("./contests/2022_w{week}/pff/rushing_summary.csv")), 
             by=c("Name"="player"))
 
 rbs_select <- rbs %>% 
@@ -185,7 +185,7 @@ rbs_select <- rbs %>%
 # 7.0 Wrs -----------------------------------------------------------------
 
 wrs <- dks %>% filter(Position=="WR") %>% 
-  left_join(read.csv(glue("./contests/2022_w{week}/receiving_summary.csv")), 
+  left_join(read.csv(glue("./contests/2022_w{week}/pff/receiving_summary.csv")), 
             by=c("Name"="player"))
 wrs %>% 
   select(Name, TeamAbbrev, Salary, status, lines, totals, pass_plays, grades_offense, yprr, 
