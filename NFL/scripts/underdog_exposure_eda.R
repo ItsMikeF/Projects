@@ -33,6 +33,15 @@ exposure_adp %>%
          rel_value_per_pick = total_rel_value/total_picks)
 
 exposure_adp %>% 
+  group_by(Draft) %>% 
+  summarize(total_picks = n(),
+            total_value = sum(value), 
+            total_rel_value = sum(rel_value)) %>% 
+  mutate(value_per_pick = total_value/total_picks, 
+         rel_value_per_pick = total_rel_value/total_picks) %>% 
+  arrange(-rel_value_per_pick)
+
+exposure_adp %>% 
   select(name, Pick.Number, adp, value, rel_value, Picked.At) %>% 
   arrange(-rel_value) %>% 
   slice_head(n=10)

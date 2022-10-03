@@ -13,7 +13,7 @@ suppressMessages({
   library(gt) #easiyl create presentation ready display tables
 })
 
-week <- 5
+week <- 6
 
 # 1.0 Scrape DraftKings odds ----------------------------------------------
 
