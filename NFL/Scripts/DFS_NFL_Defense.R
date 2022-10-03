@@ -145,6 +145,8 @@ epa_off(0.2, 0.8, 120, 'no')
 
 # 3.0 defense pff table -------------------------------------------------------
 
+week = 4
+
 nfl_pff_def <- read.csv(glue("./contests/2022_w{week}/pff/defense_summary.csv"))
 
 nfl_pff_def_table <- nfl_pff_def %>%
@@ -153,12 +155,24 @@ nfl_pff_def_table <- nfl_pff_def %>%
             rdef = round(weighted.mean(grades_run_defense, snap_counts_run_defense), digits = 1),
             tack = round(weighted.mean(grades_tackle, snap_counts_defense, na.rm = TRUE), digits = 1),
             prsh = round(weighted.mean(grades_pass_rush_defense, snap_counts_pass_rush), digits = 1),
-            cov = round(weighted.mean(grades_coverage_defense, snap_counts_coverage), digits =1)) %>% 
+            cov = round(weighted.mean(grades_coverage_defense, snap_counts_coverage), digits =1))
+
+nfl_pff_def_table <- nfl_pff_def_table %>% 
   mutate(def_rank = round(rank(-def), digits = 0), 
+         def_sd = round((def - mean(def)) / sd(def, na.rm = T), digits = 2),
+         
          rdef_rank = round(rank(-nfl_pff_def_table$rdef), digits = 0), 
+         rdef_sd = round((rdef - mean(rdef)) / sd(rdef, na.rm = T), digits = 2),
+         
          tack_rank = round(rank(-nfl_pff_def_table$tack), digits = 0), 
+         tack_sd = round((tack - mean(tack)) / sd(tack, na.rm = T), digits = 2),
+         
          prsh_rank = round(rank(-nfl_pff_def_table$prsh), digits = 0), 
+         prsh_sd = round((prsh - mean(prsh)) / sd(prsh, na.rm = T), digits = 2),
+         
          cov_rank = round(rank(-nfl_pff_def_table$cov), digits = 0),
+         cov_sd = round((cov - mean(cov)) / sd(cov, na.rm = T), digits = 2),
+         
          team_name = gsub('ARZ','ARI', team_name), 
          team_name = gsub('BLT','BAL', team_name), 
          team_name = gsub('CLV','CLE', team_name), 

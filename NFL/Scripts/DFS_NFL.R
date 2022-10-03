@@ -10,7 +10,7 @@ suppressMessages({
 
 # 1.0 load and clean files ------------------------------------------------
 
-week <- 3
+week <- 4
 
 # 1.1 load dk slate -------------------------------------------------------
 
@@ -139,7 +139,7 @@ nfl_wr <- nfl_wr %>%
          advantage_sd = round((advantage - mean(advantage, na.rm=T)) / sd(advantage, na.rm = T), digits = 2), 
          man_grade_yprr_man_cov = round((man_grades_pass_route * man_yprr * man_percentage), digits = 1), 
          man_grade_yprr_man_cov_sd = round((man_grade_yprr_man_cov - mean(man_grade_yprr_man_cov, na.rm=T)) / sd(man_grade_yprr_man_cov, na.rm = T), digits = 2), 
-         targets_per_game = targets / player_game_count.x, 
+         targets_per_game = round(targets / player_game_count.x, digits = 1),
          targets_per_game_sd = round((targets_per_game - mean(targets_per_game, na.rm=T)) / sd(targets_per_game, na.rm = T), digits = 2), )
 
 nfl_wr$sum_sd <- 
@@ -207,20 +207,26 @@ nfl_reciever_salary$total_rec_salary <- rowSums(nfl_reciever_salary[,c("wr_sum_s
 
 nfl_reciever_salary$total_rec_salary_sd <- round((nfl_reciever_salary$total_rec_salary - mean(nfl_reciever_salary$total_rec_salary, na.rm=T)) / sd(nfl_reciever_salary$total_rec_salary, na.rm = T), digits = 2)
 
+nfl_wr %>% 
+  group_by(TeamAbbrev) %>% 
+  summarize(total_sum_sd = sum(sum_sd, na.rm = T)) %>% 
+  arrange(-total_sum_sd)
+
 # 2.3.2 wr chart ----------------------------------------------------------
 
 nfl_wr %>%
   ggplot(aes(x = sum_sd , y = fantasyPoints)) +
   geom_hline(yintercept = mean(nfl_wr$fantasyPoints, na.rm = T), color = "red", linetype = "dashed", alpha=0.5) +
   geom_vline(xintercept =  mean(nfl_wr$sum_sd, na.rm = T), color = "red", linetype = "dashed", alpha=0.5) +
-  geom_point(color = nfl_wr$team_color, cex = 5, alpha = .6) +
+  #geom_point(color = nfl_wr$team_color, cex = 5, alpha = .6) +
+  geom_point(cex = 5, alpha = .6) +
   geom_smooth(method = "lm") +
   geom_text_repel(aes(label=name_salary_own)) +
   labs(x = "sum_sd",
        y = "fantasyPoints",
        title = paste("WRs, NFL Weeks 1-",max(nfl_2022$week)),
        caption = "Twitter: Its_MikeF | Data: PFF") +
-  theme_bw() +
+  theme_dark() +
   theme(plot.title = element_text(size = 14, hjust = 0.5, face = "bold")) +
   scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
   scale_x_continuous(breaks = scales::pretty_breaks(n = 10))
@@ -247,12 +253,12 @@ nfl_rb <- nfl_rb %>%
          touches_game_sd = round((touches_game - mean(touches_game, na.rm=T)) / sd(touches_game, na.rm = T), digits = 2))
 
 nfl_rb$sum_sd <- round(
-  (0.20 * nfl_rb$runBlockAdv_sd) +
+    (0.10 * nfl_rb$runBlockAdv_sd) +
     (0.10 * nfl_rb$off_rush_epa_sd) -
-    (0.15 * nfl_rb$def_rush_epa_sd) - 
-    (0.15 * nfl_rb$rdef_sd) + 
+    (0.10 * nfl_rb$def_rush_epa_sd) - 
+    (0.10 * nfl_rb$rdef_sd) + 
     (0.10 * (nfl_rb$yco_attempt_sd - nfl_rb$tack_sd)) +
-    (0.20 * nfl_rb$touches_game_sd), digits = 3)
+    (0.50 * nfl_rb$touches_game_sd), digits = 3)
 
 nfl_rb %>% 
   select(Name,
@@ -284,14 +290,14 @@ nfl_rb %>%
   ggplot(aes(x = sum_sd , y = fantasyPoints)) +
   geom_hline(yintercept = mean(nfl_rb$fantasyPoints, na.rm = T), color = "red", linetype = "dashed", alpha=0.5) +
   geom_vline(xintercept =  mean(nfl_rb$sum_sd, na.rm = T), color = "red", linetype = "dashed", alpha=0.5) +
-  geom_point(color = nfl_rb$team_color.x, cex = 5, alpha = .6) +
+  geom_point(cex = 5, alpha = .6) +
   geom_smooth(method = "lm") +
   geom_text_repel(aes(label=name_salary_own)) +
   labs(x = "sum_sd",
        y = "fantasyPoints",
        title = paste("RBs, NFL Weeks 1-",max(nfl_2022$week)),
        caption = "Twitter: Its_MikeF | Data: PFF") +
-  theme_bw() +
+  theme_dark() +
   theme(plot.title = element_text(size = 14, hjust = 0.5, face = "bold")) +
   scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
   scale_x_continuous(breaks = scales::pretty_breaks(n = 10))
@@ -347,7 +353,6 @@ test <- as.data.frame(names(nfl_qb))
 
 nfl_qb$sum_sd <- round(
   (0.35 * nfl_qb$grades_pass_sd) +
-  #(0.05 * nfl_qb$btt_twp_ratio_sd) +
   (0.20 * nfl_qb$def_pass_epa_sd) +
   (0.20 * (nfl_qb$total_rec_salary_sd - nfl_qb$cov_sd)) +
   (0.15 * nfl_qb$blitz_grades_pass_sq_blitz_rate_sd)+
@@ -360,7 +365,6 @@ nfl_qb %>%
          Salary,
          ownership,
          fantasyPoints,
-         adj_fpts,
          sum_sd,
          points_per_dollar,
          opponent, 
@@ -403,37 +407,22 @@ nfl_qb <- nfl_qb %>%
   rename(blitz_rate = Bltz.)
 
 nfl_qb_chart <- nfl_qb %>% 
-  filter(Salary >4500)
-
-nfl_qb_chart %>%
-  ggplot(aes(x = btt_rate , y = twp_rate)) +
-  geom_hline(yintercept = mean(nfl_qb_chart$twp_rate), color = "red", linetype = "dashed", alpha=0.5) +
-  geom_vline(xintercept =  mean(nfl_qb_chart$btt_rate), color = "red", linetype = "dashed", alpha=0.5) +
-  geom_point(color = nfl_qb_chart$team_color, cex = 5, alpha = .6) +
-  geom_smooth(method = "lm", se = F) +
-  geom_text_repel(aes(label=name_salary)) +
-  labs(x = "Big Time Throw %",
-       y = "Turnover Worthy Play %",
-       title = paste("QBs, NFL Weeks 1-",max(nfl_2022$week)),
-       caption = "Twitter: Its_MikeF | Data: PFF") +
-  theme_bw() +
-  theme(plot.title = element_text(size = 14, hjust = 0.5, face = "bold")) +
-  #scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
-  scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) +
-  scale_y_reverse(n.breaks = 10)
+  filter(Salary > 4500)
 
 nfl_qb_chart %>%
   ggplot(aes(x = sum_sd , y = fantasyPoints)) +
   geom_hline(yintercept = mean(nfl_qb_chart$fantasyPoints, na.rm = T), color = "red", linetype = "dashed", alpha=0.5) +
   geom_vline(xintercept =  mean(nfl_qb_chart$sum_sd, na.rm = T), color = "red", linetype = "dashed", alpha=0.5) +
-  geom_point(color = nfl_qb_chart$team_color, cex = 5, alpha = .6) +
+  #geom_point(color = nfl_qb_chart$team_color, cex = 5, alpha = .6) +
+  geom_point(cex = 5, alpha = .6) +
   geom_smooth(method = "lm") +
   geom_text_repel(aes(label=name_salary_own)) +
   labs(x = "sum_sd",
        y = "fantasyPoints",
        title = paste("QBs, NFL Weeks 1-",max(nfl_2022$week)),
        caption = "Twitter: Its_MikeF | Data: PFF") +
-  theme_bw() +
+  theme_dark() +
   theme(plot.title = element_text(size = 14, hjust = 0.5, face = "bold")) +
   scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
-  scale_x_continuous(breaks = scales::pretty_breaks(n = 10))
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) +
+  ylim(12, 26)

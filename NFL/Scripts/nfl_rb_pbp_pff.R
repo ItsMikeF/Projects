@@ -8,7 +8,7 @@ suppressMessages({
 pbp <- load_pbp(seasons = 2014:2021)
 pbp$year <- as.numeric(substr(pbp$game_date, 1, 4))
 
-#qb historical stats and fpts
+#rb historical stats and fpts
 rb_pbp <- pbp %>% 
   group_by(rusher , posteam, game_date, defteam, week) %>% 
   summarize(
@@ -56,13 +56,18 @@ def_rush <- def %>%
     missed_tackles = round(weighted.mean(missed_tackles.y / player_game_count, snap_counts_run, na.rm = T), digits = 4), 
     forced_fumbles = round(weighted.mean(forced_fumbles.y / player_game_count, snap_counts_run, na.rm = T), digits = 4)
     ) %>% 
+  ungroup()
+
+def_rush <- def_rush %>% 
   mutate(merge2 = paste0(def_rush$team_name, def_rush$year, def_rush$week))
 
 #load pff rb merge file
 rbs <- read.csv("./Training_Data/position_groups/rbs.csv") %>% 
   mutate(name = player) %>% 
   separate(name, into = c("first_name", "last_name"), sep=" ") %>% 
-  mutate(merge = paste0(last_name, year, week)) 
+  mutate(designed_ypg = round(designed_yards/player_game_count, digits = 1),
+         targets_pg = round(targets/player_game_count, digits = 1),
+         merge = paste0(last_name, year, week)) 
 
 rbs_full <- rbs %>% 
   left_join(rb_pbp, by = c("merge"))
@@ -72,5 +77,11 @@ rbs_full$merge2 <- paste0(rbs_full$defteam, rbs_full$year.x, rbs_full$week.x)
 rbs_full_def <- rbs_full %>% 
   left_join(def_rush, by = c("merge2"))
 
-rbs_all <- rbs_full_def %>% 
-  select(player, team_name.x, attempts, )
+rbs_full_def <- rbs_full_def %>% 
+  drop_na() %>% 
+  arrange(-fpts)
+
+names(rbs_full_def)
+
+rbs_select <- rbs_full_def %>% 
+  select(player, team_name.x, designed_ypg, targets_pg, yprr, grades_run, grades_defense, grades_run_defense, yco_attempt, fpts)

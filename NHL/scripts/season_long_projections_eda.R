@@ -39,11 +39,10 @@ projections_udd <- read.csv("./season_projections/2022_2023/projections_underdog
 projections_udd <- projections_udd %>% 
   replace(., projections_udd =='Mitch Marner','Mitchell Marner')
 
-
 # 2.1 Projections change --------------------------------------------------
 
 #load the latest projections
-projections_udd_1 <- read.csv("./season_projections/2022_2023/projections_underdog_1.csv") %>% 
+projections_udd_1 <- read.csv("./season_projections/2022_2023/projections_underdog_2.csv") %>% 
   mutate(name = paste(firstName, lastName)) %>% 
   select(name, adp, projectedPoints, positionRank, slotName, teamName)
 
