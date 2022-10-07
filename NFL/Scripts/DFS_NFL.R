@@ -8,9 +8,14 @@ suppressMessages({
   library(glue) #interpreted literal strings
 })
 
+
+# 0.0 define team labels --------------------------------------------------
+
+team_names <- c('ARZ'='ARI', 'BLT'='BAL', 'CLV'='CLE', 'HST'='HOU', 'JAX'='JAC', 'LA'='LAR')
+
 # 1.0 load and clean files ------------------------------------------------
 
-week <- 4
+week <- 5
 
 # 1.1 load dk slate -------------------------------------------------------
 

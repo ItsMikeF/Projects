@@ -23,8 +23,8 @@ epa_def <- function(week, year, wp_lower, wp_upper, half_seconds_remaining, prin
   #def pass epa
   nfl_2022_def_pass <- nfl_2022 %>% 
     filter(pass == 1 &
-             wp > 0.2 &
-             wp < 0.8 &
+             wp > 0.1 &
+             wp < 0.9 &
              half_seconds_remaining > 120) %>% 
     group_by(defteam) %>% 
     summarize(def_pass_epa = round(mean(epa), digits = 3),
@@ -36,8 +36,8 @@ epa_def <- function(week, year, wp_lower, wp_upper, half_seconds_remaining, prin
   #def rush epa
   nfl_2022_def_rush <- nfl_2022 %>% 
     filter(rush == 1 &
-             wp > 0.2 &
-             wp < 0.8 &
+             wp > 0.1 &
+             wp < 0.9 &
              half_seconds_remaining > 120) %>% 
     group_by(defteam) %>% 
     summarize(def_rush_epa = round(mean(epa), digits = 3),
@@ -50,7 +50,8 @@ epa_def <- function(week, year, wp_lower, wp_upper, half_seconds_remaining, prin
     left_join(nfl_2022_def_rush, by = c('defteam')) %>% 
     mutate(total_plays = n_plays.x + n_plays.y,
            defteam = gsub('JAX','JAC', defteam), 
-           defteam = gsub('LA','LAR', defteam))
+           defteam = gsub('LA','LAR', defteam), 
+           defteam = gsub('LARC','LAC', defteam))
   
   #plot the data
   if (print_plot == 'yes') {
@@ -88,8 +89,8 @@ epa_off <- function(wp_lower, wp_upper, half_seconds_remaining, print_plot) {
   get("nfl_2022", envir = .GlobalEnv)
   nfl_2022_off_pass <- nfl_2022 %>% 
     filter(pass == 1 &
-             wp > .20 &
-             wp < .80 &
+             wp > .10 &
+             wp < .90 &
              half_seconds_remaining > 120) %>% 
     group_by(posteam) %>% 
     summarize(off_pass_epa = round(mean(epa), digits = 3),
@@ -100,8 +101,8 @@ epa_off <- function(wp_lower, wp_upper, half_seconds_remaining, print_plot) {
   
   nfl_2022_off_rush <- nfl_2022 %>% 
     filter(rush == 1 &
-             wp > .20 &
-             wp < .80 &
+             wp > .10 &
+             wp < .90 &
              half_seconds_remaining > 120) %>% 
     group_by(posteam) %>% 
     summarize(off_rush_epa = round(mean(epa), digits = 3),
@@ -145,7 +146,7 @@ epa_off(0.2, 0.8, 120, 'no')
 
 # 3.0 defense pff table -------------------------------------------------------
 
-week = 4
+week = 5
 
 nfl_pff_def <- read.csv(glue("./contests/2022_w{week}/pff/defense_summary.csv"))
 
@@ -173,12 +174,15 @@ nfl_pff_def_table <- nfl_pff_def_table %>%
          cov_rank = round(rank(-nfl_pff_def_table$cov), digits = 0),
          cov_sd = round((cov - mean(cov)) / sd(cov, na.rm = T), digits = 2),
          
+         
+         
          team_name = gsub('ARZ','ARI', team_name), 
          team_name = gsub('BLT','BAL', team_name), 
          team_name = gsub('CLV','CLE', team_name), 
          team_name = gsub('HST','HOU', team_name), 
          team_name = gsub('JAX','JAC', team_name), 
-         team_name = gsub('LA','LAR', team_name))
+         team_name = gsub('LA','LAR', team_name), 
+         team_name = gsub('LARC','LAC', team_name))
 
 # 3.1 pff defense coverage scheme -------------------------------------------------
 

@@ -42,7 +42,7 @@ projections_udd <- projections_udd %>%
 # 2.1 Projections change --------------------------------------------------
 
 #load the latest projections
-projections_udd_1 <- read.csv("./season_projections/2022_2023/projections_underdog_2.csv") %>% 
+projections_udd_1 <- read.csv("./season_projections/2022_2023/projections_underdog_3.csv") %>% 
   mutate(name = paste(firstName, lastName)) %>% 
   select(name, adp, projectedPoints, positionRank, slotName, teamName)
 
@@ -57,15 +57,17 @@ projections_udd_delta <- projections_udd_delta %>%
   select(name, adp.x, adp.y, slotName, teamName, projectedPoints) %>% 
   mutate(adp.x = as.numeric(adp.x), 
          adp.y = as.numeric(adp.y)) %>% 
-  mutate(adp_delta = adp.y-adp.x)
+  mutate(adp_delta = adp.y-adp.x, 
+         rel_adp_mvmt = round(adp_delta/adp.y, digits = 2)) %>% 
+  select(name, slotName, teamName, projectedPoints, adp.x, adp.y, adp_delta, rel_adp_mvmt)
 
 adp_movement <- projections_udd_delta %>% 
   group_by(teamName) %>% 
   summarize(
     adp_movement = sum(adp_delta, na.rm = T)
   ) %>% 
-  filter(teamName != "") %>% 
-  left_join(team_logos_colors, by=c("teamName"="full_team_name"))
+  filter(teamName != "") %>%  #%>% left_join(team_logos_colors, by=c("teamName"="full_team_name"))
+  arrange(-adp_movement)
 
 ggplot(adp_movement, aes(x=teamName, y=adp_movement)) +
   #geom_point() +
