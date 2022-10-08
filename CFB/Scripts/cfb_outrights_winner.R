@@ -13,7 +13,7 @@ suppressMessages({
 })
 
 #read the webpage
-url <- "https://sportsbook.draftkings.com/leagues/football/ncaaf?category=team-futures"
+url <- "https://sportsbook.draftkings.com/leagues/football/ncaaf?category=team-futures&subcategory=winner"
 webpage <- read_html(url)
 
 #define the css selectors

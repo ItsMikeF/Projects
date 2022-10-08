@@ -1,0 +1,733 @@
+"","Name","TeamAbbrev","Salary","fpts","proj_own","status","pass_plays","grades_offense","yprr","opponent","grades_defense","grades_pass_rush_defense","grades_coverage_defense"
+"1","Marvin Mims","OU",7900,18.91,10,"Healthy",134,75.1,3.41,"UT",78.2,42.2,63.2
+"2","Elijhah Badger","ASU",7600,12.86,0,"Healthy",121,76.6,2.77,"UW",NA,NA,NA
+"3","Jaxon Smith-Njigba","OSU",7500,NA,0,"Ques Sat - Hamstring",27,61,1.19,"MSU",50.9,39.1,22.8
+"4","Devaughn Vele","UTAH",7400,13.5,0,"Healthy",152,73,1.79,"UCLA",74.3,23.1,67.2
+"5","Marvin Harrison Jr.","OSU",7400,21.83,21,"Healthy",148,79.6,2.96,"MSU",50.9,39.1,22.8
+"6","Rome Odunze","UW",7200,18.11,7,"Healthy",159,76.9,2.76,"ASU",39.1,47.8,34.7
+"7","Brock Bowers","UGA",7100,18.35,12,"Healthy",145,84.6,2.63,"AUB",73.9,59.1,59.4
+"8","Charlie Jones","PUR",7000,21.87,28,"Healthy",199,81.1,3.14,"UMD",52.2,27.5,54.2
+"9","Cedric Tillman","TENN",6900,NA,0,"Late Oct - Ankle",91,68.6,2.96,"LSU",79.4,36.9,66.6
+"10","Jalin Hyatt","TENN",6900,17.14,9,"Healthy",129,69.4,2.66,"LSU",79.4,36.9,66.6
+"11","Quentin Johnston","TCU",6800,14.95,6,"Healthy",99,57.5,1.19,"KU",66,32.7,52.9
+"12","Jayden McGowan","VAND",6700,10.63,0,"Healthy",137,62.4,2.12,"MISS",78.5,30.6,75.6
+"13","Emeka Egbuka","OSU",6700,24.92,43,"Healthy",137,81.1,4,"MSU",50.9,39.1,22.8
+"14","Jadon Haselwood","ARK",6600,10.53,0,"Healthy",144,62.8,1.82,"MSST",NA,NA,NA
+"15","Jake Bobo","UCLA",6500,12.75,1,"Healthy",149,81.8,2.52,"UTAH",65,26.9,67.8
+"16","Jonathan Mingo","MISS",6400,10.19,0,"Healthy",122,79.1,2.3,"VAND",37.8,30,43.5
+"17","Solomon Enis","UTAH",6400,NA,0,"Ques Sat - Undisclosed",101,52.8,0.63,"UCLA",74.3,23.1,67.2
+"18","Tyrone Tracy","PUR",6400,7.54,0,"Healthy",103,62.7,1.06,"UMD",52.2,27.5,54.2
+"19","Derius Davis","TCU",6300,11.96,3,"Out indefinitely - Leg",53,71.5,3.04,"KU",66,32.7,52.9
+"20","Xavier Worthy","UT",6300,15.43,9,"Healthy",138,73.5,2.75,"OU",51.9,30.2,35.7
+"21","Rufus Harvey","MSST",6200,9.91,0,"Healthy",128,64.7,1.89,"ARK",46.5,46.1,12.9
+"22","Jalen McMillan","UW",6200,18.7,10,"Healthy",172,72.4,2.61,"ASU",39.1,47.8,34.7
+"23","Adonai Mitchell","UGA",6100,NA,0,"Prob Sat - Ankle",27,69.5,2.56,"AUB",73.9,59.1,59.4
+"24","Rara Thomas","MSST",6100,14.64,2,"Healthy",121,71.3,3.02,"ARK",46.5,46.1,12.9
+"25","Devin Boddie Jr.","VAND",6100,2.35,0,"Healthy",59,53.7,1.07,"MISS",78.5,30.6,75.6
+"26","Lawrence Arnold","KU",6000,7.58,0,"Healthy",96,75.6,2.16,"TCU",63.2,13.5,55
+"27","Theo Wease","OU",6000,8.02,0,"Healthy",112,64.8,1.82,"UT",78.2,42.2,63.2
+"28","Jordan Whittington","UT",5900,11.5,1,"Healthy",164,70,1.75,"OU",51.9,30.2,35.7
+"29","Ronnie Bell","MICH",5900,13.88,2,"Healthy",103,77.1,2.66,"IU",51.1,50.5,33.6
+"30","Malik Heath","MISS",5800,10.42,6,"Healthy",111,75.9,3.11,"VAND",37.8,30,43.5
+"31","D.J. Matthews Jr.","IU",5800,NA,0,"Healthy",105,69.7,2,"MICH",87.2,17.6,68.9
+"32","Bru McCoy","TENN",5700,15.11,3,"Healthy",130,63.6,1.77,"LSU",79.4,36.9,66.6
+"33","Jaylon Robinson","MISS",5700,3.09,0,"Healthy",41,58.9,0.66,"VAND",37.8,30,43.5
+"34","Andre Johnson","ASU",5700,5.1,0,"Prob Thurs - Leg",122,56.5,0.86,"UW",NA,NA,NA
+"35","Rakim Jarrett","UMD",5700,13.75,2,"Healthy",138,68.4,1.86,"PUR",59.6,34.7,44.2
+"36","Will Sheppard","VAND",5600,12.45,0,"Healthy",152,79.6,2.52,"MISS",78.5,30.6,75.6
+"37","Braydon Johnson","OKST",5600,18.15,13,"Healthy",140,65.3,2.77,"TTU",70.1,40.6,36.8
+"38","Ladd McConkey","UGA",5500,14.49,2,"Healthy",137,63.5,2.02,"AUB",73.9,59.1,59.4
+"39","Caleb Ducking","MSST",5500,14.24,4,"Healthy",185,62.9,1.54,"ARK",46.5,46.1,12.9
+"40","Myles Price","TTU",5500,NA,0,"Ques Sat - Ankle",167,66.2,1.91,"OKST",66.4,16.5,41.5
+"41","Xzavier Henderson","UF",5400,11.29,2,"Ques Sat - Leg",124,70.1,1.71,"MIZZ",63.9,34.4,55.3
+"42","Malik Nabers","LSU",5300,15.52,6,"Healthy",145,66,2.09,"TENN",49.6,17.4,25.9
+"43","Dontay Demus Jr.","UMD",5300,7.86,0,"Healthy",118,54.6,0.75,"PUR",59.6,34.7,44.2
+"44","Broc Thompson","PUR",5300,NA,0,"Ques Sat - Knee",42,56.8,0.7,"UMD",52.2,27.5,54.2
+"45","Jalil Farooq","OU",5200,7.31,0,"Healthy",160,60.9,1,"UT",78.2,42.2,63.2
+"46","Cam Camper","IU",5200,14.44,9,"Ques Sat - Illness",210,68.5,2.11,"MICH",87.2,17.6,68.9
+"47","Keon Coleman","MSU",5200,11.68,4,"Healthy",180,72,1.84,"OSU",77.6,11.1,60.7
+"48","Luther Burden III","MIZZ",5100,10.67,3,"Healthy",138,56.5,0.83,"UF",69.8,38.9,54.7
+"49","Kazmeir Allen","UCLA",5100,11.34,2,"Healthy",122,66.3,1.34,"UTAH",65,26.9,67.8
+"50","Luke Grimm","KU",5100,11.95,2,"Healthy",92,76.4,2.42,"TCU",63.2,13.5,55
+"51","Taye Barber","TCU",5100,11.56,4,"Healthy",77,66.2,2.89,"KU",66,32.7,52.9
+"52","Brennan Presley","OKST",5100,9.85,2,"Healthy",100,71.9,2.71,"TTU",70.1,40.6,36.8
+"53","Roman Wilson","MICH",5000,NA,0,"Healthy",59,80.4,3.86,"IU",51.1,50.5,33.6
+"54","Julian Fleming","OSU",5000,9.16,7,"Healthy",51,73.7,3,"MSU",50.9,39.1,22.8
+"55","Chimere Dike","WISC",5000,12.75,2,"Healthy",118,70.1,2.38,"NW",56.3,57.1,21.7
+"56","Warren Thompson","ARK",4900,1.29,0,"Healthy",91,54.9,1.42,"MSST",NA,NA,NA
+"57","Bryan Thompson","ASU",4900,4.68,0,"Ques Sat - Knee",50,73.4,2.3,"UW",NA,NA,NA
+"58","Jeshaun Jones","UMD",4900,10.68,2,"Healthy",120,72.8,2.24,"PUR",59.6,34.7,44.2
+"59","Jayden Reed","MSU",4900,13.69,13,"Healthy",119,65.5,1.7,"OSU",77.6,11.1,60.7
+"60","Malik Washington","NW",4900,15.64,6,"Healthy",201,67.9,1.79,"WISC",57.6,28.4,48.5
+"61","Kayshon Boutte","LSU",4800,9.79,1,"Healthy",132,57.6,0.78,"TENN",49.6,17.4,25.9
+"62","Will Nixon","UW",4800,6.89,0,"Healthy",50,56.3,1.07,"ASU",39.1,47.8,34.7
+"63","Ricky Pearsall","UF",4700,8.53,0,"Healthy",105,77.1,2.43,"MIZZ",63.9,34.4,55.3
+"64","Jaray Jenkins","LSU",4700,4.15,0,"Healthy",110,71.5,1.21,"TENN",49.6,17.4,25.9
+"65","Jaylen Dixon","UTAH",4700,5.07,0,"Healthy",25,77.9,2.44,"UCLA",74.3,23.1,67.2
+"66","Erick All","MICH",4700,NA,0,"Ques Sat - Undisclosed",39,62.1,1,"IU",51.1,50.5,33.6
+"67","Jacob Copeland","UMD",4700,6.96,0,"Healthy",72,74.6,2.92,"PUR",59.6,34.7,44.2
+"68","TJ Sheffield","PUR",4600,9.7,0,"Healthy",177,54.8,0.81,"UMD",52.2,27.5,54.2
+"69","Ja'Lynn Polk","UW",4500,12.01,6,"Healthy",157,66.2,1.86,"ASU",39.1,47.8,34.7
+"70","Tre Mosley","MSU",4500,6.88,0,"Healthy",142,64.4,1.37,"OSU",77.6,11.1,60.7
+"71","Squirrel White","TENN",4400,1.28,0,"Healthy",13,73.2,5.08,"LSU",79.4,36.9,66.6
+"72","Dalton Kincaid","UTAH",4400,15.51,17,"Healthy",150,67.4,1.81,"UCLA",74.3,23.1,67.2
+"73","Skyler Bell","WISC",4400,8.11,0,"Healthy",117,64.6,2.02,"NW",56.3,57.1,21.7
+"74","Ja'Varrius Johnson","AUB",4300,7.37,0,"Healthy",102,75.7,3.08,"UGA",78.2,6.1,86.2
+"75","Austin Williams","MSST",4300,5.05,0,"Healthy",135,50.4,0.52,"ARK",46.5,46.1,12.9
+"76","Quentin Skinner","KU",4300,6.52,0,"Healthy",73,71,2.1,"TCU",63.2,13.5,55
+"77","Daniel Barker","MSU",4300,5.03,0,"Healthy",83,75.6,1.72,"OSU",77.6,11.1,60.7
+"78","Jayden Ballard","OSU",4300,3.53,0,"Healthy",28,78.1,4.54,"MSU",50.9,39.1,22.8
+"79","Mookie Cooper","MIZZ",4200,6.34,0,"Healthy",82,60.8,1.34,"UF",69.8,38.9,54.7
+"80","Kearis Jackson","UGA",4200,5.55,0,"Healthy",59,67.1,1.96,"AUB",73.9,59.1,59.4
+"81","Ketron Jackson Jr.","ARK",4200,6.21,0,"Healthy",82,65.5,1.89,"MSST",NA,NA,NA
+"82","Cam Johnson","ASU",4200,0.51,0,"Healthy",25,56.2,0.77,"UW",NA,NA,NA
+"83","Savion Williams","TCU",4200,7.57,0,"Healthy",84,66.5,1.51,"KU",66,32.7,52.9
+"84","Donny Navarro III","NW",4200,8.83,0,"Healthy",197,53.7,0.85,"WISC",57.6,28.4,48.5
+"85","Lideatrick Griffin","MSST",4100,7.33,0,"Healthy",123,67.3,1.78,"ARK",46.5,46.1,12.9
+"86","Justin Shorter","UF",4000,12.03,2,"Healthy",130,70.5,2.53,"MIZZ",63.9,34.4,55.3
+"87","Darnell Washington","UGA",4000,4.71,0,"Healthy",112,91,1.88,"AUB",73.9,59.1,59.4
+"88","Makai Cope","UTAH",4000,1.46,0,"Healthy",32,53.3,0.17,"UCLA",74.3,23.1,67.2
+"89","Trey Cleveland","TTU",4000,11.76,4,"Healthy",114,70.6,1.75,"OKST",66.4,16.5,41.5
+"90","Javon Swinton","IU",4000,1.45,0,"Healthy",86,54.3,0.51,"MICH",87.2,17.6,68.9
+"91","Payne Durham","PUR",4000,10.53,3,"Healthy",199,64.7,0.99,"UMD",52.2,27.5,54.2
+"92","Mershawn Rice","PUR",4000,5.67,0,"Healthy",102,56.1,0.96,"UMD",52.2,27.5,54.2
+"93","Cade Stover","OSU",4000,10.52,7,"Healthy",141,77.1,1.8,"MSU",50.9,39.1,22.8
+"94","Shedrick Jackson","AUB",3900,3.61,0,"Healthy",102,59,1.45,"UGA",78.2,6.1,86.2
+"95","Brian Thomas Jr.","LSU",3900,8.91,2,"Healthy",87,69,2.24,"TENN",49.6,17.4,25.9
+"96","Logan Loya","UCLA",3900,2.74,0,"Healthy",47,74,2.27,"UTAH",65,26.9,67.8
+"97","Casey Cain","UT",3900,3.43,0,"Healthy",83,60.5,1.27,"OU",51.9,30.2,35.7
+"98","J.J. Sparkman","TTU",3900,9.08,2,"Healthy",97,60.8,1.17,"OKST",66.4,16.5,41.5
+"99","Cornelius Johnson","MICH",3900,9.17,1,"Healthy",98,57.2,1.28,"IU",51.1,50.5,33.6
+"100","Keontez Lewis","WISC",3900,5.31,0,"Ques Sat - Undisclosed",73,61.1,1.48,"NW",56.3,57.1,21.7
+"101","Dominic Lovett","MIZZ",3800,14.45,17,"Ques Sat - Leg",126,82.8,3.71,"UF",69.8,38.9,54.7
+"102","Marcus Rosemy-Jacksaint","UGA",3800,8.08,0,"Healthy",99,64.7,1.23,"AUB",73.9,59.1,59.4
+"103","Ramel Keyton","TENN",3800,11.3,9,"Healthy",69,70.3,3,"LSU",79.4,36.9,66.6
+"104","Brayden Willis","OU",3800,6.48,0,"Healthy",136,70.5,1.57,"UT",78.2,42.2,63.2
+"105","Abdur-Rahmaan Yaseen","PUR",3800,0.76,0,"Ques Sat - Knee",NA,NA,NA,"UMD",52.2,27.5,54.2
+"106","Montorie Foster","MSU",3800,0.56,0,"Healthy",25,62.5,1.27,"OSU",77.6,11.1,60.7
+"107","Bryce Kirtz","NW",3800,5.31,0,"Healthy",109,54.2,0.94,"WISC",57.6,28.4,48.5
+"108","Jack Bech","LSU",3700,4.17,0,"Healthy",72,59.9,0.96,"TENN",49.6,17.4,25.9
+"109","Jamire Calvin","MSST",3700,5.12,0,"Healthy",95,53.1,0.53,"ARK",46.5,46.1,12.9
+"110","Logan Kyle","VAND",3700,0.49,0,"Healthy",11,54.7,0,"MISS",78.5,30.6,75.6
+"111","Jordan Hudson","TCU",3700,3.29,0,"Healthy",29,77.5,4,"KU",66,32.7,52.9
+"112","John Paul Richardson","OKST",3700,10.14,3,"Healthy",94,65.2,1.7,"TTU",70.1,40.6,36.8
+"113","Jerand Bradley","TTU",3700,5.42,0,"Healthy",164,58.9,1.23,"OKST",66.4,16.5,41.5
+"114","Trent Whittemore","UF",3600,1.03,0,"Healthy",20,79.5,4.83,"MIZZ",63.9,34.4,55.3
+"115","Chance Luper","MIZZ",3600,NA,0,"Healthy",NA,NA,NA,"UF",69.8,38.9,54.7
+"116","Giovanni Sanders","ASU",3600,5.88,0,"Healthy",125,67.5,1.53,"UW",NA,NA,NA
+"117","Mason Fairchild","KU",3600,2.7,0,"Healthy",88,59.4,0.28,"TCU",63.2,13.5,55
+"118","Tai Felton","UMD",3600,3.09,0,"Healthy",95,59.5,0.76,"PUR",59.6,34.7,44.2
+"119","Barrett Banister","MIZZ",3500,6.69,0,"Prob Sat - Undisclosed",113,62.6,1.21,"UF",69.8,38.9,54.7
+"120","Dillon Bell","UGA",3500,3.71,0,"Healthy",92,51.7,0.7,"AUB",73.9,59.1,59.4
+"121","Kyren Lacy","LSU",3500,2.24,0,"Healthy",68,66.9,1.27,"TENN",49.6,17.4,25.9
+"122","Matt Landers","ARK",3500,11.47,7,"Healthy",152,64.1,1.82,"MSST",NA,NA,NA
+"123","Jaden Walley","MSST",3500,5.68,0,"Healthy",111,56.4,0.9,"ARK",46.5,46.1,12.9
+"124","Michael Trigg","MISS",3500,7.35,1,"Healthy",96,61.8,1.51,"VAND",37.8,30,43.5
+"125","Jordan Watkins","MISS",3500,10.47,4,"Healthy",103,55.6,1.24,"VAND",37.8,30,43.5
+"126","Michael Ezeike","UCLA",3500,2.76,0,"Healthy",46,66.1,2.12,"UTAH",65,26.9,67.8
+"127","Kam Brown","UCLA",3500,7.32,1,"Healthy",71,61.8,1.2,"UTAH",65,26.9,67.8
+"128","Blake Nowell","TCU",3500,1.35,0,"Healthy",29,68.2,2.46,"KU",66,32.7,52.9
+"129","Ja'Tavion Sanders","UT",3500,7.47,0,"Healthy",160,68.3,1.72,"OU",51.9,30.2,35.7
+"130","Tarique Milton","UT",3500,2.74,0,"Healthy",40,54.3,0.8,"OU",51.9,30.2,35.7
+"131","Bryson Green","OKST",3500,9.16,3,"Ques Sat - Wrist",131,64,1.39,"TTU",70.1,40.6,36.8
+"132","Loic Fouonji","TTU",3500,6.92,1,"Healthy",121,63.9,1.5,"OKST",66.4,16.5,41.5
+"133","Emery Simmons","IU",3500,8.12,2,"Healthy",159,58.5,0.93,"MICH",87.2,17.6,68.9
+"134","A.J. Henning","MICH",3500,1.1,0,"Healthy",29,66.1,1.52,"IU",51.1,50.5,33.6
+"135","Deion Burks","PUR",3500,4.96,0,"Healthy",76,59.4,1.42,"UMD",52.2,27.5,54.2
+"136","Germie Bernard","MSU",3500,2.14,0,"Healthy",68,63,1.59,"OSU",77.6,11.1,60.7
+"137","Markus Allen","WISC",3500,3.55,0,"Healthy",54,55.9,1.1,"NW",56.3,57.1,21.7
+"138","Tyler Stephens","MIZZ",3400,1.02,0,"Healthy",51,44.8,1.11,"UF",69.8,38.9,54.7
+"139","Tauskie Dove","MIZZ",3400,5.53,0,"Healthy",144,50.7,0.57,"UF",69.8,38.9,54.7
+"140","Trey Knox","ARK",3400,6.74,0,"Healthy",146,66.8,1.23,"MSST",NA,NA,NA
+"141","Dayton Wade","MISS",3400,1.36,0,"Healthy",32,68.5,2.34,"VAND",37.8,30,43.5
+"142","Ben Bresnahan","VAND",3400,4.12,0,"Healthy",114,56,0.52,"MISS",78.5,30.6,75.6
+"143","Giles Jackson","UW",3400,8.82,1,"Healthy",76,69.4,2.5,"ASU",39.1,47.8,34.7
+"144","Munir McClain","UTAH",3400,NA,0,"Healthy",8,65.4,1.71,"UCLA",74.3,23.1,67.2
+"145","Money Parks","UTAH",3400,6.7,0,"Healthy",34,65.4,3.16,"UCLA",74.3,23.1,67.2
+"146","Steven McBride","KU",3400,0.71,0,"Healthy",11,61.9,2.56,"TCU",63.2,13.5,55
+"147","Jared Wiley","TCU",3400,1.57,0,"Healthy",39,74.1,1.5,"KU",66,32.7,52.9
+"148","Drake Stoops","OU",3400,5.77,0,"Healthy",75,66.3,1.34,"UT",78.2,42.2,63.2
+"149","Xavier White","TTU",3400,14.84,24,"Healthy",95,68.4,2.29,"OKST",66.4,16.5,41.5
+"150","Luke Schoonmaker","MICH",3400,12.85,6,"Healthy",72,78.4,2.49,"IU",51.1,50.5,33.6
+"151","Joel Honigford","MICH",3400,NA,0,"Healthy",NA,NA,NA,"IU",51.1,50.5,33.6
+"152","Koy Moore","AUB",3300,6.31,1,"Healthy",103,57.7,1.59,"UGA",78.2,6.1,86.2
+"153","Shawn Charles","ASU",3300,NA,0,"Healthy",NA,NA,NA,"UW",NA,NA,NA
+"154","Blair Conwright","TCU",3300,0.75,0,"Healthy",16,54.5,0.5,"KU",66,32.7,52.9
+"155","Braden Cassity","OKST",3300,2.02,0,"Healthy",45,43.4,-0.17,"TTU",70.1,40.6,36.8
+"156","Mason Tharp","TTU",3300,4.93,0,"Healthy",106,61.8,0.67,"OKST",66.4,16.5,41.5
+"157","AJ Barner","IU",3300,5.33,0,"Healthy",254,57.1,0.56,"MICH",87.2,17.6,68.9
+"158","Corey Dyches","UMD",3300,9.38,4,"Healthy",99,67.8,2.26,"PUR",59.6,34.7,44.2
+"159","Dean Engram","WISC",3300,3.11,0,"Healthy",22,63.4,3.89,"NW",56.3,57.1,21.7
+"160","Keon Zipperer","UF",3200,6.31,0,"Healthy",102,71.5,1.96,"MIZZ",63.9,34.4,55.3
+"161","Daejon Reynolds","UF",3200,0.55,0,"Healthy",22,58.1,3.59,"MIZZ",63.9,34.4,55.3
+"162","Dominick Blaylock","UGA",3200,3.77,0,"Healthy",42,70.5,2.23,"AUB",73.9,59.1,59.4
+"163","Kole Taylor","LSU",3200,1.27,0,"Healthy",50,63.3,0.55,"TENN",49.6,17.4,25.9
+"164","Princeton Fant","TENN",3200,4.71,0,"Healthy",76,55.3,1.4,"LSU",79.4,36.9,66.6
+"165","Jimmy Holiday","TENN",3200,0.67,0,"Healthy",18,64.9,4.25,"LSU",79.4,36.9,66.6
+"166","Antonio Harmon","MSST",3200,1.83,0,"Healthy",44,61.4,1.42,"ARK",46.5,46.1,12.9
+"167","Messiah Swinson","ASU",3200,3.62,0,"Healthy",128,48.9,0.91,"UW",NA,NA,NA
+"168","Taj Davis","UW",3200,1.51,0,"Healthy",52,58.9,1.57,"ASU",39.1,47.8,34.7
+"169","Titus Mokiao-Atimalala","UCLA",3200,3.08,0,"Healthy",108,60.7,1.03,"UTAH",65,26.9,67.8
+"170","Collin Edwards","UTAH",3200,NA,0,"Healthy",NA,NA,NA,"UCLA",74.3,23.1,67.2
+"171","Douglas Emilien","KU",3200,3.48,0,"Healthy",9,62.3,1.22,"TCU",63.2,13.5,55
+"172","Brenen Thompson","UT",3200,0.63,0,"Ques Sat - Knee",NA,NA,NA,"OU",51.9,30.2,35.7
+"173","Rashod Owens","OKST",3200,0.75,0,"Healthy",39,57,0.56,"TTU",70.1,40.6,36.8
+"174","Andrel Anthony","MICH",3200,3.5,0,"Healthy",37,63.7,1.16,"IU",51.1,50.5,33.6
+"175","Robert Smith","UMD",3200,NA,0,"Healthy",NA,NA,NA,"PUR",59.6,34.7,44.2
+"176","Paul Piferi","PUR",3200,1.47,0,"Healthy",41,60.9,1.58,"UMD",52.2,27.5,54.2
+"177","Tyler Hunt","MSU",3200,3.97,0,"Healthy",111,59.8,0.93,"OSU",77.6,11.1,60.7
+"178","Terry Lockett Jr.","MSU",3200,NA,0,"Healthy",NA,NA,NA,"OSU",77.6,11.1,60.7
+"179","Raymond Niro III","NW",3200,0.67,0,"Healthy",40,51,1.11,"WISC",57.6,28.4,48.5
+"180","Stephan Bracey Jr.","WISC",3200,NA,0,"Healthy",NA,NA,NA,"NW",56.3,57.1,21.7
+"181","John Samuel Shenker","AUB",3100,5.28,0,"Healthy",148,68.1,1.16,"UGA",78.2,6.1,86.2
+"182","Arik Gilbert","UGA",3100,0.64,0,"Ques Sat - Personal",13,44.6,0,"AUB",73.9,59.1,59.4
+"183","Cade Brock","UGA",3100,NA,0,"Healthy",NA,NA,NA,"AUB",73.9,59.1,59.4
+"184","Nick Elksnis","UF",3000,NA,0,"Healthy",NA,NA,NA,"MIZZ",63.9,34.4,55.3
+"185","Arlis Boardingham","UF",3000,NA,0,"Out indefinitely - Upper Body",NA,NA,NA,"MIZZ",63.9,34.4,55.3
+"186","Noah Keeter","UF",3000,NA,0,"Healthy",NA,NA,NA,"MIZZ",63.9,34.4,55.3
+"187","Scott Isacks III","UF",3000,NA,0,"Healthy",NA,NA,NA,"MIZZ",63.9,34.4,55.3
+"188","Hayden Hansen","UF",3000,NA,0,"Healthy",NA,NA,NA,"MIZZ",63.9,34.4,55.3
+"189","Gage Wilcox","UF",3000,NA,0,"Healthy",NA,NA,NA,"MIZZ",63.9,34.4,55.3
+"190","Jonathan Odom","UF",3000,NA,0,"Healthy",NA,NA,NA,"MIZZ",63.9,34.4,55.3
+"191","Dante Zanders","UF",3000,3.5,0,"Healthy",88,34.8,0.32,"MIZZ",63.9,34.4,55.3
+"192","Griffin McDowell","UF",3000,NA,0,"Healthy",NA,NA,NA,"MIZZ",63.9,34.4,55.3
+"193","Ja'Quavion Fraziars","UF",3000,1.53,0,"Healthy",28,56.4,0,"MIZZ",63.9,34.4,55.3
+"194","Ja'Markis Weston","UF",3000,NA,0,"Healthy",4,55.6,0,"MIZZ",63.9,34.4,55.3
+"195","Justin Curtis","UF",3000,NA,0,"Healthy",NA,NA,NA,"MIZZ",63.9,34.4,55.3
+"196","Taylor Spierto","UF",3000,NA,0,"Healthy",NA,NA,NA,"MIZZ",63.9,34.4,55.3
+"197","Daniel Cross","UF",3000,NA,0,"Healthy",NA,NA,NA,"MIZZ",63.9,34.4,55.3
+"198","Kahleil Jackson","UF",3000,NA,0,"Healthy",4,84,10,"MIZZ",63.9,34.4,55.3
+"199","Zak Sedaros","UF",3000,NA,0,"Healthy",NA,NA,NA,"MIZZ",63.9,34.4,55.3
+"200","Marcus Burke","UF",3000,0.55,0,"Healthy",NA,NA,NA,"MIZZ",63.9,34.4,55.3
+"201","Jordan Pouncey","UF",3000,NA,0,"Healthy",1,60.8,-2,"MIZZ",63.9,34.4,55.3
+"202","William Sawyer","UF",3000,NA,0,"Healthy",NA,NA,NA,"MIZZ",63.9,34.4,55.3
+"203","Caleb Douglas","UF",3000,NA,0,"Healthy",5,89.8,12.2,"MIZZ",63.9,34.4,55.3
+"204","Thai Chiaokhiao-Bowman","UF",3000,0.55,0,"Healthy",13,63.5,1.33,"MIZZ",63.9,34.4,55.3
+"205","Alex Gonzalez","UF",3000,NA,0,"Healthy",NA,NA,NA,"MIZZ",63.9,34.4,55.3
+"206","Ryan Hoerstkamp","MIZZ",3000,NA,0,"Healthy",NA,NA,NA,"UF",69.8,38.9,54.7
+"207","Kibet Chepyator","MIZZ",3000,2.09,0,"Healthy",54,34,0.63,"UF",69.8,38.9,54.7
+"208","Gavin McKay","MIZZ",3000,NA,0,"Healthy",NA,NA,NA,"UF",69.8,38.9,54.7
+"209","Max Whisner","MIZZ",3000,NA,0,"Healthy",NA,NA,NA,"UF",69.8,38.9,54.7
+"210","Tucker Miller","MIZZ",3000,NA,0,"Healthy",NA,NA,NA,"UF",69.8,38.9,54.7
+"211","Shawn Hendershot","MIZZ",3000,NA,0,"Healthy",NA,NA,NA,"UF",69.8,38.9,54.7
+"212","Damon Johanns","MIZZ",3000,NA,0,"Healthy",NA,NA,NA,"UF",69.8,38.9,54.7
+"213","Demariyon Houston","MIZZ",3000,NA,0,"Out indefinitely - Undisclosed",NA,NA,NA,"UF",69.8,38.9,54.7
+"214","Mekhi Miller","MIZZ",3000,0.57,0,"Healthy",9,63.3,1.89,"UF",69.8,38.9,54.7
+"215","Micah Manning","MIZZ",3000,NA,0,"Healthy",NA,NA,NA,"UF",69.8,38.9,54.7
+"216","Zach Hahn","MIZZ",3000,NA,0,"Healthy",NA,NA,NA,"UF",69.8,38.9,54.7
+"217","Wes Campbell VI","MIZZ",3000,NA,0,"Healthy",NA,NA,NA,"UF",69.8,38.9,54.7
+"218","Jaden Nash","MIZZ",3000,NA,0,"Healthy",NA,NA,NA,"UF",69.8,38.9,54.7
+"219","Logan Muckey","MIZZ",3000,NA,0,"Healthy",NA,NA,NA,"UF",69.8,38.9,54.7
+"220","Luke Deal","AUB",3000,0.84,0,"Healthy",51,50.7,0.03,"UGA",78.2,6.1,86.2
+"221","Tyler Fromm","AUB",3000,0.45,0,"Healthy",37,56,1.38,"UGA",78.2,6.1,86.2
+"222","Brandon Frazier","AUB",3000,0.45,0,"Healthy",7,60.3,1.17,"UGA",78.2,6.1,86.2
+"223","Camden Etheredge","AUB",3000,NA,0,"Healthy",NA,NA,NA,"UGA",78.2,6.1,86.2
+"224","Micah Riley-Ducker","AUB",3000,NA,0,"Healthy",NA,NA,NA,"UGA",78.2,6.1,86.2
+"225","Grant Hidalgo","AUB",3000,NA,0,"Healthy",NA,NA,NA,"UGA",78.2,6.1,86.2
+"226","Malcolm Johnson Jr.","AUB",3000,2.88,0,"Healthy",42,57.6,0.7,"UGA",78.2,6.1,86.2
+"227","Camden Brown","AUB",3000,3.5,0,"Healthy",63,54.3,0.43,"UGA",78.2,6.1,86.2
+"228","Landen King","AUB",3000,0.45,0,"out for season - Redshirt",25,63.3,0.96,"UGA",78.2,6.1,86.2
+"229","Tar'Varish Dawson Jr.","AUB",3000,1.59,0,"Healthy",18,61.3,1.88,"UGA",78.2,6.1,86.2
+"230","Jackson Billings","AUB",3000,NA,0,"Healthy",NA,NA,NA,"UGA",78.2,6.1,86.2
+"231","J.J. Evans","AUB",3000,NA,0,"Healthy",NA,NA,NA,"UGA",78.2,6.1,86.2
+"232","Trent Mason","AUB",3000,NA,0,"Healthy",NA,NA,NA,"UGA",78.2,6.1,86.2
+"233","Dazalin Worsham","AUB",3000,0.83,0,"Healthy",13,53.4,0,"UGA",78.2,6.1,86.2
+"234","Tommy Nesmith","AUB",3000,NA,0,"Healthy",NA,NA,NA,"UGA",78.2,6.1,86.2
+"235","Jay Fair","AUB",3000,0.45,0,"Healthy",NA,NA,NA,"UGA",78.2,6.1,86.2
+"236","Omari Kelly","AUB",3000,1.21,0,"Healthy",23,68.5,1.68,"UGA",78.2,6.1,86.2
+"237","Colby Stafford","AUB",3000,NA,0,"Healthy",NA,NA,NA,"UGA",78.2,6.1,86.2
+"238","Jake Kruse","AUB",3000,NA,0,"Healthy",NA,NA,NA,"UGA",78.2,6.1,86.2
+"239","Ze'Vian Capers","AUB",3000,0.37,0,"Healthy",12,53.5,0,"UGA",78.2,6.1,86.2
+"240","Whit Johnson","AUB",3000,NA,0,"Healthy",NA,NA,NA,"UGA",78.2,6.1,86.2
+"241","Brett Seither","UGA",3000,NA,0,"Healthy",NA,NA,NA,"AUB",73.9,59.1,59.4
+"242","Oscar Delp","UGA",3000,0.68,0,"Healthy",28,61.8,1.33,"AUB",73.9,59.1,59.4
+"243","Ryland Goede","UGA",3000,NA,0,"Healthy",NA,NA,NA,"AUB",73.9,59.1,59.4
+"244","Drew Sheehan","UGA",3000,NA,0,"Healthy",NA,NA,NA,"AUB",73.9,59.1,59.4
+"245","Davis Day","UGA",3000,NA,0,"Healthy",NA,NA,NA,"AUB",73.9,59.1,59.4
+"246","Samuel Johnson","UGA",3000,NA,0,"Healthy",NA,NA,NA,"AUB",73.9,59.1,59.4
+"247","Cooper Johnson","UGA",3000,NA,0,"Healthy",NA,NA,NA,"AUB",73.9,59.1,59.4
+"248","Arian Smith","UGA",3000,1.28,0,"out for season - Ankle",5,57.4,1.4,"AUB",73.9,59.1,59.4
+"249","Arian Smith","UGA",3000,1.28,0,"Prob Sat - Hamstring",5,57.4,1.4,"AUB",73.9,59.1,59.4
+"250","De'Nylon Morrissette","UGA",3000,0.67,0,"Healthy",18,59.6,1.22,"AUB",73.9,59.1,59.4
+"251","Jackson Meeks","UGA",3000,0.67,0,"Healthy",24,66,1.35,"AUB",73.9,59.1,59.4
+"252","Cole Speer","UGA",3000,0.67,0,"Healthy",2,76.8,6,"AUB",73.9,59.1,59.4
+"253","George Vining","UGA",3000,NA,0,"Healthy",NA,NA,NA,"AUB",73.9,59.1,59.4
+"254","Grant Briscoe","UGA",3000,NA,0,"Healthy",NA,NA,NA,"AUB",73.9,59.1,59.4
+"255","Luke Bennett","UGA",3000,NA,0,"Healthy",NA,NA,NA,"AUB",73.9,59.1,59.4
+"256","Miles Thornton","UGA",3000,NA,0,"Healthy",NA,NA,NA,"AUB",73.9,59.1,59.4
+"257","C.J. Smith","UGA",3000,NA,0,"Healthy",NA,NA,NA,"AUB",73.9,59.1,59.4
+"258","Mekhi Mews","UGA",3000,NA,0,"Healthy",2,59.8,3,"AUB",73.9,59.1,59.4
+"259","Braxton Hicks","UGA",3000,NA,0,"Healthy",NA,NA,NA,"AUB",73.9,59.1,59.4
+"260","Collin Lark","UGA",3000,NA,0,"Healthy",NA,NA,NA,"AUB",73.9,59.1,59.4
+"261","Nathan Priestley","UGA",3000,NA,0,"Healthy",NA,NA,NA,"AUB",73.9,59.1,59.4
+"262","Parker Jones","UGA",3000,NA,0,"Healthy",NA,NA,NA,"AUB",73.9,59.1,59.4
+"263","Logan Johnson","UGA",3000,NA,0,"Healthy",NA,NA,NA,"AUB",73.9,59.1,59.4
+"264","Woody Waters","UGA",3000,NA,0,"Healthy",NA,NA,NA,"AUB",73.9,59.1,59.4
+"265","Brooks Bortle","UGA",3000,NA,0,"Healthy",NA,NA,NA,"AUB",73.9,59.1,59.4
+"266","Steven Peterson","UGA",3000,NA,0,"Healthy",NA,NA,NA,"AUB",73.9,59.1,59.4
+"267","Randon Jernigan","UGA",3000,NA,0,"Healthy",NA,NA,NA,"AUB",73.9,59.1,59.4
+"268","Jack Mashburn","LSU",3000,0.67,0,"Healthy",13,59.7,0.83,"TENN",49.6,17.4,25.9
+"269","MJ Frazier","LSU",3000,NA,0,"Healthy",NA,NA,NA,"TENN",49.6,17.4,25.9
+"270","Mason Taylor","LSU",3000,8.82,8,"Healthy",174,42.4,0.67,"TENN",49.6,17.4,25.9
+"271","Stephen King","LSU",3000,NA,0,"Healthy",NA,NA,NA,"TENN",49.6,17.4,25.9
+"272","Caleb Bonine","LSU",3000,NA,0,"Healthy",NA,NA,NA,"TENN",49.6,17.4,25.9
+"273","Charlie Drost","LSU",3000,NA,0,"Healthy",NA,NA,NA,"TENN",49.6,17.4,25.9
+"274","Gabe Leonards","LSU",3000,NA,0,"Healthy",NA,NA,NA,"TENN",49.6,17.4,25.9
+"275","Nick Storz","LSU",3000,NA,0,"Healthy",NA,NA,NA,"TENN",49.6,17.4,25.9
+"276","GiVanni Peterson","LSU",3000,NA,0,"Healthy",NA,NA,NA,"TENN",49.6,17.4,25.9
+"277","RJ Willis","LSU",3000,NA,0,"Healthy",NA,NA,NA,"TENN",49.6,17.4,25.9
+"278","Chris Hilton Jr.","LSU",3000,0.66,0,"Healthy",35,73.8,3.21,"TENN",49.6,17.4,25.9
+"279","LJ Gilyot","LSU",3000,NA,0,"Healthy",NA,NA,NA,"TENN",49.6,17.4,25.9
+"280","Javen Nicholas","LSU",3000,NA,0,"Healthy",NA,NA,NA,"TENN",49.6,17.4,25.9
+"281","Noah Nash","LSU",3000,NA,0,"Healthy",NA,NA,NA,"TENN",49.6,17.4,25.9
+"282","Cowinn Helaire","LSU",3000,NA,0,"Healthy",NA,NA,NA,"TENN",49.6,17.4,25.9
+"283","Gregory Clayton Jr.","LSU",3000,NA,0,"Healthy",NA,NA,NA,"TENN",49.6,17.4,25.9
+"284","Evan Francioni","LSU",3000,0.66,0,"Healthy",12,61.2,1.27,"TENN",49.6,17.4,25.9
+"285","Landon Ibieta","LSU",3000,NA,0,"Healthy",NA,NA,NA,"TENN",49.6,17.4,25.9
+"286","Jack Rilling","LSU",3000,NA,0,"Healthy",NA,NA,NA,"TENN",49.6,17.4,25.9
+"287","Jacob Warren","TENN",3000,3.91,0,"Healthy",71,65.7,1.91,"LSU",79.4,36.9,66.6
+"288","Miles Campbell","TENN",3000,NA,0,"Ques Sat - Undisclosed",NA,NA,NA,"LSU",79.4,36.9,66.6
+"289","Julian Nixon","TENN",3000,NA,0,"Healthy",NA,NA,NA,"LSU",79.4,36.9,66.6
+"290","Hunter Salmon","TENN",3000,0.68,0,"Healthy",19,67.4,0.75,"LSU",79.4,36.9,66.6
+"291","Titus Rohrer","TENN",3000,NA,0,"Healthy",NA,NA,NA,"LSU",79.4,36.9,66.6
+"292","Charlie Browder","TENN",3000,NA,0,"Healthy",NA,NA,NA,"LSU",79.4,36.9,66.6
+"293","Walker Merrill","TENN",3000,2.5,0,"Healthy",15,66.2,4.79,"LSU",79.4,36.9,66.6
+"294","Jimmy Calloway","TENN",3000,1.89,0,"Healthy",18,50.6,1.43,"LSU",79.4,36.9,66.6
+"295","Jack Jancek","TENN",3000,0.67,0,"Healthy",3,86.2,13,"LSU",79.4,36.9,66.6
+"296","Chas Nimrod","TENN",3000,NA,0,"Healthy",NA,NA,NA,"LSU",79.4,36.9,66.6
+"297","Kaleb Webb","TENN",3000,NA,0,"Healthy",NA,NA,NA,"LSU",79.4,36.9,66.6
+"298","Michael Bittner","TENN",3000,0.67,0,"Healthy",NA,NA,NA,"LSU",79.4,36.9,66.6
+"299","Nigel Lanier","TENN",3000,NA,0,"Healthy",NA,NA,NA,"LSU",79.4,36.9,66.6
+"300","Grant Frerking","TENN",3000,0.67,0,"Healthy",NA,NA,NA,"LSU",79.4,36.9,66.6
+"301","Hudson Henry","ARK",3000,NA,0,"Healthy",NA,NA,NA,"MSST",NA,NA,NA
+"302","Nathan Bax","ARK",3000,0.97,0,"Healthy",31,58.8,0.23,"MSST",NA,NA,NA
+"303","Zach Lee","ARK",3000,NA,0,"Healthy",NA,NA,NA,"MSST",NA,NA,NA
+"304","Erin Outley","ARK",3000,NA,0,"Healthy",NA,NA,NA,"MSST",NA,NA,NA
+"305","Collin Sutherland","ARK",3000,NA,0,"Healthy",NA,NA,NA,"MSST",NA,NA,NA
+"306","Ty Washington","ARK",3000,NA,0,"Healthy",NA,NA,NA,"MSST",NA,NA,NA
+"307","Nathan Johnson","ARK",3000,NA,0,"Healthy",NA,NA,NA,"MSST",NA,NA,NA
+"308","Hunter Talley","ARK",3000,NA,0,"Healthy",NA,NA,NA,"MSST",NA,NA,NA
+"309","Dax Courtney","ARK",3000,NA,0,"Healthy",NA,NA,NA,"MSST",NA,NA,NA
+"310","Isaiah Sategna","ARK",3000,NA,0,"Ques Sat - Ankle",NA,NA,NA,"MSST",NA,NA,NA
+"311","Bryce Stephens","ARK",3000,NA,0,"Healthy",NA,NA,NA,"MSST",NA,NA,NA
+"312","Chase Lowery","ARK",3000,NA,0,"Healthy",NA,NA,NA,"MSST",NA,NA,NA
+"313","Kalil Girault","ARK",3000,NA,0,"Healthy",NA,NA,NA,"MSST",NA,NA,NA
+"314","Jaedon Wilson","ARK",3000,4.56,0,"Healthy",17,47.1,0,"MSST",NA,NA,NA
+"315","Landon Rogers","ARK",3000,NA,0,"Healthy",NA,NA,NA,"MSST",NA,NA,NA
+"316","Quincey McAdoo","ARK",3000,NA,0,"Healthy",NA,NA,NA,"MSST",NA,NA,NA
+"317","Kamron Bibby","ARK",3000,NA,0,"Healthy",NA,NA,NA,"MSST",NA,NA,NA
+"318","Sam Mbake","ARK",3000,NA,0,"Healthy",NA,NA,NA,"MSST",NA,NA,NA
+"319","Chris Harris","ARK",3000,NA,0,"Ques Sat - Undisclosed",NA,NA,NA,"MSST",NA,NA,NA
+"320","Harper Cole","ARK",3000,NA,0,"Healthy",NA,NA,NA,"MSST",NA,NA,NA
+"321","Jaquayln Crawford","ARK",3000,NA,0,"Healthy",NA,NA,NA,"MSST",NA,NA,NA
+"322","Justin Robinson","MSST",3000,9.03,1,"Healthy",44,75,2.16,"ARK",46.5,46.1,12.9
+"323","Scoobie Ford","MSST",3000,NA,0,"Healthy",22,55.9,0.91,"ARK",46.5,46.1,12.9
+"324","Jordan Mosley","MSST",3000,0.95,0,"Healthy",11,53.4,0,"ARK",46.5,46.1,12.9
+"325","Brad Cumbest","MSST",3000,NA,0,"Healthy",NA,NA,NA,"ARK",46.5,46.1,12.9
+"326","Trip Wilson","MSST",3000,NA,0,"Out indefinitely - Suspension",NA,NA,NA,"ARK",46.5,46.1,12.9
+"327","Brodie King","MSST",3000,NA,0,"Healthy",NA,NA,NA,"ARK",46.5,46.1,12.9
+"328","Nick Lauderdale","MSST",3000,NA,0,"Healthy",NA,NA,NA,"ARK",46.5,46.1,12.9
+"329","Zavion Thomas","MSST",3000,NA,0,"Healthy",NA,NA,NA,"ARK",46.5,46.1,12.9
+"330","Jarnorris Hopson","MSST",3000,NA,0,"Healthy",NA,NA,NA,"ARK",46.5,46.1,12.9
+"331","Bo Brooks","MSST",3000,NA,0,"out for season - Lower Body",NA,NA,NA,"ARK",46.5,46.1,12.9
+"332","Kaydin Pope","MSST",3000,NA,0,"Healthy",NA,NA,NA,"ARK",46.5,46.1,12.9
+"333","Andrew Berquist","MSST",3000,NA,0,"Healthy",NA,NA,NA,"ARK",46.5,46.1,12.9
+"334","Kade Kolka","MSST",3000,NA,0,"Healthy",NA,NA,NA,"ARK",46.5,46.1,12.9
+"335","Marquez Dortch","MSST",3000,NA,0,"Healthy",NA,NA,NA,"ARK",46.5,46.1,12.9
+"336","Braden Coffey","MSST",3000,NA,0,"Healthy",NA,NA,NA,"ARK",46.5,46.1,12.9
+"337","Jace Dean","MSST",3000,NA,0,"Healthy",NA,NA,NA,"ARK",46.5,46.1,12.9
+"338","Casey Kelly","MISS",3000,3.63,0,"Healthy",60,50.6,0.08,"VAND",37.8,30,43.5
+"339","Hudson Wolfe","MISS",3000,NA,0,"Healthy",NA,NA,NA,"VAND",37.8,30,43.5
+"340","Trace Campbell","MISS",3000,NA,0,"Healthy",NA,NA,NA,"VAND",37.8,30,43.5
+"341","DJ Ruff","MISS",3000,NA,0,"Healthy",NA,NA,NA,"VAND",37.8,30,43.5
+"342","Landon Thomason","MISS",3000,NA,0,"Healthy",NA,NA,NA,"VAND",37.8,30,43.5
+"343","Kyirin Heath","MISS",3000,NA,0,"Healthy",NA,NA,NA,"VAND",37.8,30,43.5
+"344","Jonathan Hess","MISS",3000,NA,0,"Healthy",NA,NA,NA,"VAND",37.8,30,43.5
+"345","Salathiel Hemphill","MISS",3000,NA,0,"Healthy",NA,NA,NA,"VAND",37.8,30,43.5
+"346","Matt Ware","MISS",3000,NA,0,"Healthy",NA,NA,NA,"VAND",37.8,30,43.5
+"347","Bralon Brown","MISS",3000,NA,0,"Healthy",5,57,0,"VAND",37.8,30,43.5
+"348","Larry Simmons","MISS",3000,NA,0,"Healthy",NA,NA,NA,"VAND",37.8,30,43.5
+"349","Jalen Knox","MISS",3000,0.61,0,"Healthy",NA,NA,NA,"VAND",37.8,30,43.5
+"350","JJ Henry","MISS",3000,5.83,1,"Healthy",42,61.2,1.47,"VAND",37.8,30,43.5
+"351","Jeremiah Dillon","MISS",3000,NA,0,"Healthy",NA,NA,NA,"VAND",37.8,30,43.5
+"352","Joshua Pfeifer","MISS",3000,NA,0,"Healthy",NA,NA,NA,"VAND",37.8,30,43.5
+"353","Dannis Jackson","MISS",3000,NA,0,"Healthy",NA,NA,NA,"VAND",37.8,30,43.5
+"354","Calvin Wilson","MISS",3000,NA,0,"Healthy",NA,NA,NA,"VAND",37.8,30,43.5
+"355","Qua Davis","MISS",3000,0.58,0,"Healthy",2,60.8,1,"VAND",37.8,30,43.5
+"356","Brandon Buckhaulter","MISS",3000,NA,0,"Healthy",NA,NA,NA,"VAND",37.8,30,43.5
+"357","Jacobi Moore","MISS",3000,NA,0,"Healthy",NA,NA,NA,"VAND",37.8,30,43.5
+"358","Lex Boucvalt","MISS",3000,NA,0,"Healthy",NA,NA,NA,"VAND",37.8,30,43.5
+"359","Drew Burnett","MISS",3000,NA,0,"Healthy",NA,NA,NA,"VAND",37.8,30,43.5
+"360","Mac Owen","MISS",3000,NA,0,"Healthy",NA,NA,NA,"VAND",37.8,30,43.5
+"361","Sellers Shy","MISS",3000,NA,0,"Healthy",NA,NA,NA,"VAND",37.8,30,43.5
+"362","Austin Morphis","MISS",3000,NA,0,"Healthy",NA,NA,NA,"VAND",37.8,30,43.5
+"363","Hayden Farrar","MISS",3000,NA,0,"Healthy",NA,NA,NA,"VAND",37.8,30,43.5
+"364","Gavin Schoenwald","VAND",3000,2.65,0,"Healthy",84,56,0.78,"MISS",78.5,30.6,75.6
+"365","Justin Ball","VAND",3000,2.65,0,"Healthy",50,54.3,1,"MISS",78.5,30.6,75.6
+"366","Joel DeCoursey","VAND",3000,NA,0,"Healthy",NA,NA,NA,"MISS",78.5,30.6,75.6
+"367","Cole Spence","VAND",3000,0.5,0,"Healthy",NA,NA,NA,"MISS",78.5,30.6,75.6
+"368","Ezra McAllister","VAND",3000,NA,0,"Healthy",NA,NA,NA,"MISS",78.5,30.6,75.6
+"369","Gamarion Carter","VAND",3000,NA,0,"Healthy",4,57.8,1.75,"MISS",78.5,30.6,75.6
+"370","Daveon Walker","VAND",3000,NA,0,"Ques Sat - Undisclosed",NA,NA,NA,"MISS",78.5,30.6,75.6
+"371","Hutch Baird","VAND",3000,NA,0,"Healthy",NA,NA,NA,"MISS",78.5,30.6,75.6
+"372","Wilson Long","VAND",3000,NA,0,"Healthy",NA,NA,NA,"MISS",78.5,30.6,75.6
+"373","Richie Hoskins","VAND",3000,NA,0,"Healthy",NA,NA,NA,"MISS",78.5,30.6,75.6
+"374","Quincy Skinner Jr.","VAND",3000,NA,0,"Healthy",22,53.6,1.29,"MISS",78.5,30.6,75.6
+"375","Landon Wells","VAND",3000,NA,0,"Healthy",NA,NA,NA,"MISS",78.5,30.6,75.6
+"376","Jalin Conyers","ASU",3000,3.21,0,"Healthy",49,53.2,1.38,"UW",NA,NA,NA
+"377","Bryce Pierre","ASU",3000,NA,0,"Healthy",NA,NA,NA,"UW",NA,NA,NA
+"378","Jacob Newell","ASU",3000,NA,0,"out for season - Leg",NA,NA,NA,"UW",NA,NA,NA
+"379","Ryan Morgan","ASU",3000,NA,0,"Healthy",NA,NA,NA,"UW",NA,NA,NA
+"380","Colby Garvin","ASU",3000,NA,0,"Healthy",NA,NA,NA,"UW",NA,NA,NA
+"381","Justin Roehl","ASU",3000,NA,0,"Healthy",NA,NA,NA,"UW",NA,NA,NA
+"382","Cade Veach","ASU",3000,NA,0,"Healthy",NA,NA,NA,"UW",NA,NA,NA
+"383","Jack Cole","ASU",3000,NA,0,"Healthy",NA,NA,NA,"UW",NA,NA,NA
+"384","Jake Ray","ASU",3000,NA,0,"Healthy",NA,NA,NA,"UW",NA,NA,NA
+"385","Chad Johnson Jr.","ASU",3000,0.95,0,"Healthy",8,49.4,0,"UW",NA,NA,NA
+"386","Josh Hart","ASU",3000,NA,0,"Healthy",NA,NA,NA,"UW",NA,NA,NA
+"387","Charles Hall IV","ASU",3000,NA,0,"Healthy",NA,NA,NA,"UW",NA,NA,NA
+"388","Elijah Parker","ASU",3000,NA,0,"Healthy",NA,NA,NA,"UW",NA,NA,NA
+"389","Max Ware","ASU",3000,NA,0,"Healthy",NA,NA,NA,"UW",NA,NA,NA
+"390","Isaac Yates","ASU",3000,NA,0,"Healthy",NA,NA,NA,"UW",NA,NA,NA
+"391","James Pearson","ASU",3000,NA,0,"Healthy",NA,NA,NA,"UW",NA,NA,NA
+"392","Javen Jacobs","ASU",3000,0.51,0,"out for season - Undisclosed",NA,NA,NA,"UW",NA,NA,NA
+"393","Cooper Wallace","ASU",3000,NA,0,"Healthy",NA,NA,NA,"UW",NA,NA,NA
+"394","Patrick Williams II","ASU",3000,NA,0,"Healthy",NA,NA,NA,"UW",NA,NA,NA
+"395","Zeek Freeman","ASU",3000,0.51,0,"Healthy",7,53.5,0,"UW",NA,NA,NA
+"396","Coben Bourguet","ASU",3000,NA,0,"Healthy",NA,NA,NA,"UW",NA,NA,NA
+"397","Devin Culp","UW",3000,5.82,2,"Healthy",99,58,0.95,"ASU",39.1,47.8,34.7
+"398","Jack Westover","UW",3000,4.52,0,"Healthy",100,58.9,1.28,"ASU",39.1,47.8,34.7
+"399","Quentin Moore","UW",3000,0.83,0,"Healthy",51,49.4,0.36,"ASU",39.1,47.8,34.7
+"400","Griffin Waiss","UW",3000,NA,0,"Healthy",3,48.1,0,"ASU",39.1,47.8,34.7
+"401","Mason West","UW",3000,NA,0,"Healthy",NA,NA,NA,"ASU",39.1,47.8,34.7
+"402","Caden Jumper","UW",3000,NA,0,"Healthy",NA,NA,NA,"ASU",39.1,47.8,34.7
+"403","Zeke Pelluer","UW",3000,NA,0,"Healthy",NA,NA,NA,"ASU",39.1,47.8,34.7
+"404","John Frazier","UW",3000,NA,0,"Healthy",NA,NA,NA,"ASU",39.1,47.8,34.7
+"405","Ryan Otton","UW",3000,NA,0,"Healthy",NA,NA,NA,"ASU",39.1,47.8,34.7
+"406","Lonyatta Alexander Jr.","UW",3000,NA,0,"Healthy",NA,NA,NA,"ASU",39.1,47.8,34.7
+"407","Brennan Holmes","UW",3000,0.82,0,"Healthy",3,78.3,5,"ASU",39.1,47.8,34.7
+"408","Jackson Girouard","UW",3000,NA,0,"Healthy",NA,NA,NA,"ASU",39.1,47.8,34.7
+"409","Mason Wheeler","UW",3000,NA,0,"Healthy",NA,NA,NA,"ASU",39.1,47.8,34.7
+"410","Jake Parnigan","UW",3000,NA,0,"Healthy",NA,NA,NA,"ASU",39.1,47.8,34.7
+"411","Keanu Wallace","UW",3000,NA,0,"Healthy",NA,NA,NA,"ASU",39.1,47.8,34.7
+"412","David Pritchard","UW",3000,NA,0,"Healthy",NA,NA,NA,"ASU",39.1,47.8,34.7
+"413","Nick Juran","UW",3000,NA,0,"Healthy",NA,NA,NA,"ASU",39.1,47.8,34.7
+"414","Denzel Boston","UW",3000,0.82,0,"Healthy",9,69.2,1.25,"ASU",39.1,47.8,34.7
+"415","Jabez Tinae","UW",3000,NA,0,"Healthy",NA,NA,NA,"ASU",39.1,47.8,34.7
+"416","Hudson Habermehl","UCLA",3000,4.93,0,"Healthy",110,57.9,0.99,"UTAH",65,26.9,67.8
+"417","David Priebe","UCLA",3000,NA,0,"Healthy",NA,NA,NA,"UTAH",65,26.9,67.8
+"418","Mike Martinez","UCLA",3000,NA,0,"Healthy",NA,NA,NA,"UTAH",65,26.9,67.8
+"419","Grant Norberg","UCLA",3000,NA,0,"Healthy",NA,NA,NA,"UTAH",65,26.9,67.8
+"420","Sam Summa","UCLA",3000,NA,0,"Healthy",NA,NA,NA,"UTAH",65,26.9,67.8
+"421","Michael Churich","UCLA",3000,NA,0,"Healthy",NA,NA,NA,"UTAH",65,26.9,67.8
+"422","Carsen Ryan","UCLA",3000,0.6,0,"Healthy",44,82.9,2.48,"UTAH",65,26.9,67.8
+"423","Matt Sykes","UCLA",3000,1.67,0,"Healthy",42,64.5,1.17,"UTAH",65,26.9,67.8
+"424","Josiah Norwood","UCLA",3000,1.13,0,"Healthy",27,65,3.65,"UTAH",65,26.9,67.8
+"425","Colson Yankoff","UCLA",3000,1.13,0,"Healthy",7,67.2,3.33,"UTAH",65,26.9,67.8
+"426","Ashton Authement","UCLA",3000,NA,0,"Healthy",NA,NA,NA,"UTAH",65,26.9,67.8
+"427","Jadyn Marshall","UCLA",3000,0.6,0,"Healthy",3,42.4,0,"UTAH",65,26.9,67.8
+"428","Braden Pegan","UCLA",3000,NA,0,"Healthy",2,57.8,0,"UTAH",65,26.9,67.8
+"429","Devanti Dillard","UCLA",3000,NA,0,"Healthy",NA,NA,NA,"UTAH",65,26.9,67.8
+"430","Ezavier Staples","UCLA",3000,NA,0,"Healthy",NA,NA,NA,"UTAH",65,26.9,67.8
+"431","DJ Justice","UCLA",3000,NA,0,"Healthy",NA,NA,NA,"UTAH",65,26.9,67.8
+"432","Ryan Cragun","UCLA",3000,NA,0,"Healthy",NA,NA,NA,"UTAH",65,26.9,67.8
+"433","Elijah Rodriguez","UCLA",3000,NA,0,"Healthy",NA,NA,NA,"UTAH",65,26.9,67.8
+"434","Bradley Schlom","UCLA",3000,NA,0,"Healthy",NA,NA,NA,"UTAH",65,26.9,67.8
+"435","Brant Kuithe","UTAH",3000,NA,0,"out for season - Leg",89,68.8,2.37,"UCLA",74.3,23.1,67.2
+"436","Thomas Yassmin","UTAH",3000,2.89,0,"Healthy",31,61.9,3.79,"UCLA",74.3,23.1,67.2
+"437","Landon Morris","UTAH",3000,NA,0,"Healthy",NA,NA,NA,"UCLA",74.3,23.1,67.2
+"438","Logan Kendall","UTAH",3000,1.95,0,"Healthy",24,68.8,0.67,"UCLA",74.3,23.1,67.2
+"439","Hayden Erickson","UTAH",3000,NA,0,"Healthy",NA,NA,NA,"UCLA",74.3,23.1,67.2
+"440","Deven Johnson","UTAH",3000,NA,0,"Healthy",NA,NA,NA,"UCLA",74.3,23.1,67.2
+"441","Isaac Vaha","UTAH",3000,NA,0,"Healthy",NA,NA,NA,"UCLA",74.3,23.1,67.2
+"442","Sire Woods","UTAH",3000,NA,0,"Healthy",NA,NA,NA,"UCLA",74.3,23.1,67.2
+"443","Taniela Pututau","UTAH",3000,NA,0,"Healthy",NA,NA,NA,"UCLA",74.3,23.1,67.2
+"444","Luca Caldarella","UTAH",3000,NA,0,"Healthy",NA,NA,NA,"UCLA",74.3,23.1,67.2
+"445","Chris Reed","UTAH",3000,NA,0,"Healthy",NA,NA,NA,"UCLA",74.3,23.1,67.2
+"446","Jett Meine","UTAH",3000,NA,0,"Healthy",NA,NA,NA,"UCLA",74.3,23.1,67.2
+"447","Zach Vaughn","UTAH",3000,NA,0,"Healthy",NA,NA,NA,"UCLA",74.3,23.1,67.2
+"448","Tao Johnson","UTAH",3000,1.46,0,"Late Nov - Elbow",NA,NA,NA,"UCLA",74.3,23.1,67.2
+"449","Pierre Moudourou","UTAH",3000,NA,0,"Healthy",NA,NA,NA,"UCLA",74.3,23.1,67.2
+"450","Bennett Redell","UTAH",3000,NA,0,"Healthy",NA,NA,NA,"UCLA",74.3,23.1,67.2
+"451","Noah Bennee","UTAH",3000,NA,0,"Healthy",NA,NA,NA,"UCLA",74.3,23.1,67.2
+"452","Sidney Mbanasor","UTAH",3000,NA,0,"Healthy",NA,NA,NA,"UCLA",74.3,23.1,67.2
+"453","Jack Platt","UTAH",3000,NA,0,"Healthy",NA,NA,NA,"UCLA",74.3,23.1,67.2
+"454","Tiquan Gilmore","UTAH",3000,0.82,0,"Healthy",NA,NA,NA,"UCLA",74.3,23.1,67.2
+"455","Masaki Kudo","UTAH",3000,NA,0,"Healthy",NA,NA,NA,"UCLA",74.3,23.1,67.2
+"456","Braxton Wehrli","UTAH",3000,NA,0,"Healthy",NA,NA,NA,"UCLA",74.3,23.1,67.2
+"457","Trevor Kardell","KU",3000,1.35,0,"Healthy",16,90.5,4.36,"TCU",63.2,13.5,55
+"458","Jared Casey","KU",3000,3.07,0,"Healthy",57,67.4,1.7,"TCU",63.2,13.5,55
+"459","Tevita Noa","KU",3000,NA,0,"Healthy",NA,NA,NA,"TCU",63.2,13.5,55
+"460","Will Huggins","KU",3000,NA,0,"Healthy",NA,NA,NA,"TCU",63.2,13.5,55
+"461","Mason Brotherton","KU",3000,NA,0,"Healthy",NA,NA,NA,"TCU",63.2,13.5,55
+"462","Mac Copeland","KU",3000,NA,0,"Healthy",NA,NA,NA,"TCU",63.2,13.5,55
+"463","Max Dowling","KU",3000,NA,0,"Healthy",NA,NA,NA,"TCU",63.2,13.5,55
+"464","Mack Moeller","KU",3000,NA,0,"Healthy",NA,NA,NA,"TCU",63.2,13.5,55
+"465","Kevin Terry","KU",3000,1.34,0,"Healthy",26,58.5,1.27,"TCU",63.2,13.5,55
+"466","Tanaka Scott","KU",3000,1.34,0,"Healthy",17,65.2,1.44,"TCU",63.2,13.5,55
+"467","Quinton Conley","KU",3000,NA,0,"Healthy",NA,NA,NA,"TCU",63.2,13.5,55
+"468","Majik Rector","KU",3000,NA,0,"Healthy",NA,NA,NA,"TCU",63.2,13.5,55
+"469","Jordan Medley","KU",3000,NA,0,"Healthy",NA,NA,NA,"TCU",63.2,13.5,55
+"470","Cole Rhoden","KU",3000,NA,0,"Healthy",NA,NA,NA,"TCU",63.2,13.5,55
+"471","Trevor Wilson","KU",3000,NA,0,"Out indefinitely - Suspension",NA,NA,NA,"TCU",63.2,13.5,55
+"472","Kelan Robinson","KU",3000,NA,0,"Healthy",NA,NA,NA,"TCU",63.2,13.5,55
+"473","Griffin Koch","KU",3000,NA,0,"Healthy",NA,NA,NA,"TCU",63.2,13.5,55
+"474","Geor'Quarius Spivey","TCU",3000,3.17,0,"Healthy",54,58,0.9,"KU",66,32.7,52.9
+"475","Dominic DiNunzio","TCU",3000,0.71,0,"Healthy",NA,NA,NA,"KU",66,32.7,52.9
+"476","Carter Ware","TCU",3000,NA,0,"Healthy",NA,NA,NA,"KU",66,32.7,52.9
+"477","D'Andre Rogers","TCU",3000,NA,0,"Healthy",NA,NA,NA,"KU",66,32.7,52.9
+"478","Ben Reppenhagen","TCU",3000,NA,0,"Healthy",NA,NA,NA,"KU",66,32.7,52.9
+"479","Henry Deakins","TCU",3000,NA,0,"Healthy",NA,NA,NA,"KU",66,32.7,52.9
+"480","Dylan Adams","TCU",3000,NA,0,"Healthy",NA,NA,NA,"KU",66,32.7,52.9
+"481","Brent Matiscik","TCU",3000,NA,0,"Healthy",NA,NA,NA,"KU",66,32.7,52.9
+"482","Hilton Harris","TCU",3000,NA,0,"Healthy",NA,NA,NA,"KU",66,32.7,52.9
+"483","Alex Honig","TCU",3000,NA,0,"Healthy",NA,NA,NA,"KU",66,32.7,52.9
+"484","Curtis Raymond III","TCU",3000,NA,0,"Healthy",NA,NA,NA,"KU",66,32.7,52.9
+"485","Austin Scheets","TCU",3000,NA,0,"Healthy",NA,NA,NA,"KU",66,32.7,52.9
+"486","Quincy Brown","TCU",3000,0.61,0,"Out indefinitely - Undisclosed",18,75.4,1.82,"KU",66,32.7,52.9
+"487","Gunnar Henderson","TCU",3000,2,0,"Healthy",19,85.3,7.84,"KU",66,32.7,52.9
+"488","Colton Dobson","TCU",3000,NA,0,"Healthy",NA,NA,NA,"KU",66,32.7,52.9
+"489","Major Everhart","TCU",3000,NA,0,"Healthy",NA,NA,NA,"KU",66,32.7,52.9
+"490","Caleb Medford","TCU",3000,NA,0,"Healthy",NA,NA,NA,"KU",66,32.7,52.9
+"491","Chase Jackson","TCU",3000,0.71,0,"Healthy",5,58.8,1.4,"KU",66,32.7,52.9
+"492","Drew Scott","TCU",3000,NA,0,"Healthy",NA,NA,NA,"KU",66,32.7,52.9
+"493","Chase Curtis","TCU",3000,NA,0,"Healthy",14,65.6,2.85,"KU",66,32.7,52.9
+"494","JR Justice","TCU",3000,NA,0,"Healthy",NA,NA,NA,"KU",66,32.7,52.9
+"495","Joe Staubach","TCU",3000,NA,0,"Healthy",NA,NA,NA,"KU",66,32.7,52.9
+"496","Parker Clark","TCU",3000,NA,0,"Healthy",NA,NA,NA,"KU",66,32.7,52.9
+"497","Hunter Krepp","TCU",3000,NA,0,"Healthy",NA,NA,NA,"KU",66,32.7,52.9
+"498","Christopher Chosen","TCU",3000,NA,0,"Healthy",NA,NA,NA,"KU",66,32.7,52.9
+"499","Stayton Ankrom","TCU",3000,NA,0,"Healthy",NA,NA,NA,"KU",66,32.7,52.9
+"500","DJ Allen","TCU",3000,NA,0,"Healthy",NA,NA,NA,"KU",66,32.7,52.9
+"501","Keagan Cunningham","TCU",3000,NA,0,"Healthy",NA,NA,NA,"KU",66,32.7,52.9
+"502","Christian MacDonald","TCU",3000,NA,0,"Healthy",NA,NA,NA,"KU",66,32.7,52.9
+"503","Daniel Parker Jr.","OU",3000,1.91,0,"Healthy",39,73.1,0.85,"UT",78.2,42.2,63.2
+"504","Kaden Helms","OU",3000,0.57,0,"Healthy",7,55,0.8,"UT",78.2,42.2,63.2
+"505","Jason Llewellyn","OU",3000,NA,0,"Healthy",NA,NA,NA,"UT",78.2,42.2,63.2
+"506","Carsten Groos","OU",3000,NA,0,"Healthy",NA,NA,NA,"UT",78.2,42.2,63.2
+"507","Jackson Sumlin","OU",3000,NA,0,"Healthy",NA,NA,NA,"UT",78.2,42.2,63.2
+"508","Trevon West","OU",3000,NA,0,"Healthy",NA,NA,NA,"UT",78.2,42.2,63.2
+"509","Jayden Gibson","OU",3000,3.53,0,"Healthy",25,54.5,0.52,"UT",78.2,42.2,63.2
+"510","Brian Darby","OU",3000,NA,0,"Healthy",NA,NA,NA,"UT",78.2,42.2,63.2
+"511","LV Bunkley-Shelton","OU",3000,0.93,0,"Healthy",13,63.5,0.83,"UT",78.2,42.2,63.2
+"512","J.J. Hester","OU",3000,0.56,0,"Healthy",NA,NA,NA,"UT",78.2,42.2,63.2
+"513","Damon Smith","OU",3000,NA,0,"Healthy",NA,NA,NA,"UT",78.2,42.2,63.2
+"514","Dallas Dudley","OU",3000,NA,0,"Healthy",NA,NA,NA,"UT",78.2,42.2,63.2
+"515","Luke Creeger","OU",3000,NA,0,"Healthy",NA,NA,NA,"UT",78.2,42.2,63.2
+"516","Nasir Kemper","OU",3000,NA,0,"Healthy",NA,NA,NA,"UT",78.2,42.2,63.2
+"517","Nic Anderson","OU",3000,NA,0,"Healthy",NA,NA,NA,"UT",78.2,42.2,63.2
+"518","Davion Woolen","OU",3000,NA,0,"Healthy",NA,NA,NA,"UT",78.2,42.2,63.2
+"519","Gavin Freeman","OU",3000,0.93,0,"Healthy",4,84.6,0.25,"UT",78.2,42.2,63.2
+"520","Adrian Scott","OU",3000,NA,0,"Healthy",NA,NA,NA,"UT",78.2,42.2,63.2
+"521","Major Melson","OU",3000,NA,0,"Healthy",NA,NA,NA,"UT",78.2,42.2,63.2
+"522","Gunnar Helm","UT",3000,1.86,1,"Healthy",38,49.4,0.44,"OU",51.9,30.2,35.7
+"523","Juan Davis","UT",3000,0.63,0,"Out indefinitely - Undisclosed",NA,NA,NA,"OU",51.9,30.2,35.7
+"524","Nathan Hatter","UT",3000,NA,0,"Healthy",NA,NA,NA,"OU",51.9,30.2,35.7
+"525","Myles Hill","UT",3000,NA,0,"Healthy",NA,NA,NA,"OU",51.9,30.2,35.7
+"526","Patrick Bayouth","UT",3000,NA,0,"Healthy",NA,NA,NA,"OU",51.9,30.2,35.7
+"527","Jahleel Billingsley","UT",3000,NA,0,"Healthy",NA,NA,NA,"OU",51.9,30.2,35.7
+"528","Brayden Liebrock","UT",3000,NA,0,"Healthy",NA,NA,NA,"OU",51.9,30.2,35.7
+"529","Troy Omeire","UT",3000,0.63,0,"Healthy",5,68.9,1.8,"OU",51.9,30.2,35.7
+"530","Remy Patson","UT",3000,NA,0,"Healthy",NA,NA,NA,"OU",51.9,30.2,35.7
+"531","Dajon Harrison","UT",3000,NA,0,"Healthy",25,52.7,0.36,"OU",51.9,30.2,35.7
+"532","Savion Red","UT",3000,0.63,0,"Healthy",6,61.2,0.83,"OU",51.9,30.2,35.7
+"533","Reece Beauchamp","UT",3000,NA,0,"Healthy",NA,NA,NA,"OU",51.9,30.2,35.7
+"534","Isaiah Neyor","UT",3000,NA,0,"out for season - Knee",NA,NA,NA,"OU",51.9,30.2,35.7
+"535","Parker Alford","UT",3000,NA,0,"Healthy",NA,NA,NA,"OU",51.9,30.2,35.7
+"536","Agiye Hall","UT",3000,1.75,0,"Healthy",9,55.4,0.88,"OU",51.9,30.2,35.7
+"537","Quinn Merritt","UT",3000,NA,0,"Healthy",NA,NA,NA,"OU",51.9,30.2,35.7
+"538","Thatcher Milton","UT",3000,NA,0,"Healthy",NA,NA,NA,"OU",51.9,30.2,35.7
+"539","Jaden Alexis","UT",3000,NA,0,"Healthy",NA,NA,NA,"OU",51.9,30.2,35.7
+"540","Hamilton McMartin","UT",3000,NA,0,"Healthy",NA,NA,NA,"OU",51.9,30.2,35.7
+"541","Gabe Sulser","UT",3000,0.67,0,"Healthy",5,70.3,2,"OU",51.9,30.2,35.7
+"542","Gus Asel","UT",3000,NA,0,"Healthy",NA,NA,NA,"OU",51.9,30.2,35.7
+"543","Paxton Anderson","UT",3000,NA,0,"Healthy",NA,NA,NA,"OU",51.9,30.2,35.7
+"544","Jake Schultz","OKST",3000,2.67,0,"Healthy",45,54.8,0.41,"TTU",70.1,40.6,36.8
+"545","Quinton Stewart","OKST",3000,0.72,0,"Healthy",NA,NA,NA,"TTU",70.1,40.6,36.8
+"546","Blaine Green","OKST",3000,NA,0,"Ques Sat - Wrist",NA,NA,NA,"TTU",70.1,40.6,36.8
+"547","Tabry Shettron","OKST",3000,NA,0,"Healthy",NA,NA,NA,"TTU",70.1,40.6,36.8
+"548","Luke McEndoo","OKST",3000,NA,0,"Healthy",NA,NA,NA,"TTU",70.1,40.6,36.8
+"549","Jaden Bray","OKST",3000,NA,0,"Ques Sat - Arm",NA,NA,NA,"TTU",70.1,40.6,36.8
+"550","Cale Cabbiness","OKST",3000,3.31,0,"Healthy",16,58.9,2.31,"TTU",70.1,40.6,36.8
+"551","Talyn Shettron","OKST",3000,0.71,0,"Healthy",5,71.5,4.2,"TTU",70.1,40.6,36.8
+"552","Langston Anderson","OKST",3000,1.36,0,"Healthy",8,48.2,0,"TTU",70.1,40.6,36.8
+"553","Peyton Kramer","OKST",3000,NA,0,"Healthy",NA,NA,NA,"TTU",70.1,40.6,36.8
+"554","CJ Tate","OKST",3000,0.71,0,"Healthy",16,47.9,0,"TTU",70.1,40.6,36.8
+"555","Rylan McQuarters","OKST",3000,NA,0,"Healthy",NA,NA,NA,"TTU",70.1,40.6,36.8
+"556","Xavier Dandridge","OKST",3000,NA,0,"Healthy",NA,NA,NA,"TTU",70.1,40.6,36.8
+"557","Braylin Presley","OKST",3000,1.36,0,"Healthy",20,54.8,0.6,"TTU",70.1,40.6,36.8
+"558","Rashad Dixon","OKST",3000,NA,0,"Healthy",NA,NA,NA,"TTU",70.1,40.6,36.8
+"559","Clayton Barbour","OKST",3000,NA,0,"Healthy",NA,NA,NA,"TTU",70.1,40.6,36.8
+"560","Stephon Johnson Jr.","OKST",3000,1.06,0,"Healthy",25,66.1,2.2,"TTU",70.1,40.6,36.8
+"561","Mason Gilkey","OKST",3000,NA,0,"Healthy",NA,NA,NA,"TTU",70.1,40.6,36.8
+"562","Vance Hooper","OKST",3000,NA,0,"Healthy",NA,NA,NA,"TTU",70.1,40.6,36.8
+"563","Baylor Cupp","TTU",3000,2.36,0,"Healthy",37,74.4,2.68,"OKST",66.4,16.5,41.5
+"564","Henry Teeter","TTU",3000,0.83,0,"Healthy",44,57.4,0.59,"OKST",66.4,16.5,41.5
+"565","Jayden York","TTU",3000,NA,0,"Healthy",NA,NA,NA,"OKST",66.4,16.5,41.5
+"566","Tanner Allen","TTU",3000,NA,0,"Healthy",NA,NA,NA,"OKST",66.4,16.5,41.5
+"567","Charles Robinson","TTU",3000,NA,0,"Healthy",1,59.8,0,"OKST",66.4,16.5,41.5
+"568","Zack McCown","TTU",3000,NA,0,"Healthy",NA,NA,NA,"OKST",66.4,16.5,41.5
+"569","Jason Lloyd","TTU",3000,NA,0,"Healthy",NA,NA,NA,"OKST",66.4,16.5,41.5
+"570","Cole Ramsey","TTU",3000,NA,0,"Healthy",NA,NA,NA,"OKST",66.4,16.5,41.5
+"571","Brady Boyd","TTU",3000,3.11,0,"Healthy",100,55.5,0.52,"OKST",66.4,16.5,41.5
+"572","Chadarius Townsend","TTU",3000,NA,0,"Healthy",NA,NA,NA,"OKST",66.4,16.5,41.5
+"573","Drew Hocutt","TTU",3000,NA,0,"Healthy",5,69.3,2.2,"OKST",66.4,16.5,41.5
+"574","Jordan Brown","TTU",3000,0.59,0,"Healthy",2,90.3,7,"OKST",66.4,16.5,41.5
+"575","Nehemiah Martinez I","TTU",3000,7.75,3,"Healthy",NA,NA,NA,"OKST",66.4,16.5,41.5
+"576","Tyler King","TTU",3000,NA,0,"Healthy",1,61.3,6,"OKST",66.4,16.5,41.5
+"577","Coy Eakin","TTU",3000,NA,0,"Ques Sat - Ankle",NA,NA,NA,"OKST",66.4,16.5,41.5
+"578","Louis Ortiz","TTU",3000,NA,0,"Healthy",NA,NA,NA,"OKST",66.4,16.5,41.5
+"579","Cole Kirkpatrick","TTU",3000,NA,0,"Healthy",NA,NA,NA,"OKST",66.4,16.5,41.5
+"580","Ben Gair","TTU",3000,NA,0,"Healthy",NA,NA,NA,"OKST",66.4,16.5,41.5
+"581","Jake Bishop","TTU",3000,NA,0,"Healthy",NA,NA,NA,"OKST",66.4,16.5,41.5
+"582","Jack Esparza","TTU",3000,NA,0,"Healthy",NA,NA,NA,"OKST",66.4,16.5,41.5
+"583","Cameron Cantrell","TTU",3000,NA,0,"Healthy",NA,NA,NA,"OKST",66.4,16.5,41.5
+"584","Haydon Wiginton","TTU",3000,NA,0,"Healthy",4,58.8,1.75,"OKST",66.4,16.5,41.5
+"585","Nate Floyd","TTU",3000,NA,0,"Healthy",NA,NA,NA,"OKST",66.4,16.5,41.5
+"586","James Bomba","IU",3000,0.63,0,"Healthy",17,64,0.38,"MICH",87.2,17.6,68.9
+"587","Aaron Steinfeldt","IU",3000,0.63,0,"Healthy",20,63.2,2.63,"MICH",87.2,17.6,68.9
+"588","Sam Daugstrup","IU",3000,NA,0,"Healthy",NA,NA,NA,"MICH",87.2,17.6,68.9
+"589","Trey Walker","IU",3000,NA,0,"Healthy",NA,NA,NA,"MICH",87.2,17.6,68.9
+"590","Brody Foley","IU",3000,NA,0,"Healthy",NA,NA,NA,"MICH",87.2,17.6,68.9
+"591","Ryan Barnes","IU",3000,NA,0,"Healthy",NA,NA,NA,"MICH",87.2,17.6,68.9
+"592","Ryan Miller","IU",3000,NA,0,"Out indefinitely - Undisclosed",NA,NA,NA,"MICH",87.2,17.6,68.9
+"593","Andison Coby","IU",3000,3.85,0,"Healthy",134,53.9,0.77,"MICH",87.2,17.6,68.9
+"594","Donaven McCulley","IU",3000,3.18,0,"Healthy",85,59.7,1.06,"MICH",87.2,17.6,68.9
+"595","Malachi Holt-Bennett","IU",3000,6.2,2,"Healthy",42,48.6,0.3,"MICH",87.2,17.6,68.9
+"596","David Baker","IU",3000,NA,0,"Out indefinitely - Undisclosed",NA,NA,NA,"MICH",87.2,17.6,68.9
+"597","Brady Simmons","IU",3000,NA,0,"Healthy",NA,NA,NA,"MICH",87.2,17.6,68.9
+"598","Eli Jochem","IU",3000,NA,0,"Healthy",NA,NA,NA,"MICH",87.2,17.6,68.9
+"599","Christian Harris","IU",3000,NA,0,"Ques Sat - Undisclosed",NA,NA,NA,"MICH",87.2,17.6,68.9
+"600","Connor Delp","IU",3000,NA,0,"Healthy",NA,NA,NA,"MICH",87.2,17.6,68.9
+"601","Omar Cooper Jr.","IU",3000,NA,0,"Healthy",NA,NA,NA,"MICH",87.2,17.6,68.9
+"602","McCall Ray","IU",3000,NA,0,"Healthy",NA,NA,NA,"MICH",87.2,17.6,68.9
+"603","Kamryn Perry","IU",3000,NA,0,"Healthy",NA,NA,NA,"MICH",87.2,17.6,68.9
+"604","Jaquez Smith","IU",3000,NA,0,"Out indefinitely - Undisclosed",NA,NA,NA,"MICH",87.2,17.6,68.9
+"605","Matthew Hibner","MICH",3000,NA,0,"Healthy",7,61,2.5,"IU",51.1,50.5,33.6
+"606","Carter Selzer","MICH",3000,NA,0,"Healthy",NA,NA,NA,"IU",51.1,50.5,33.6
+"607","Hunter Neff","MICH",3000,NA,0,"Healthy",1,81,8,"IU",51.1,50.5,33.6
+"608","Noah Howes","MICH",3000,NA,0,"Healthy",NA,NA,NA,"IU",51.1,50.5,33.6
+"609","Colston Loveland","MICH",3000,0.64,0,"Healthy",16,54.9,2.54,"IU",51.1,50.5,33.6
+"610","Josh Beetham","MICH",3000,NA,0,"Healthy",NA,NA,NA,"IU",51.1,50.5,33.6
+"611","Louis Hansen","MICH",3000,NA,0,"Healthy",NA,NA,NA,"IU",51.1,50.5,33.6
+"612","Max Bredeson","MICH",3000,1.22,0,"Healthy",26,83.1,2.85,"IU",51.1,50.5,33.6
+"613","Marlin Klein","MICH",3000,NA,0,"Healthy",NA,NA,NA,"IU",51.1,50.5,33.6
+"614","Cristian Dixon","MICH",3000,NA,0,"Healthy",NA,NA,NA,"IU",51.1,50.5,33.6
+"615","Jake Thaw","MICH",3000,NA,0,"Healthy",NA,NA,NA,"IU",51.1,50.5,33.6
+"616","Eamonn Dennis","MICH",3000,NA,0,"Healthy",NA,NA,NA,"IU",51.1,50.5,33.6
+"617","Peyton O'Leary","MICH",3000,0.64,0,"Healthy",5,57.5,0.8,"IU",51.1,50.5,33.6
+"618","Amorion Walker","MICH",3000,0.64,0,"Healthy",8,56.8,0.5,"IU",51.1,50.5,33.6
+"619","Christian Bartholomew","MICH",3000,NA,0,"Healthy",NA,NA,NA,"IU",51.1,50.5,33.6
+"620","Zach Peterson","MICH",3000,NA,0,"Healthy",NA,NA,NA,"IU",51.1,50.5,33.6
+"621","Will Rolapp","MICH",3000,NA,0,"Healthy",NA,NA,NA,"IU",51.1,50.5,33.6
+"622","Darrius Clemons","MICH",3000,0.64,0,"Healthy",22,50.9,0.32,"IU",51.1,50.5,33.6
+"623","Mathew Harrison","MICH",3000,NA,0,"Healthy",NA,NA,NA,"IU",51.1,50.5,33.6
+"624","Joe Taylor","MICH",3000,NA,0,"Healthy",NA,NA,NA,"IU",51.1,50.5,33.6
+"625","Tyler Morris","MICH",3000,1.21,0,"Healthy",10,59.3,0.9,"IU",51.1,50.5,33.6
+"626","Sam Staruch","MICH",3000,NA,0,"Healthy",NA,NA,NA,"IU",51.1,50.5,33.6
+"627","Logan Forbes","MICH",3000,NA,0,"Healthy",NA,NA,NA,"IU",51.1,50.5,33.6
+"628","CJ Dippre","UMD",3000,4.33,0,"Healthy",99,74.9,2.03,"PUR",59.6,34.7,44.2
+"629","Leron Husbands","UMD",3000,NA,0,"Healthy",NA,NA,NA,"PUR",59.6,34.7,44.2
+"630","Maxwell Brown","UMD",3000,NA,0,"Healthy",NA,NA,NA,"PUR",59.6,34.7,44.2
+"631","Preston Howard","UMD",3000,NA,0,"Healthy",NA,NA,NA,"PUR",59.6,34.7,44.2
+"632","Joshua Jennings","UMD",3000,NA,0,"Healthy",NA,NA,NA,"PUR",59.6,34.7,44.2
+"633","Terrance Ellis","UMD",3000,NA,0,"Healthy",NA,NA,NA,"PUR",59.6,34.7,44.2
+"634","Weston Wolff","UMD",3000,NA,0,"Healthy",NA,NA,NA,"PUR",59.6,34.7,44.2
+"635","Shane Carroll","UMD",3000,NA,0,"Healthy",NA,NA,NA,"PUR",59.6,34.7,44.2
+"636","Marcus Fleming","UMD",3000,NA,0,"Healthy",NA,NA,NA,"PUR",59.6,34.7,44.2
+"637","Kai Holloway","UMD",3000,NA,0,"Healthy",NA,NA,NA,"PUR",59.6,34.7,44.2
+"638","Octavian Smith Jr.","UMD",3000,0.67,0,"Healthy",26,69.3,1.32,"PUR",59.6,34.7,44.2
+"639","Leon Haughton Jr.","UMD",3000,0.67,0,"Healthy",5,68.9,5,"PUR",59.6,34.7,44.2
+"640","Khalid Jones","UMD",3000,NA,0,"Healthy",NA,NA,NA,"PUR",59.6,34.7,44.2
+"641","Shaleak Knotts","UMD",3000,0.67,0,"Healthy",6,57.5,-0.8,"PUR",59.6,34.7,44.2
+"642","Garrett Miller","PUR",3000,NA,0,"out for season - Knee",NA,NA,NA,"UMD",52.2,27.5,54.2
+"643","Ben Buechel","PUR",3000,NA,0,"Healthy",NA,NA,NA,"UMD",52.2,27.5,54.2
+"644","Max Klare","PUR",3000,NA,0,"Healthy",NA,NA,NA,"UMD",52.2,27.5,54.2
+"645","Drew Biber","PUR",3000,0.77,0,"Healthy",6,52.8,1.5,"UMD",52.2,27.5,54.2
+"646","Charlie Kenrich","PUR",3000,NA,0,"Healthy",NA,NA,NA,"UMD",52.2,27.5,54.2
+"647","Kyle Bilodeau","PUR",3000,NA,0,"Healthy",NA,NA,NA,"UMD",52.2,27.5,54.2
+"648","Preston Terrell","PUR",3000,0.76,0,"Healthy",5,62.5,2.4,"UMD",52.2,27.5,54.2
+"649","Collin Sullivan","PUR",3000,0.76,0,"Healthy",8,56.1,0.75,"UMD",52.2,27.5,54.2
+"650","Elijah Canion","PUR",3000,NA,0,"Ques Sat - Knee",4,55.5,0,"UMD",52.2,27.5,54.2
+"651","Hayden Parise","PUR",3000,NA,0,"Healthy",NA,NA,NA,"UMD",52.2,27.5,54.2
+"652","Milton Wright","PUR",3000,NA,0,"Healthy",NA,NA,NA,"UMD",52.2,27.5,54.2
+"653","Alex Maxwell","PUR",3000,0.76,0,"Healthy",2,73.8,4,"UMD",52.2,27.5,54.2
+"654","Ben Van Noord","PUR",3000,NA,0,"Healthy",NA,NA,NA,"UMD",52.2,27.5,54.2
+"655","Zion Steptoe","PUR",3000,NA,0,"Healthy",NA,NA,NA,"UMD",52.2,27.5,54.2
+"656","Curtis Deville Jr.","PUR",3000,NA,0,"Healthy",NA,NA,NA,"UMD",52.2,27.5,54.2
+"657","Trey Firestone","PUR",3000,NA,0,"Healthy",NA,NA,NA,"UMD",52.2,27.5,54.2
+"658","Camdyn Childers","PUR",3000,NA,0,"Healthy",NA,NA,NA,"UMD",52.2,27.5,54.2
+"659","Andrew Sowinski","PUR",3000,NA,0,"Healthy",NA,NA,NA,"UMD",52.2,27.5,54.2
+"660","Maliq Carr","MSU",3000,1.64,0,"Healthy",49,63.9,1.21,"OSU",77.6,11.1,60.7
+"661","Jack Nickel","MSU",3000,NA,0,"Healthy",NA,NA,NA,"OSU",77.6,11.1,60.7
+"662","Powers Warren","MSU",3000,NA,0,"Healthy",NA,NA,NA,"OSU",77.6,11.1,60.7
+"663","Michael Masunas","MSU",3000,NA,0,"Healthy",NA,NA,NA,"OSU",77.6,11.1,60.7
+"664","Evan Morris","MSU",3000,NA,0,"Healthy",NA,NA,NA,"OSU",77.6,11.1,60.7
+"665","Adam Berghorst","MSU",3000,NA,0,"Healthy",NA,NA,NA,"OSU",77.6,11.1,60.7
+"666","Jackson Morse","MSU",3000,NA,0,"Healthy",NA,NA,NA,"OSU",77.6,11.1,60.7
+"667","Christian Fitzpatrick","MSU",3000,0.58,0,"Healthy",20,61.1,0.94,"OSU",77.6,11.1,60.7
+"668","Jaron Glover","MSU",3000,0.58,0,"Healthy",8,56.9,0.29,"OSU",77.6,11.1,60.7
+"669","Cade McDonald","MSU",3000,NA,0,"Healthy",18,63.6,2.07,"OSU",77.6,11.1,60.7
+"670","Tyrell Henry","MSU",3000,0.58,0,"Healthy",NA,NA,NA,"OSU",77.6,11.1,60.7
+"671","Antonio Gates","MSU",3000,NA,0,"Healthy",NA,NA,NA,"OSU",77.6,11.1,60.7
+"672","Joseph Martinez","MSU",3000,NA,0,"Healthy",NA,NA,NA,"OSU",77.6,11.1,60.7
+"673","Alex Watters","MSU",3000,NA,0,"Healthy",NA,NA,NA,"OSU",77.6,11.1,60.7
+"674","Tyler Vroman","MSU",3000,NA,0,"Healthy",NA,NA,NA,"OSU",77.6,11.1,60.7
+"675","Aubrey Dawkins","MSU",3000,NA,0,"Healthy",NA,NA,NA,"OSU",77.6,11.1,60.7
+"676","Nick Hunter","MSU",3000,NA,0,"Healthy",NA,NA,NA,"OSU",77.6,11.1,60.7
+"677","Sebastian Brown","MSU",3000,NA,0,"Healthy",NA,NA,NA,"OSU",77.6,11.1,60.7
+"678","Zach Gillespie","MSU",3000,NA,0,"Healthy",NA,NA,NA,"OSU",77.6,11.1,60.7
+"679","Joe Royer","OSU",3000,NA,0,"Ques Sat - Undisclosed",NA,NA,NA,"MSU",50.9,39.1,22.8
+"680","Mitch Rossi","OSU",3000,0.76,0,"Healthy",NA,NA,NA,"MSU",50.9,39.1,22.8
+"681","Gee Scott Jr.","OSU",3000,0.76,0,"Healthy",30,49.8,0.3,"MSU",50.9,39.1,22.8
+"682","Riordin Stauffer","OSU",3000,NA,0,"Healthy",NA,NA,NA,"MSU",50.9,39.1,22.8
+"683","Patrick Gurd","OSU",3000,NA,0,"Healthy",NA,NA,NA,"MSU",50.9,39.1,22.8
+"684","Sam Hart","OSU",3000,NA,0,"Healthy",NA,NA,NA,"MSU",50.9,39.1,22.8
+"685","Bennett Christian","OSU",3000,NA,0,"Healthy",NA,NA,NA,"MSU",50.9,39.1,22.8
+"686","Zak Herbstreit","OSU",3000,NA,0,"Healthy",NA,NA,NA,"MSU",50.9,39.1,22.8
+"687","Kamryn Babb","OSU",3000,NA,0,"Out indefinitely - Knee",NA,NA,NA,"MSU",50.9,39.1,22.8
+"688","Xavier Johnson","OSU",3000,1.45,0,"Healthy",54,57.5,0.94,"MSU",50.9,39.1,22.8
+"689","Caleb Burton","OSU",3000,NA,0,"Healthy",NA,NA,NA,"MSU",50.9,39.1,22.8
+"690","Kaleb Brown","OSU",3000,2.83,0,"Healthy",NA,NA,NA,"MSU",50.9,39.1,22.8
+"691","Kojo Antwi","OSU",3000,NA,0,"Healthy",NA,NA,NA,"MSU",50.9,39.1,22.8
+"692","Kyion Grayes","OSU",3000,0.76,0,"Healthy",2,60.3,1,"MSU",50.9,39.1,22.8
+"693","Kai Saunders","OSU",3000,NA,0,"Healthy",NA,NA,NA,"MSU",50.9,39.1,22.8
+"694","Corban Cleveland","OSU",3000,NA,0,"Healthy",NA,NA,NA,"MSU",50.9,39.1,22.8
+"695","Blaize Exline","OSU",3000,NA,0,"Healthy",NA,NA,NA,"MSU",50.9,39.1,22.8
+"696","David Adolph","OSU",3000,NA,0,"Healthy",NA,NA,NA,"MSU",50.9,39.1,22.8
+"697","Joop Mitchell","OSU",3000,NA,0,"Ques Sat - Leg",NA,NA,NA,"MSU",50.9,39.1,22.8
+"698","Reis Stocksdale","OSU",3000,NA,0,"Healthy",NA,NA,NA,"MSU",50.9,39.1,22.8
+"699","Thomas Gordon","NW",3000,4.26,0,"Healthy",148,67.1,1.12,"WISC",57.6,28.4,48.5
+"700","Marshall Lang","NW",3000,2.05,0,"Healthy",111,58.7,1.01,"WISC",57.6,28.4,48.5
+"701","Charlie Mangieri","NW",3000,0.53,0,"Healthy",8,48.8,0,"WISC",57.6,28.4,48.5
+"702","Hunter Welcing","NW",3000,NA,0,"Healthy",NA,NA,NA,"WISC",57.6,28.4,48.5
+"703","Chris Petrucci","NW",3000,NA,0,"Healthy",NA,NA,NA,"WISC",57.6,28.4,48.5
+"704","Lawson Albright","NW",3000,NA,0,"Healthy",NA,NA,NA,"WISC",57.6,28.4,48.5
+"705","Blake Van Buren","NW",3000,NA,0,"Healthy",NA,NA,NA,"WISC",57.6,28.4,48.5
+"706","Jacob Gill","NW",3000,7.38,3,"Healthy",83,54,0.93,"WISC",57.6,28.4,48.5
+"707","Genson Hooper Price","NW",3000,NA,0,"Healthy",23,65.4,2.76,"WISC",57.6,28.4,48.5
+"708","Wayne Dennis Jr.","NW",3000,0.67,0,"Healthy",NA,NA,NA,"WISC",57.6,28.4,48.5
+"709","Reggie Fleurima","NW",3000,NA,0,"Healthy",NA,NA,NA,"WISC",57.6,28.4,48.5
+"710","Preston Bacon","NW",3000,NA,0,"Healthy",12,53.8,0,"WISC",57.6,28.4,48.5
+"711","Jack Kennedy","NW",3000,NA,0,"Healthy",NA,NA,NA,"WISC",57.6,28.4,48.5
+"712","Calvin Johnson II","NW",3000,NA,0,"Healthy",NA,NA,NA,"WISC",57.6,28.4,48.5
+"713","Jack Moses","NW",3000,NA,0,"Healthy",NA,NA,NA,"WISC",57.6,28.4,48.5
+"714","Jasper Stratton","NW",3000,NA,0,"Healthy",NA,NA,NA,"WISC",57.6,28.4,48.5
+"715","Donnie Gray","NW",3000,NA,0,"Healthy",NA,NA,NA,"WISC",57.6,28.4,48.5
+"716","Clay Cundiff","WISC",3000,NA,0,"out for season - Leg",73,75.6,2.22,"NW",56.3,57.1,21.7
+"717","Hayden Rucci","WISC",3000,NA,0,"Out Sat - Leg",42,60.9,1.57,"NW",56.3,57.1,21.7
+"718","Jack Eschenbach","WISC",3000,7.57,3,"Healthy",63,51.9,1.2,"NW",56.3,57.1,21.7
+"719","Jaylan Franklin","WISC",3000,NA,0,"Healthy",16,57.2,1.75,"NW",56.3,57.1,21.7
+"720","Cam Large","WISC",3000,NA,0,"Out indefinitely - Leg",NA,NA,NA,"NW",56.3,57.1,21.7
+"721","Jack Pugh","WISC",3000,NA,0,"Out indefinitely - Leg",NA,NA,NA,"NW",56.3,57.1,21.7
+"722","Cole Dakovich","WISC",3000,0.5,0,"Healthy",NA,NA,NA,"NW",56.3,57.1,21.7
+"723","JT Seagreaves","WISC",3000,NA,0,"Healthy",NA,NA,NA,"NW",56.3,57.1,21.7
+"724","Haakon Anderson","WISC",3000,0.5,0,"Healthy",NA,NA,NA,"NW",56.3,57.1,21.7
+"725","Tommy McIntosh","WISC",3000,NA,0,"Healthy",NA,NA,NA,"NW",56.3,57.1,21.7
+"726","Vinny Anthony","WISC",3000,0.5,0,"Healthy",NA,NA,NA,"NW",56.3,57.1,21.7
+"727","Cole Toennies","WISC",3000,NA,0,"Healthy",NA,NA,NA,"NW",56.3,57.1,21.7
+"728","Mike Gregoire","WISC",3000,NA,0,"Healthy",NA,NA,NA,"NW",56.3,57.1,21.7
+"729","Cam Fane","WISC",3000,NA,0,"Healthy",NA,NA,NA,"NW",56.3,57.1,21.7
+"730","Chris Brooks Jr.","WISC",3000,NA,0,"Healthy",NA,NA,NA,"NW",56.3,57.1,21.7
+"731","Jordan DiBenedetto","WISC",3000,NA,0,"Healthy",NA,NA,NA,"NW",56.3,57.1,21.7
+"732","Alex Moeller","WISC",3000,NA,0,"Healthy",NA,NA,NA,"NW",56.3,57.1,21.7

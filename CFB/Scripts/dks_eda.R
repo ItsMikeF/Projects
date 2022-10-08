@@ -83,14 +83,14 @@ slate <- function(week) {
     select(dk_abbrev, draftkings)
   
   #remove games from next week
-  dk_odds <- dk_odds[c(1:70),]
+  #dk_odds <- dk_odds[c(1:70),]
   
   #filter dk_odds to the slate
-  dk_odds <- dk_odds[which(dk_odds$teams %in% slate_schools$draftkings),]
+  #dk_odds <- dk_odds[which(dk_odds$teams %in% slate_schools$draftkings),]
   
   #add dk odds
   dks <- dks %>% 
-    left_join(dk_odds, by=c("draftkings"="teams")) %>% 
+    #left_join(dk_odds, by=c("draftkings"="teams")) %>% 
     mutate(inj_name = paste(substr(Name,1,1),str_extract(Name, '[^ ]+$'),sep = ".")) %>% 
     left_join(injuries, by=c("inj_name"="players")) %>% 
     mutate(status = replace_na(status, "Healthy")) %>%
@@ -153,12 +153,14 @@ qbs_select <- qbs %>%
          ttt_run_p2s = round(avg_time_to_throw*grades_run/pressure_to_sack_rate, digits = 1), 
          yards_game = round(yards/player_game_count, digits = 1), 
          att_game = round(attempts/player_game_count, digits = 1)) %>% 
-  select(Name, TeamAbbrev, Salary, fpts, status, lines, totals, grades_pass, 
+  select(Name, TeamAbbrev, Salary, fpts, proj_own, status, #lines, totals, 
+         grades_pass, 
          opponent, grades_defense, grades_pass_rush_defense, grades_coverage_defense, 
          btt_twp, avg_depth_of_target,  
          ttt_run_p2s, avg_time_to_throw, grades_run, pressure_to_sack_rate, att_game, yards_game, ypa) %>% 
   
   view(title = "QBs")
+write.csv(qbs_select, file = glue("./contests/2022_w{week}/pos/qbs.csv"))
 
 # 6.0 Rbs -----------------------------------------------------------------
 
@@ -168,7 +170,8 @@ rbs <- dks %>% filter(Position=="RB") %>%
 
 rbs_select <- rbs %>% 
   filter(Salary > min(Salary)) %>% 
-  select(Name, TeamAbbrev, Salary, fpts, status, lines, totals, grades_offense, grades_run, 
+  select(Name, TeamAbbrev, Salary, fpts, proj_own, status, #lines, totals, 
+         grades_offense, grades_run, 
          opponent, grades_defense, grades_run_defense, grades_tackle, designed_yards, elusive_rating, breakaway_attempts, explosive, elu_yco, first_downs, attempts,
          designed_yards, rec_yards, targets, total_touches, player_game_count) %>% 
   mutate(#mtf_per_att = round(elu_rush_mtf/attempts, digits = 2),
@@ -183,13 +186,18 @@ rbs_select <- rbs %>%
          total_touches = round(total_touches/player_game_count, digits = 1)) %>% 
   view(title = "RBs")
 
+write.csv(rbs_select, file = glue("./contests/2022_w{week}/pos/rbs.csv"))
+
 # 7.0 Wrs -----------------------------------------------------------------
 
 wrs <- dks %>% filter(Position=="WR") %>% 
   left_join(read.csv(glue("./contests/2022_w{week}/pff/receiving_summary.csv")), 
             by=c("Name"="player"))
-wrs %>% 
-  select(Name, TeamAbbrev, Salary, fpts, status, lines, totals, pass_plays, grades_offense, yprr, 
+wrs_select <- wrs %>% 
+  select(Name, TeamAbbrev, Salary, fpts, proj_own, status, #lines, totals, 
+         pass_plays, grades_offense, yprr, 
          opponent, grades_defense, grades_pass_rush_defense, grades_coverage_defense,) %>% 
   arrange(-Salary) %>% 
   view(title = "WRs")
+
+write.csv(wrs_select, file = glue("./contests/2022_w{week}/pos/wrs.csv"))
