@@ -8,6 +8,10 @@ suppressMessages({
   library(glue) #interpreted literal strings
 })
 
+# 0.0 Define Inputs -------------------------------------------------------
+
+week = 9
+
 # 1.0 defense epa table -------------------------------------------------------
 
 epa_def <- function(week, year, wp_lower, wp_upper, half_seconds_remaining, print_plot) {
@@ -81,7 +85,7 @@ epa_def <- function(week, year, wp_lower, wp_upper, half_seconds_remaining, prin
   
 }
 
-epa_def(3, 2022, 0.1, 0.9, 120, 'no')
+epa_def(week, 2022, 0.1, 0.9, 120, 'no')
 
 # 2.0 offense epa table -------------------------------------------------------
 
@@ -145,8 +149,6 @@ epa_off <- function(wp_lower, wp_upper, half_seconds_remaining, print_plot) {
 epa_off(0.1, 0.9, 120, 'no')
 
 # 3.0 defense pff table -------------------------------------------------------
-
-week = 5
 
 nfl_pff_def <- read.csv(glue("./contests/2022_w{week}/pff/defense_summary.csv"))
 

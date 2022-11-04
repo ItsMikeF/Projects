@@ -6,6 +6,7 @@ suppressMessages({
   library(tidyverse) #ggplot2 dplyr tibble tidyr purrr forecats 
   library(ggrepel) #automatically position non-overlapping text labels
   library(glue) #interpreted literal strings
+  library(gt)
 })
 
 
@@ -15,7 +16,7 @@ team_names <- c('ARZ'='ARI', 'BLT'='BAL', 'CLV'='CLE', 'HST'='HOU', 'JAX'='JAC',
 
 # 1.0 load and clean files ------------------------------------------------
 
-week <- 5
+week <- 9
 
 # 1.1 load dk slate -------------------------------------------------------
 
@@ -30,6 +31,8 @@ nfl_pff_dk_own <- read.csv(glue("./contests/2022_w{week}/pff/dk-ownership.csv"))
 
 nfl_pff_projections <- read.csv(glue("./contests/2022_w{week}/pff/projections.csv"))
 nfl_pff_projections <- replace(nfl_pff_projections, nfl_pff_projections =='D.K. Metcalf','DK Metcalf')
+
+#proj_rg <- read.csv(glue("./contests/2022_w{week}/projections.csv"))
 
 # 1.4 load qb data --------------------------------------------------------
 
@@ -289,6 +292,7 @@ nfl_rb %>%
   arrange(-sum_sd) %>%
   view(title = "NFL RBs")
 
+
 # 2.4.2 rb chart ----------------------------------------------------------
 
 nfl_rb %>%
@@ -331,7 +335,7 @@ nfl_qb <- nfl_qb %>%
   left_join(nfl_2022_def, by = c('opponent' = 'defteam')) %>% 
   left_join(nfl_pff_def_table, by = c('opponent' = 'team_name')) %>% 
   left_join(team_blitz, by = c('opponent' = 'TeamAbbrev')) %>% 
-  left_join(nfl_pff_projections, by = c('Name' = 'playerName'))
+  left_join(nfl_pff_projections, by = c('Name' = 'playerName')) 
 
 nfl_qb <- nfl_qb %>% 
   mutate(points_per_dollar = round(fantasyPoints / (Salary/100), digits = 3), 
