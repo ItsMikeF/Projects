@@ -16,7 +16,7 @@ team_names <- c('ARZ'='ARI', 'BLT'='BAL', 'CLV'='CLE', 'HST'='HOU', 'JAX'='JAC',
 
 # 1.0 load and clean files ------------------------------------------------
 
-week <- 9
+week <- 11
 
 # 1.1 load dk slate -------------------------------------------------------
 
@@ -80,7 +80,8 @@ nfl_pff_pblk <- nfl_pff_pblk %>%
          across('team_name', str_replace, 'BLT', 'BAL'), 
          across('team_name', str_replace, 'CLV', 'CLE'), 
          across('team_name', str_replace, 'HST', 'HOU'),
-         across('team_name', str_replace, 'LA', 'LAR')) %>% 
+         across('team_name', str_replace, 'LA', 'LAR'), 
+         across('team_name', str_replace, 'LARC', 'LAC')) %>% 
   mutate(pbe_rank = round(rank(-nfl_pff_pblk$pbe), digits = 0), 
          pbe_sd = round((nfl_pff_pblk$pbe - mean(nfl_pff_pblk$pbe, na.rm=T)) / sd(nfl_pff_pblk$pbe, na.rm = T), digits = 2))
          
@@ -99,11 +100,21 @@ nfl_salaries$week <- max(nfl_2022$week)+1
 
 # 2.0 Create Positions ----------------------------------------------------
 
-# 2.1 defenses ------------------------------------------------------------
+# 2.1 Defenses ------------------------------------------------------------
 
 def <- nfl_pff_dk_own %>% 
   filter(position == "D") %>% 
-  view(title = "NFL DST")
+  mutate(across('opponent', str_replace, 'JAC', 'JAX'), 
+         across('opponent', str_replace, 'LA', 'LAR'), 
+         across('opponent', str_replace, 'LARC', 'LAC'), 
+         across('opponent', str_replace, 'LARR', 'LA')) %>% 
+  left_join(nfl_2022_def %>% select(defteam, def_pass_epa_rank, def_rush_epa_rank), by=c("team"="defteam")) %>% 
+  left_join(nfl_2022_off %>% select(posteam, off_pass_epa_rank, off_rush_epa_rank), by=c("opponent"="posteam")) %>% 
+  mutate(rush_adv = off_rush_epa_rank-def_rush_epa_rank,
+         pass_adv = off_pass_epa_rank-def_pass_epa_rank,
+         delta = (off_pass_epa_rank-def_pass_epa_rank) + (off_rush_epa_rank-def_rush_epa_rank)) %>% 
+  view(title = "NFL DST") %>% 
+  write.csv(file=glue("./contests/2022_w{week}/pos/def.csv"))
 
 # 2.2 te ------------------------------------------------------------------
 
@@ -239,14 +250,14 @@ nfl_wr %>%
   scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
   scale_x_continuous(breaks = scales::pretty_breaks(n = 10))
 
-# 2.4 RBs -----------------------------------------------------------------
+# 2.4 rbs -----------------------------------------------------------------
 
 nfl_rb <- nfl_salaries %>%
   left_join(nfl_pff_rb, by = c('Name' = 'player')) %>% 
   left_join(nfl_pff_dk_own, by = c('Name' = 'player')) %>%
   filter(Position == "RB" & ownership > 0) %>% 
   left_join(nfl_2022_def, by = c('opponent' = 'defteam')) %>% 
-  left_join(nfl_2022_off, by = c('opponent' = 'posteam')) %>%
+  left_join(nfl_2022_off, by = c('team' = 'posteam')) %>%
   left_join(nfl_pff_chart_oline_dline_matchup, by = c('TeamAbbrev' = 'offTeam')) %>% 
   left_join(nfl_pff_projections, by = c('Name' = 'playerName')) %>% 
   left_join(nfl_pff_def_table, by = c('opponent' = 'team_name'))
@@ -258,15 +269,16 @@ nfl_rb <- nfl_rb %>%
          mtf_per_attempt = round(elu_rush_mtf / rushAtt, digits = 1), 
          runBlockAdv_sd = round((runBlockAdv - mean(runBlockAdv, na.rm=T)) / sd(runBlockAdv, na.rm = T), digits = 2), 
          yco_attempt_sd = round((yco_attempt - mean(yco_attempt, na.rm=T)) / sd(yco_attempt, na.rm = T), digits = 2), 
-         touches_game_sd = round((touches_game - mean(touches_game, na.rm=T)) / sd(touches_game, na.rm = T), digits = 2))
+         touches_game_sd = round((touches_game - mean(touches_game, na.rm=T)) / sd(touches_game, na.rm = T), digits = 2), 
+         off_def = (def_rush_epa_rank+rdef_rank)/2 - off_rush_epa_rank)
 
 nfl_rb$sum_sd <- round(
-    (0.10 * nfl_rb$runBlockAdv_sd) +
-    (0.10 * nfl_rb$off_rush_epa_sd) -
-    (0.10 * nfl_rb$def_rush_epa_sd) - 
-    (0.10 * nfl_rb$rdef_sd) + 
-    (0.10 * (nfl_rb$yco_attempt_sd - nfl_rb$tack_sd)) +
-    (0.50 * nfl_rb$touches_game_sd), digits = 3)
+    (0.05 * nfl_rb$runBlockAdv_sd) +
+    (0.20 * nfl_rb$off_rush_epa_sd) -
+    (0.20 * nfl_rb$def_rush_epa_sd) - 
+    (0.20 * nfl_rb$rdef_sd) + 
+    (0.05 * (nfl_rb$yco_attempt_sd - nfl_rb$tack_sd)) +
+    (0.40 * nfl_rb$touches_game_sd), digits = 3)
 
 nfl_rb %>% 
   select(Name,
@@ -275,9 +287,11 @@ nfl_rb %>%
          ownership,
          fantasyPoints,
          sum_sd,
+         touches_game,
          runBlockAdv,
          opponent,
-         def_rush_epa,
+         off_def,
+         off_rush_epa_rank,
          def_rush_epa_rank,
          rdef_rank,
          mtf_per_attempt,
@@ -285,11 +299,11 @@ nfl_rb %>%
          elusive_rating,
          tack_rank,
          grades_offense,
-         touches_game,
          yco_attempt,
          yprr, 
          name_salary_own) %>%
   arrange(-sum_sd) %>%
+  #gt() %>% 
   view(title = "NFL RBs")
 
 
@@ -312,7 +326,7 @@ nfl_rb %>%
   scale_x_continuous(breaks = scales::pretty_breaks(n = 10))
 
 
-# 2.5.1 Qbs -----------------------------------------------------------------
+# 2.5.1 qbs -----------------------------------------------------------------
 
 #QB
 nfl_qb <- nfl_salaries %>%
@@ -377,7 +391,6 @@ nfl_qb %>%
          sum_sd,
          points_per_dollar,
          opponent, 
-         def_pass_epa,
          def_pass_epa_rank,
          def_rank, 
          cov_rank,

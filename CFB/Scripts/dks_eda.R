@@ -13,7 +13,7 @@ suppressMessages({
   library(gt) #easiyl create presentation ready display tables
 })
 
-week <- 6
+week <- 11
 
 # 1.0 Scrape DraftKings odds ----------------------------------------------
 
@@ -83,14 +83,14 @@ slate <- function(week) {
     select(dk_abbrev, draftkings)
   
   #remove games from next week
-  #dk_odds <- dk_odds[c(1:70),]
+  dk_odds <- dk_odds[c(1:72),]
   
   #filter dk_odds to the slate
-  #dk_odds <- dk_odds[which(dk_odds$teams %in% slate_schools$draftkings),]
+  dk_odds <- dk_odds[which(dk_odds$teams %in% slate_schools$draftkings),]
   
   #add dk odds
   dks <- dks %>% 
-    #left_join(dk_odds, by=c("draftkings"="teams")) %>% 
+    left_join(dk_odds, by=c("draftkings"="teams")) %>% 
     mutate(inj_name = paste(substr(Name,1,1),str_extract(Name, '[^ ]+$'),sep = ".")) %>% 
     left_join(injuries, by=c("inj_name"="players")) %>% 
     mutate(status = replace_na(status, "Healthy")) %>%
@@ -118,12 +118,26 @@ defense <- function(week) {
   def <<- def %>% 
     group_by(team_name) %>% 
     summarise(
-      grades_defense = round(weighted.mean(grades_defense, snap_counts_defense, na.rm = T), digits = 2),
-      grades_run_defense = round(weighted.mean(grades_run_defense, snap_counts_run_defense, na.rm = T), digits = 2),
-      grades_tackle = round(weighted.mean(grades_tackle, snap_counts_defense, na.rm = T), digits = 2),
-      grades_pass_rush_defense = round(weighted.mean(snap_counts_defense, snap_counts_dl, na.rm = T), digits = 2),
-      grades_coverage_defense = round(weighted.mean(grades_coverage_defense, snap_counts_coverage, na.rm = T), digits = 2)
-    ) 
+      def = round(weighted.mean(grades_defense, snap_counts_defense, na.rm = T), digits = 2),
+      rdef = round(weighted.mean(grades_run_defense, snap_counts_run_defense, na.rm = T), digits = 2),
+      tack = round(weighted.mean(grades_tackle, snap_counts_defense, na.rm = T), digits = 2),
+      prsh = round(weighted.mean(grades_pass_rush_defense, snap_counts_defense, na.rm = T), digits = 2),
+      cov = round(weighted.mean(grades_coverage_defense, snap_counts_coverage, na.rm = T), digits = 2)
+    ) %>% 
+    mutate(def_rank = round(rank(-def), digits = 0), 
+           def_sd = round((def - mean(def)) / sd(def, na.rm = T), digits = 2),
+           
+           rdef_rank = round(rank(-rdef), digits = 0), 
+           rdef_sd = round((rdef - mean(rdef)) / sd(rdef, na.rm = T), digits = 2),
+           
+           tack_rank = round(rank(-tack), digits = 0), 
+           tack_sd = round((tack - mean(tack)) / sd(tack, na.rm = T), digits = 2),
+           
+           prsh_rank = round(rank(-prsh), digits = 0), 
+           prsh_sd = round((prsh - mean(prsh)) / sd(prsh, na.rm = T), digits = 2),
+           
+           cov_rank = round(rank(-cov), digits = 0),
+           cov_sd = round((cov - mean(cov)) / sd(cov, na.rm = T), digits = 2))
 }
 
 defense(week)
@@ -133,13 +147,26 @@ normalize <- function(x){
   return( (x - min(x,na.rm = T))/( max(x, na.rm = T) - min(x, na.rm = T)) )
 }
 
-for(i in 2:length(def)){
-  def[,i] = round(normalize(def[,i]), digits = 3)*100
-}
+#for(i in 2:length(def)){
+ # def[,i] = round(normalize(def[,i]), digits = 3)*100
+#}
 
 #add defense data to the dks
 dks <- dks %>% 
   left_join(def, by=c("School.y"="team_name"))
+
+# 4.2 offense team table --------------------------------------------------
+
+offense <- function(week){
+  
+  off <<- off %>% 
+    group_by(team_name) %>% 
+    summarise(
+      off = round(weighted.mean(grades_offense, snap_counts_offense, na.rm = T), digits = 2),
+      pass = round(weighted.mean(grades_pass, snap_counts_pass, na.rm = T), digits = 2),
+      run = round(weighted.mean(grades_run, snap_counts_run, na.rm = T), digits = 2)
+    )
+}
 
 # 5.0 Qbs  ----------------------------------------------------------------
 
@@ -153,13 +180,15 @@ qbs_select <- qbs %>%
          ttt_run_p2s = round(avg_time_to_throw*grades_run/pressure_to_sack_rate, digits = 1), 
          yards_game = round(yards/player_game_count, digits = 1), 
          att_game = round(attempts/player_game_count, digits = 1)) %>% 
-  select(Name, TeamAbbrev, Salary, fpts, proj_own, status, #lines, totals, 
-         grades_pass, 
-         opponent, grades_defense, grades_pass_rush_defense, grades_coverage_defense, 
+  select(Name, TeamAbbrev, Salary, fpts, proj_own, status, lines, totals, 
+         grades_pass, att_game, yards_game, 
+         opponent, def_rank, rdef_rank, prsh_rank, cov_rank, 
          btt_twp, avg_depth_of_target,  
-         ttt_run_p2s, avg_time_to_throw, grades_run, pressure_to_sack_rate, att_game, yards_game, ypa) %>% 
-  
+         ttt_run_p2s, avg_time_to_throw, grades_run, pressure_to_sack_rate) %>% 
+  drop_na(fpts) %>% 
+  arrange(-proj_own) %>% 
   view(title = "QBs")
+
 write.csv(qbs_select, file = glue("./contests/2022_w{week}/pos/qbs.csv"))
 
 # 6.0 Rbs -----------------------------------------------------------------
@@ -170,20 +199,23 @@ rbs <- dks %>% filter(Position=="RB") %>%
 
 rbs_select <- rbs %>% 
   filter(Salary > min(Salary)) %>% 
-  select(Name, TeamAbbrev, Salary, fpts, proj_own, status, #lines, totals, 
-         grades_offense, grades_run, 
-         opponent, grades_defense, grades_run_defense, grades_tackle, designed_yards, elusive_rating, breakaway_attempts, explosive, elu_yco, first_downs, attempts,
-         designed_yards, rec_yards, targets, total_touches, player_game_count) %>% 
   mutate(#mtf_per_att = round(elu_rush_mtf/attempts, digits = 2),
-         breakaway_attempts = round(breakaway_attempts/attempts),
-         explosive = round(explosive/attempts, digits = 1),
-         elu_yco = round(elu_yco/attempts, digits = 1),
-         first_downs = round(first_downs/attempts,  digits = 1),
-         attempts = round(attempts/player_game_count,  digits = 1),
-         designed_yards = round(designed_yards/player_game_count, digits = 1),
-         rec_yards = round(rec_yards/player_game_count, digits = 1),
-         targets = round(targets/player_game_count, digits = 1),
-         total_touches = round(total_touches/player_game_count, digits = 1)) %>% 
+    breakaway_attempts = round(breakaway_attempts/attempts),
+    explosive = round(explosive/attempts, digits = 1),
+    elu_yco = round(elu_yco/attempts, digits = 1),
+    first_downs = round(first_downs/attempts,  digits = 1),
+    attempts = round(attempts/player_game_count,  digits = 1),
+    designed_yards = round(designed_yards/player_game_count, digits = 1),
+    rec_yards = round(rec_yards/player_game_count, digits = 1),
+    targets = round(targets/player_game_count, digits = 1),
+    total_touches = round(total_touches/player_game_count, digits = 1)) %>% 
+  select(Name, TeamAbbrev, Salary, fpts, proj_own, status, lines, totals, 
+         grades_offense, grades_run, total_touches, 
+         opponent, def_rank, rdef_rank, tack_rank, 
+         designed_yards, elusive_rating, breakaway_attempts, explosive, elu_yco, first_downs, attempts,
+         designed_yards, rec_yards, targets, player_game_count) %>% 
+  #drop_na() %>% 
+  arrange(-proj_own) %>%
   view(title = "RBs")
 
 write.csv(rbs_select, file = glue("./contests/2022_w{week}/pos/rbs.csv"))
@@ -193,11 +225,14 @@ write.csv(rbs_select, file = glue("./contests/2022_w{week}/pos/rbs.csv"))
 wrs <- dks %>% filter(Position=="WR") %>% 
   left_join(read.csv(glue("./contests/2022_w{week}/pff/receiving_summary.csv")), 
             by=c("Name"="player"))
+
 wrs_select <- wrs %>% 
-  select(Name, TeamAbbrev, Salary, fpts, proj_own, status, #lines, totals, 
+  select(Name, TeamAbbrev, Salary, fpts, proj_own, status, lines, totals, 
          pass_plays, grades_offense, yprr, 
-         opponent, grades_defense, grades_pass_rush_defense, grades_coverage_defense,) %>% 
+         opponent, def_rank, cov_rank,) %>% 
   arrange(-Salary) %>% 
+  #drop_na() %>% 
+  arrange(-proj_own) %>%
   view(title = "WRs")
 
 write.csv(wrs_select, file = glue("./contests/2022_w{week}/pos/wrs.csv"))

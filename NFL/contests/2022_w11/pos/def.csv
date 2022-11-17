@@ -1,0 +1,23 @@
+"","id","player","team","opponent","position","salary","ownership","def_pass_epa_rank","def_rush_epa_rank","off_pass_epa_rank","off_rush_epa_rank","rush_adv","pass_adv","delta"
+"1",25324164,"Houston Texans","HOU","WAS","D",2400,9.7,30,30,30,15,-15,0,-15
+"2",25324169,"Carolina Panthers","CAR","BAL","D",2200,8.3,16,5,11,4,-1,-5,-6
+"3",25324166,"Pittsburgh Steelers","PIT","CIN","D",2300,7.9,19,11,6,26,15,-13,2
+"4",25324159,"Los Angeles Rams","LAR","NO","D",2900,7.5,22,3,26,14,11,4,15
+"5",25324167,"Cleveland Browns","CLE","BUF","D",2300,7.1,12,32,2,28,-4,-10,-14
+"6",25324160,"New York Jets","NYJ","NE","D",2800,7.1,7,22,25,6,-16,18,2
+"7",25324163,"Las Vegas Raiders","LV","DEN","D",2500,6.6,31,7,22,30,23,-9,14
+"8",25324158,"New Orleans Saints","NO","LA","D",3000,5.9,26,10,28,25,15,2,17
+"9",25324154,"Cincinnati Bengals","CIN","PIT","D",3400,5.5,4,24,24,19,-5,20,15
+"10",25324157,"Washington Commanders","WAS","HOU","D",3100,5.2,17,6,27,20,14,10,24
+"11",25324168,"Indianapolis Colts","IND","PHI","D",2200,4.4,18,9,4,1,-8,-14,-22
+"12",25324148,"Baltimore Ravens","BAL","CAR","D",4000,3.2,6,15,32,3,-12,26,14
+"13",25324151,"New England Patriots","NE","NYJ","D",3700,3,3,20,31,18,-2,28,26
+"14",25324150,"Buffalo Bills","BUF","CLE","D",3800,2.9,15,18,8,2,-16,-7,-23
+"15",25324161,"Detroit Lions","DET","NYG","D",2700,2.7,28,28,7,13,-15,-21,-36
+"16",25324153,"Denver Broncos","DEN","LV","D",3500,2.6,2,8,10,24,16,8,24
+"17",25324149,"Philadelphia Eagles","PHI","IND","D",3900,2.5,1,25,29,31,6,28,34
+"18",25324152,"New York Giants","NYG","DET","D",3600,2.4,24,26,20,27,1,-4,-3
+"19",25324165,"Minnesota Vikings","MIN","DAL","D",2400,1.7,25,2,17,7,5,-8,-3
+"20",25324156,"Dallas Cowboys","DAL","MIN","D",3200,1.6,11,16,12,11,-5,1,-4
+"21",25324155,"Atlanta Falcons","ATL","CHI","D",3300,1.4,29,31,14,6,-25,-15,-40
+"22",25324162,"Chicago Bears","CHI","ATL","D",2600,0.8,32,23,15,8,-15,-17,-32

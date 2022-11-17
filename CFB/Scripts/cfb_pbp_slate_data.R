@@ -9,7 +9,7 @@ suppressMessages({
 #cfbd_key <- "lDpblntVUpUafh2geyo/tqM6QMErJgcl8FnpnugstY7wBLPmllehGfB/EYknH0VV"
 
 #read csv
-dks <- read_csv("./contests/2022_w0/DKSalaries.csv")
+dks_test <- read_csv("./contests/2022_w0/DKSalaries.csv")
 
 #get teams on the slate
 teams <- unique(dks$TeamAbbrev)

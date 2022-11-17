@@ -20,9 +20,9 @@ suppressMessages({
 entries <- 20
 
 #automated values
-folder <- list.dirs()[20]
-date <- as.Date(str_sub(folder, 3, 12))
-tournament <- str_sub(folder, 14, nchar(folder))
+folder <- list.dirs()[length(list.dirs())]
+tournament <- str_sub(folder, 17, nchar(folder))
+date <- as.Date(str_sub(tournament, 1, 10))
 
 #import salaries
 golf_salaries <- read.csv(paste0(folder, "/DKSalaries.csv")) %>% 
