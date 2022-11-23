@@ -13,7 +13,7 @@ suppressMessages({
   library(gt) #easiyl create presentation ready display tables
 })
 
-week <- 11
+week <- 12
 
 # 1.0 Scrape DraftKings odds ----------------------------------------------
 
@@ -83,7 +83,7 @@ slate <- function(week) {
     select(dk_abbrev, draftkings)
   
   #remove games from next week
-  dk_odds <- dk_odds[c(1:72),]
+  dk_odds <- dk_odds[c(1:58),]
   
   #filter dk_odds to the slate
   dk_odds <- dk_odds[which(dk_odds$teams %in% slate_schools$draftkings),]
