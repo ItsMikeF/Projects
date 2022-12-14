@@ -1,0 +1,7 @@
+"","team","opp","name","fpts","ceil","floor","proj_own","salary","rg_value","def_pass_epa_rank","off_pass_epa_rank","pass_adv","def_rush_epa_rank","off_rush_epa_rank","rush_adv","delta"
+"1","MIN","IND","Vikings",5.97,9.55,2.39,0,3300,-1.63,27,27,0,7,31,24,24
+"2","CLE","BAL","Browns",6.85,10.96,2.74,0,3100,-0.35,6,18,12,30,3,-27,-15
+"3","BAL","CLE","Ravens",6.94,11.1,2.78,0,3000,-0.06,8,17,9,2,7,5,14
+"4","BUF","MIA","Bills",7.21,11.54,2.88,0,2700,0.81,17,7,-10,3,24,21,11
+"5","IND","MIN","Colts",5.85,9.36,2.34,0,2400,0.05,13,12,-1,23,19,-4,-5
+"6","MIA","BUF","Dolphins",5.65,9.04,2.26,0,2300,0.05,25,2,-23,4,20,16,-7

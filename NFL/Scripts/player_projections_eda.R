@@ -67,7 +67,7 @@ draft_positions <- function(i) {
   picks <<- picks[picks %in% 1:(league_size*rounds)]
 }
 
-draft_positions(2)
+draft_positions(9)
 picks
 draft_picks <- projections[picks,]
 draft_picks

@@ -10,7 +10,7 @@ suppressMessages({
 
 # 0.0 Define Inputs -------------------------------------------------------
 
-week = 11
+week = 15
 
 # 1.0 defense epa table -------------------------------------------------------
 
@@ -53,7 +53,7 @@ epa_def <- function(week, year, wp_lower, wp_upper, half_seconds_remaining, prin
   nfl_2022_def <<- nfl_2022_def_pass %>% 
     left_join(nfl_2022_def_rush, by = c('defteam')) %>% 
     mutate(total_plays = n_plays.x + n_plays.y,
-           defteam = gsub('JAX','JAC', defteam), 
+           #defteam = gsub('JAX','JAC', defteam), 
            defteam = gsub('LA','LAR', defteam), 
            defteam = gsub('LARC','LAC', defteam))
   
@@ -176,13 +176,11 @@ nfl_pff_def_table <- nfl_pff_def_table %>%
          cov_rank = round(rank(-nfl_pff_def_table$cov), digits = 0),
          cov_sd = round((cov - mean(cov)) / sd(cov, na.rm = T), digits = 2),
          
-         
-         
          team_name = gsub('ARZ','ARI', team_name), 
          team_name = gsub('BLT','BAL', team_name), 
          team_name = gsub('CLV','CLE', team_name), 
          team_name = gsub('HST','HOU', team_name), 
-         team_name = gsub('JAX','JAC', team_name), 
+         #team_name = gsub('JAX','JAC', team_name), 
          team_name = gsub('LA','LAR', team_name), 
          team_name = gsub('LARC','LAC', team_name))
 
@@ -229,12 +227,7 @@ sportsref_download$bltz_rank <- round(rank(-sportsref_download$Bltz.), digits = 
 team_blitz <- sportsref_download %>% 
   select(Tm,
          Bltz.,
-         bltz_rank)
-
-nfl_team_table <- read.csv("nfl_team_table.csv")
-
-team_blitz <- team_blitz %>% 
-  left_join(nfl_team_table, by = c('Tm' = 'Tm')) %>%
-  arrange(bltz_rank)
-
-team_blitz <- replace(team_blitz, team_blitz == 'JAX', 'JAC')
+         bltz_rank) %>% 
+  left_join(read.csv("nfl_team_table.csv"), by = c('Tm' = 'Tm')) %>%
+  arrange(bltz_rank) %>% 
+  mutate(TeamAbbrev = gsub("JAC","JAX", TeamAbbrev))

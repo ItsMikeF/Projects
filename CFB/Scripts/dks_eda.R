@@ -13,11 +13,12 @@ suppressMessages({
   library(gt) #easiyl create presentation ready display tables
 })
 
-week <- 12
+week <- 13
 
 # 1.0 Scrape DraftKings odds ----------------------------------------------
 
 dk_scraper <- function(url) {
+  #url <- "https://sportsbook.draftkings.com/leagues/football/ncaaf"
   webpage <- read_html(url)
   
   css1 <- ".event-cell__name-text" #teams
@@ -28,9 +29,8 @@ dk_scraper <- function(url) {
   lines <- html_text(html_elements(webpage, css2)) %>% as.numeric()
   totals<- html_text(html_elements(webpage, css3)) %>% as.numeric()
   
-  dk_odds <<- as.data.frame(cbind(teams, lines, totals)) %>% 
-    mutate(lines = as.numeric(lines),
-           totals = as.numeric(totals))
+  dk_odds <<- as.data.frame(cbind(teams[1:length(totals)], as.numeric(lines[1:length(totals)]), as.numeric(totals))) %>% 
+    rename("teams"="V1","lines"="V2","totals"="V3")
   
   time = Sys.time() %>% as.character() %>% str_replace_all(.,":","") %>% substr(1,15)
   write.csv(dk_odds, file = glue("./contests/2022_w{week}/odds/{time}_cfb_dk_odds.csv"))
@@ -83,7 +83,7 @@ slate <- function(week) {
     select(dk_abbrev, draftkings)
   
   #remove games from next week
-  dk_odds <- dk_odds[c(1:58),]
+  dk_odds <- dk_odds[c(1:80),]
   
   #filter dk_odds to the slate
   dk_odds <- dk_odds[which(dk_odds$teams %in% slate_schools$draftkings),]
@@ -172,7 +172,9 @@ offense <- function(week){
 
 qbs <- dks %>% filter(Position=="QB") %>% 
   left_join(read.csv(glue("./contests/2022_w{week}/pff/passing_summary.csv")), 
-                          by=c("Name"="player"))
+                          by=c("Name"="player")) %>% 
+  left_join(read.csv(glue("./contests/2022_w{week}/pff/passing_pressure.csv")) %>% select(player, pressure_grades_pass), 
+            by=c("Name"="player"))
 
 qbs_select <- qbs %>% 
   filter(Salary > min(Salary)) %>% 
@@ -182,11 +184,11 @@ qbs_select <- qbs %>%
          att_game = round(attempts/player_game_count, digits = 1)) %>% 
   select(Name, TeamAbbrev, Salary, fpts, proj_own, status, lines, totals, 
          grades_pass, att_game, yards_game, 
-         opponent, def_rank, rdef_rank, prsh_rank, cov_rank, 
+         opponent, def_rank, rdef_rank, prsh_rank, cov_rank, pressure_grades_pass,
          btt_twp, avg_depth_of_target,  
          ttt_run_p2s, avg_time_to_throw, grades_run, pressure_to_sack_rate) %>% 
   drop_na(fpts) %>% 
-  arrange(-proj_own) %>% 
+  arrange(-fpts) %>% 
   view(title = "QBs")
 
 write.csv(qbs_select, file = glue("./contests/2022_w{week}/pos/qbs.csv"))
