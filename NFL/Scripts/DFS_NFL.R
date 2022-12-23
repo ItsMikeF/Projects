@@ -15,7 +15,7 @@ team_names <- c('ARZ'='ARI', 'BLT'='BAL', 'CLV'='CLE', 'HST'='HOU', 'JAX'='JAC',
 
 # 1.0 load and clean files ------------------------------------------------
 
-week <- 15
+week <- 16
 folder <- glue("./contests/2022_w{week}")
 
 # 1.1 load dk slate -------------------------------------------------------
@@ -27,7 +27,7 @@ nfl_salaries <- nfl_salaries %>%
 
 # 1.2 load dk ownership ---------------------------------------------------
 
-#nfl_pff_dk_own <- read.csv(glue("{folder}/pff/dk-ownership.csv"))
+nfl_pff_dk_own <- read.csv(glue("{folder}/pff/dk-ownership.csv"))
 
 # 1.3 load projections ----------------------------------------------------
 
@@ -133,7 +133,7 @@ nfl_te <- rg %>% filter(pos=="TE") %>%
   left_join(defense_coverage_scheme, by = c('opp' = 'team_name')) %>% 
   
   left_join(nfl_pff_projections %>% select(playerName, fantasyPoints), by = c('name' = 'playerName')) %>% 
-  #left_join(nfl_pff_dk_own %>% select(player, ownership), by=c('name'='player')) %>% 
+  left_join(nfl_pff_dk_own %>% select(player, ownership), by=c('name'='player')) %>% 
   mutate(man_zone_yprr_split = man_yprr - zone_yprr) %>% 
   arrange(-fpts) %>% 
   select(team,
@@ -143,7 +143,7 @@ nfl_te <- rg %>% filter(pos=="TE") %>%
          fpts, 
          fantasyPoints,
          proj_own,
-         #ownership,
+         ownership,
          offYprr,
          grades_offense,
          adv, 
@@ -158,15 +158,14 @@ nfl_te <- rg %>% filter(pos=="TE") %>%
          def_zone_grade_rank, 
          zone_yprr, 
          zone_routes) %>% 
-  view(title = "TEs") %>% 
-  write.csv(file = glue("{folder}/pos/te.csv"))
+  view(title = "TEs") #%>% write.csv(file = glue("{folder}/pos/te.csv"))
 
 # 2.3 wr ------------------------------------------------------------------
 
 nfl_wr <- nfl_salaries %>%
   left_join(nfl_pff_wr, by = c('Name' = 'player')) %>% 
   left_join(rg, by=c("Name" = "name")) %>% 
-  #left_join(nfl_pff_dk_own, by = c('Name' = 'player')) %>%
+  left_join(nfl_pff_dk_own, by = c('Name' = 'player')) %>%
   filter(pos == "WR" & proj_own >= 0) %>% 
   left_join(nfl_pff_chart_wr_cb_matchup, by = c('Name' = 'offPlayer')) %>% 
   left_join(nfl_2022_def, by = c('opp' = 'defteam')) %>% 
@@ -230,7 +229,7 @@ nfl_wr %>%
 #Salary Table
 nfl_wr_salary_table <- nfl_wr %>%
   group_by(TeamAbbrev) %>%
-  summarise(wr_sum_salary = round(mean(salary), digits = 0))
+  summarise(wr_sum_salary = round(mean(Salary), digits = 0))
 
 nfl_wr_count <- table(nfl_wr$TeamAbbrev)
 
@@ -259,10 +258,10 @@ nfl_wr %>%
 nfl_rb <- nfl_salaries %>%
   left_join(nfl_pff_rb, by = c('Name' = 'player')) %>% 
   left_join(rg, by=c("Name" = "name")) %>% 
-  #left_join(nfl_pff_dk_own, by = c('Name' = 'player')) %>%
+  left_join(nfl_pff_dk_own, by = c('Name' = 'player')) %>%
   filter(pos == "RB" & proj_own > 0) %>% 
   left_join(nfl_2022_def, by = c('opp' = 'defteam')) %>% 
-  left_join(nfl_2022_off, by = c('team' = 'posteam')) %>%
+  left_join(nfl_2022_off, by = c('team.x' = 'posteam')) %>%
   left_join(nfl_pff_chart_oline_dline_matchup, by = c('TeamAbbrev' = 'offTeam')) %>% 
   left_join(nfl_pff_projections, by = c('Name' = 'playerName')) %>% 
   left_join(nfl_pff_def_table, by = c('opp' = 'team_name'))
@@ -317,7 +316,7 @@ nfl_rb %>%
 nfl_qb <- nfl_salaries %>%
   left_join(nfl_pff_qb, by = c('Name' = 'player')) %>% 
   left_join(rg, by=c("Name" = "name")) %>% 
-  #left_join(nfl_pff_dk_own, by = c('Name' = 'player')) %>%
+  left_join(nfl_pff_dk_own, by = c('Name' = 'player')) %>%
   filter(pos == "QB" & proj_own > 0) %>% 
   left_join(nfl_pff_pblk, by = c('TeamAbbrev' = 'team_name')) %>% 
   left_join(nfl_pff_passing_concept, by = c('Name' = 'player')) %>% 
