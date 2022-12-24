@@ -360,9 +360,9 @@ nfl_qb$grades_pass_sd <- round((nfl_qb$grades_pass - weighted.mean(nfl_qb$grades
 test <- as.data.frame(names(nfl_qb))
 
 nfl_qb$sum_sd <- round(
-  (0.20 * nfl_qb$grades_pass_sd) +
+  (0.30 * nfl_qb$grades_pass_sd) +
   (0.30 * nfl_qb$def_pass_epa_sd) +
-  (0.20 * (nfl_qb$total_rec_salary_sd - nfl_qb$cov_sd)) +
+  (0.10 * (nfl_qb$total_rec_salary_sd - nfl_qb$cov_sd)) +
   (0.10 * nfl_qb$blitz_grades_pass_sq_blitz_rate_sd)+
   (0.00 * nfl_qb$pressure_vs_prsh_sd) +
   (0.00 * (nfl_qb$pbe_sd - nfl_qb$prsh_sd)), digits = 3)
