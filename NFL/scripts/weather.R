@@ -12,11 +12,11 @@ load <- load_pbp(2017:2022)
 
 abc <- data.frame(names(load))
 
-load_schedules(2017:2022) %>% 
-  select(game_id, gameday, away_team, home_team, result, spread_line, total_line)
+sch <- load_schedules(2017:2022) %>% 
+  select(game_id, gameday, away_team, away_score, home_team, home_score, away_moneyline, home_moneyline, result, spread_line, total_line, temp, wind)
 
 test <- load %>%
-  filter(pass == 1 & passer == "T.Huntley") %>% 
+  filter(pass == 1 & passer == "P.Mahomes") %>% 
   group_by(game_date, passer, posteam, defteam, week, temp) %>% 
   summarize(pass_attempt = sum(pass_attempt, na.rm = T),
             passing_yards = sum(passing_yards, na.rm = T),
@@ -53,7 +53,7 @@ test %>%
   #geom_text_repel(aes(label=name_salary_own)) +
   labs(x = "temp",
        y = "fpts",
-       title = "J.Allen Fpts",
+       title = "P.Mahomes Fpts",
        caption = "Twitter: Its_MikeF | Data: PFF") +
   theme_dark() +
   theme(plot.title = element_text(size = 14, hjust = 0.5, face = "bold")) +

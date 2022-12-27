@@ -84,7 +84,6 @@ epa_def <- function(week, year, wp_lower, wp_upper, half_seconds_remaining, prin
   }
   
 }
-
 epa_def(week, 2022, 0.1, 0.9, 120, 'no')
 
 # 2.0 offense epa table -------------------------------------------------------
@@ -145,89 +144,166 @@ epa_off <- function(wp_lower, wp_upper, half_seconds_remaining, print_plot) {
   }
   
 }
-
 epa_off(0.1, 0.9, 120, 'no')
 
 # 3.0 defense pff table -------------------------------------------------------
 
-nfl_pff_def <- read.csv(glue("./contests/2022_w{week}/pff/defense_summary.csv"))
+pff_def_table <- function(week) {
+  nfl_pff_def <- read.csv(glue("./contests/2022_w{week}/pff/defense_summary.csv"))
+  
+  nfl_pff_def_table <- nfl_pff_def %>%
+    group_by(team_name) %>%
+    summarise(def = round(weighted.mean(grades_defense, snap_counts_defense), digits = 1),
+              rdef = round(weighted.mean(grades_run_defense, snap_counts_run_defense), digits = 1),
+              tack = round(weighted.mean(grades_tackle, snap_counts_defense, na.rm = TRUE), digits = 1),
+              prsh = round(weighted.mean(grades_pass_rush_defense, snap_counts_pass_rush), digits = 1),
+              cov = round(weighted.mean(grades_coverage_defense, snap_counts_coverage), digits =1))
+  
+  nfl_pff_def_table <<- nfl_pff_def_table %>% 
+    mutate(def_rank = round(rank(-def), digits = 0), 
+           def_sd = round((def - mean(def)) / sd(def, na.rm = T), digits = 2),
+           
+           rdef_rank = round(rank(-nfl_pff_def_table$rdef), digits = 0), 
+           rdef_sd = round((rdef - mean(rdef)) / sd(rdef, na.rm = T), digits = 2),
+           
+           tack_rank = round(rank(-nfl_pff_def_table$tack), digits = 0), 
+           tack_sd = round((tack - mean(tack)) / sd(tack, na.rm = T), digits = 2),
+           
+           prsh_rank = round(rank(-nfl_pff_def_table$prsh), digits = 0), 
+           prsh_sd = round((prsh - mean(prsh)) / sd(prsh, na.rm = T), digits = 2),
+           
+           cov_rank = round(rank(-nfl_pff_def_table$cov), digits = 0),
+           cov_sd = round((cov - mean(cov)) / sd(cov, na.rm = T), digits = 2),
+           
+           team_name = gsub('ARZ','ARI', team_name), 
+           team_name = gsub('BLT','BAL', team_name), 
+           team_name = gsub('CLV','CLE', team_name), 
+           team_name = gsub('HST','HOU', team_name), 
+           #team_name = gsub('JAX','JAC', team_name), 
+           team_name = gsub('LA','LAR', team_name), 
+           team_name = gsub('LARC','LAC', team_name))
+}
+pff_def_table(week)
 
-nfl_pff_def_table <- nfl_pff_def %>%
-  group_by(team_name) %>%
-  summarise(def = round(weighted.mean(grades_defense, snap_counts_defense), digits = 1),
-            rdef = round(weighted.mean(grades_run_defense, snap_counts_run_defense), digits = 1),
-            tack = round(weighted.mean(grades_tackle, snap_counts_defense, na.rm = TRUE), digits = 1),
-            prsh = round(weighted.mean(grades_pass_rush_defense, snap_counts_pass_rush), digits = 1),
-            cov = round(weighted.mean(grades_coverage_defense, snap_counts_coverage), digits =1))
+# 3.1 defense coverage scheme -------------------------------------------------
 
-nfl_pff_def_table <- nfl_pff_def_table %>% 
-  mutate(def_rank = round(rank(-def), digits = 0), 
-         def_sd = round((def - mean(def)) / sd(def, na.rm = T), digits = 2),
-         
-         rdef_rank = round(rank(-nfl_pff_def_table$rdef), digits = 0), 
-         rdef_sd = round((rdef - mean(rdef)) / sd(rdef, na.rm = T), digits = 2),
-         
-         tack_rank = round(rank(-nfl_pff_def_table$tack), digits = 0), 
-         tack_sd = round((tack - mean(tack)) / sd(tack, na.rm = T), digits = 2),
-         
-         prsh_rank = round(rank(-nfl_pff_def_table$prsh), digits = 0), 
-         prsh_sd = round((prsh - mean(prsh)) / sd(prsh, na.rm = T), digits = 2),
-         
-         cov_rank = round(rank(-nfl_pff_def_table$cov), digits = 0),
-         cov_sd = round((cov - mean(cov)) / sd(cov, na.rm = T), digits = 2),
-         
-         team_name = gsub('ARZ','ARI', team_name), 
-         team_name = gsub('BLT','BAL', team_name), 
-         team_name = gsub('CLV','CLE', team_name), 
-         team_name = gsub('HST','HOU', team_name), 
-         #team_name = gsub('JAX','JAC', team_name), 
-         team_name = gsub('LA','LAR', team_name), 
-         team_name = gsub('LARC','LAC', team_name))
+defense_coverage_scheme <- function(week) {
+  nfl_pff_defense_coverage_scheme <- read.csv(glue("./contests/2022_w{week}/pff/defense_coverage_scheme.csv")) %>% 
+    mutate(team_name = gsub('ARZ','ARI', team_name), 
+           team_name = gsub('BLT','BAL', team_name), 
+           team_name = gsub('CLV','CLE', team_name), 
+           team_name = gsub('HST','HOU', team_name), 
+           team_name = gsub('JAX','JAC', team_name), 
+           team_name = gsub('LA','LAR', team_name)) 
+  
+  defense_coverage_scheme <<- nfl_pff_defense_coverage_scheme %>% 
+    select(player,
+           team_name,
+           man_snap_counts_coverage, 
+           man_snap_counts_coverage_percent,
+           man_grades_coverage_defense,
+           zone_snap_counts_coverage,
+           zone_snap_counts_coverage_percent,
+           zone_grades_coverage_defense) %>% 
+    group_by(team_name) %>% 
+    summarize(man_snaps = sum(man_snap_counts_coverage), 
+              zone_snaps = sum(zone_snap_counts_coverage),
+              def_man_grade = weighted.mean(man_grades_coverage_defense, man_snap_counts_coverage), 
+              def_zone_grade = weighted.mean(zone_grades_coverage_defense, zone_snap_counts_coverage)) %>% 
+    mutate(man_percentage = round(man_snaps / (man_snaps + zone_snaps), digits = 3), 
+           man_rank =  round(rank(-man_percentage), digits = 0), 
+           def_man_grade = round(def_man_grade, digits = 1), 
+           def_man_grade_rank = round(rank(-def_man_grade), digits = 0), 
+           zone_percentage = 1 - man_percentage, 
+           zone_rank = round(rank(-zone_percentage), digits = 0), 
+           def_zone_grade = round(def_zone_grade, digits = 1), 
+           def_zone_grade_rank = round(rank(-def_zone_grade), digits = 0))
+}
+defense_coverage_scheme(week)
 
-# 3.1 pff defense coverage scheme -------------------------------------------------
+# 3.2 Slot and Wide Coverage ----------------------------------------------
 
-nfl_pff_defense_coverage_scheme <- read.csv(glue("./contests/2022_w{week}/pff/defense_coverage_scheme.csv")) %>% 
-  mutate(team_name = gsub('ARZ','ARI', team_name), 
-         team_name = gsub('BLT','BAL', team_name), 
-         team_name = gsub('CLV','CLE', team_name), 
-         team_name = gsub('HST','HOU', team_name), 
-         team_name = gsub('JAX','JAC', team_name), 
-         team_name = gsub('LA','LAR', team_name)) 
-
-defense_coverage_scheme <- nfl_pff_defense_coverage_scheme %>% 
-  select(player,
-         team_name,
-         man_snap_counts_coverage, 
-         man_snap_counts_coverage_percent,
-         man_grades_coverage_defense,
-         zone_snap_counts_coverage,
-         zone_snap_counts_coverage_percent,
-         zone_grades_coverage_defense) %>% 
-  group_by(team_name) %>% 
-  summarize(man_snaps = sum(man_snap_counts_coverage), 
-            zone_snaps = sum(zone_snap_counts_coverage),
-            def_man_grade = weighted.mean(man_grades_coverage_defense, man_snap_counts_coverage), 
-            def_zone_grade = weighted.mean(zone_grades_coverage_defense, zone_snap_counts_coverage)) %>% 
-  mutate(man_percentage = round(man_snaps / (man_snaps + zone_snaps), digits = 3), 
-         man_rank =  round(rank(-man_percentage), digits = 0), 
-         def_man_grade = round(def_man_grade, digits = 1), 
-         def_man_grade_rank = round(rank(-def_man_grade), digits = 0), 
-         zone_percentage = 1 - man_percentage, 
-         zone_rank = round(rank(-zone_percentage), digits = 0), 
-         def_zone_grade = round(def_zone_grade, digits = 1), 
-         def_zone_grade_rank = round(rank(-def_zone_grade), digits = 0))
+slot <- function(week){
+  slot <-  read.csv(glue("./contests/2022_w{week}/pff/defense_summary.csv")) %>% 
+    group_by(team_name) %>% 
+    summarise(slot = round(weighted.mean(grades_coverage_defense, snap_counts_slot, na.rm = T), digits = 2)) %>% 
+    mutate(slot_rank = dense_rank(desc(slot)))
+  
+  wide <- read.csv(glue("./contests/2022_w{week}/pff/defense_summary.csv")) %>% 
+    group_by(team_name) %>% 
+    summarise(wide = round(weighted.mean(grades_coverage_defense, snap_counts_corner, na.rm = T), digits = 2)) %>% 
+    mutate(wide_rank = dense_rank(desc(wide)))
+  
+  slot <<- slot %>% left_join(wide, by=c('team_name'))
+}
+slot(week)
 
 # 4.0 pfr defense blitz  ----------------------------------------------------------
-#https://www.pro-football-reference.com/years/2022/opp.htm
-sportsref_download <- read.csv(glue("./contests/2022_w{week}/sportsref_download.csv"))
 
-sportsref_download$Bltz. <- round(as.numeric(sub("%","",sportsref_download$Bltz.))/100, digits = 3)
-sportsref_download$bltz_rank <- round(rank(-sportsref_download$Bltz.), digits = 0)
+#blitz rate from sportsref
+sportsref <- function(week){
+  #https://www.pro-football-reference.com/years/2022/opp.htm
+  sportsref_download <- read.csv(glue("./contests/2022_w{week}/sportsref_download.csv"))
+  
+  sportsref_download$Bltz. <- round(as.numeric(sub("%","",sportsref_download$Bltz.))/100, digits = 3)
+  sportsref_download$bltz_rank <- round(rank(-sportsref_download$Bltz.), digits = 0)
+  
+  team_blitz <- sportsref_download %>% 
+    select(Tm,
+           Bltz.,
+           bltz_rank) %>% 
+    left_join(read.csv("nfl_team_table.csv"), by = c('Tm' = 'Tm')) %>%
+    arrange(bltz_rank) %>% 
+    mutate(TeamAbbrev = gsub("JAC","JAX", TeamAbbrev))
+}
 
-team_blitz <- sportsref_download %>% 
-  select(Tm,
-         Bltz.,
-         bltz_rank) %>% 
-  left_join(read.csv("nfl_team_table.csv"), by = c('Tm' = 'Tm')) %>%
-  arrange(bltz_rank) %>% 
-  mutate(TeamAbbrev = gsub("JAC","JAX", TeamAbbrev))
+#blitz rates from pff data
+blitz <- function(week) {
+  defense_summary <- read.csv(glue("./contests/2022_w{week}/pff/defense_summary.csv"))
+  pass_rush_summary <- read.csv(glue("./contests/2022_w{week}/pff/pass_rush_summary.csv")) 
+  run_defense_summary <- read.csv(glue("./contests/2022_w{week}/pff/run_defense_summary.csv")) 
+  defense_coverage_summary <- read.csv(glue("./contests/2022_w{week}/pff/defense_coverage_summary.csv"))
+  defense_coverage_scheme <- read.csv(glue("./contests/2022_w{week}/pff/defense_coverage_scheme.csv"))
+  slot_coverage <- read.csv(glue("./contests/2022_w{week}/pff/slot_coverage.csv"))
+  pass_rush_productivity <- read.csv(glue("./contests/2022_w{week}/pff/pass_rush_productivity.csv"))
+  
+  def_list <- list()
+  
+  def_list[[1]] <- list(defense_summary, 
+                        pass_rush_summary %>% select(2,6:dim(pass_rush_summary)[2]), 
+                        run_defense_summary %>% select(2,6:dim(run_defense_summary)[2]), 
+                        defense_coverage_summary %>% select(2,6:dim(defense_coverage_summary)[2]), 
+                        defense_coverage_scheme %>% select(2,6:dim(defense_coverage_scheme)[2]), 
+                        slot_coverage %>% select(2,6:dim(slot_coverage)[2]), 
+                        pass_rush_productivity %>% select(2,6:dim(pass_rush_productivity)[2])) %>% 
+    reduce(left_join, by = "player_id")
+  
+  def <- def_list[[1]] %>% filter(!position %in% c('G','WR','HB','FB','TE'))
+  
+  #blitz
+  def_blitz_pos <- def %>% 
+    group_by(team_name, position) %>% 
+    summarise(snaps = sum(snap_counts_pass_rush.x)) %>% 
+    ungroup()
+  
+  def_blitz <- def %>% 
+    group_by(team_name) %>% 
+    summarise(prsh_snaps = sum(snap_counts_pass_rush.x))
+  
+  def_blitz_pos <- def_blitz_pos %>% 
+    left_join(def_blitz, by=c('team_name')) 
+  
+  def_blitz_pos <- def_blitz_pos %>% 
+    mutate(blitz_pos = round(snaps/prsh_snaps, digits = 3)) %>% 
+    filter(position == "LB" | position == "CB" | position == "S") 
+  
+  team_blitz <<- def_blitz_pos %>% 
+    group_by(team_name) %>% 
+    summarise(blitz_team = sum(blitz_pos)) %>% 
+    mutate(blitz_rank = dense_rank(desc(blitz_team)))
+  
+  def_blitz_pos <<- def_blitz_pos %>% 
+    left_join(team_blitz, by=c('team_name')) 
+  
+}
+blitz(week)

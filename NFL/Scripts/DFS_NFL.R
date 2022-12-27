@@ -158,7 +158,8 @@ nfl_te <- rg %>% filter(pos=="TE") %>%
          def_zone_grade_rank, 
          zone_yprr, 
          zone_routes) %>% 
-  view(title = "TEs") #%>% write.csv(file = glue("{folder}/pos/te.csv"))
+  view(title = "TEs") %>%
+  write.csv(file = glue("{folder}/pos/te.csv"))
 
 # 2.3 wr ------------------------------------------------------------------
 
@@ -172,7 +173,8 @@ nfl_wr <- nfl_salaries %>%
   left_join(defense_coverage_scheme, by = c('opp' = 'team_name')) %>% 
   left_join(nfl_pff_receiving_scheme, by = c('Name' = 'player')) %>% 
   left_join(nfl_pff_projections, by = c('Name' = 'playerName')) %>% 
-  left_join(nfl_pff_def_table, by = c('opp' = 'team_name'))
+  left_join(nfl_pff_def_table, by = c('opp' = 'team_name')) %>% 
+  left_join(slot, by=c('opp'='team_name'))
 
 nfl_wr <- nfl_wr %>% 
   mutate(name_salary = paste(Name, Salary), 
@@ -217,6 +219,10 @@ nfl_wr %>%
          def_man_grade_rank,
          zone_pass_plays,
          zone_percentage,
+         route_rate, 
+         slot_rate, 
+         slot,
+         wide, 
          def_zone_grade_rank,
          def_pass_epa,
          touchdowns,
@@ -333,7 +339,7 @@ nfl_qb <- nfl_qb %>%
   left_join(nfl_qb_blitz, by = c('Name' = 'player')) %>% 
   left_join(nfl_2022_def, by = c('opp' = 'defteam')) %>% 
   left_join(nfl_pff_def_table, by = c('opp' = 'team_name')) %>% 
-  left_join(team_blitz, by = c('opp' = 'TeamAbbrev')) %>% 
+  left_join(team_blitz, by = c('opp' = 'team_name')) %>% 
   left_join(nfl_pff_projections, by = c('Name' = 'playerName')) 
 
 nfl_qb <- nfl_qb %>% 
@@ -352,7 +358,7 @@ nfl_qb <- nfl_qb %>%
 #nfl_qb$blitz_grades_pass_sq_exp_blitz_rate <- round(nfl_qb$blitz_grades_pass^2 * nfl_qb$expected_blitz_rate, digits = -1)
 #nfl_qb$blitz_grades_pass_sq_exp_blitz_rate_sd <- round((nfl_qb$blitz_grades_pass_sq_exp_blitz_rate - mean(nfl_qb$blitz_grades_pass_sq_exp_blitz_rate, na.rm=T)) / sd(nfl_qb$blitz_grades_pass_sq_exp_blitz_rate, na.rm = T), digits = 2)
 
-nfl_qb$blitz_grades_pass_sq_blitz_rate <- round(nfl_qb$blitz_grades_pass^2 * nfl_qb$Bltz., digits = -1)
+nfl_qb$blitz_grades_pass_sq_blitz_rate <- round(nfl_qb$blitz_grades_pass^2 * nfl_qb$blitz_team, digits = -1)
 nfl_qb$blitz_grades_pass_sq_blitz_rate_sd <- round((nfl_qb$blitz_grades_pass_sq_blitz_rate - mean(nfl_qb$blitz_grades_pass_sq_blitz_rate, na.rm=T)) / sd(nfl_qb$blitz_grades_pass_sq_blitz_rate, na.rm = T), digits = 2)
 
 nfl_qb$grades_pass_sd <- round((nfl_qb$grades_pass - weighted.mean(nfl_qb$grades_pass, nfl_qb$dropbacks.x, na.rm=T)) / sd(nfl_qb$grades_pass, na.rm = T), digits = 2)
@@ -392,7 +398,7 @@ nfl_qb %>%
          pressure_vs_prsh, 
          blitz_dropbacks_percent,
          blitz_grades_pass,
-         bltz_rank,
+         blitz_rank,
          blitz_grades_pass_sq_blitz_rate,
          total_rec_salary,
          name_salary_own) %>%

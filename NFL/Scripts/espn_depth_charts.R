@@ -145,7 +145,7 @@ iol_team <- iol_grades %>%
   )
 
 #lets scrape pro football reference for team advanced rushing stats
-url <- "https://www.pro-football-reference.com/years/2021/advanced.htm"
+url <- "https://www.pro-football-reference.com/years/2022/advanced.htm"
 
 webpage <- read_html(url)
 tables <- webpage %>% html_table(fill = T)
@@ -240,7 +240,7 @@ plot_qb_pbp %>%
   xlab("Avg OT 2021 PBLK Grades") +
   labs(
     title = "2022 QB Review",
-    caption = "2021 OT Grade based on starting LT and RT on 2022 ESPN Depth Chart.",
+    caption = "2022 OT Grade based on starting LT and RT on 2022 ESPN Depth Chart.",
     y = "QB Passing Grade"
   )
 
@@ -302,7 +302,7 @@ plot_rb_pbp %>%
   #geom_nfl_logos(aes(team_abbr=team.x), width=0.065, alpha=0.7) +
   geom_nfl_headshots(aes(player_gsis = id), width = 0.075, vjust = 0.45) +
   geom_label_repel(aes(label = player)) +
-  xlab("Avg IOL 2021 RBLK Grades") +
+  xlab("Avg IOL 2022 RBLK Grades") +
   labs(
     title = "2022 RB Review",
     caption = "2021 IOL Grade based on starting LG, C, RG on 2022 ESPN Depth Chart. \n 

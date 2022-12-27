@@ -49,7 +49,8 @@ combine_csv <- function(end_week) {
 
 # 1.1 Define Game week ----------------------------------------------------
 
-week <- as.numeric(max(pbp$week))
+week = 16
+#week <- as.numeric(max(pbp$week))
 
 # 2.0 PFF Def Table -------------------------------------------------------
 
@@ -201,7 +202,7 @@ for (i in 1:dim(slate_qbs)[1]) {
   
 #start with a single player
 player <- pbp %>% 
-  filter(pass == 1 & passer == slate_qbs$name[i]) %>% 
+  filter(pass == 1 & passer == slate_qbs$name[i] & week < 16) %>% 
   group_by(passer, posteam, defteam, week) %>% 
   summarize(pass_attempt = sum(pass_attempt, na.rm = T),
             passing_yards = sum(passing_yards, na.rm = T),
