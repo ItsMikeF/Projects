@@ -34,5 +34,5 @@ draft_positions <- function(i) {
   picks <<- picks[picks %in% 1:(league_size*rounds)]
 }
 
-draft_positions(5)
+draft_positions(11)
 picks
