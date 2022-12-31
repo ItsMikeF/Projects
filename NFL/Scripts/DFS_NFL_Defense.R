@@ -10,22 +10,23 @@ suppressMessages({
 
 # 0.0 Define Inputs -------------------------------------------------------
 
-week = 16
+week = 17
+pbp <- load_pbp(2022)
+wp_lower = 0.1
+wp_upper = 0.9
+half_seconds_remaining = 120
 
 # 1.0 defense epa table -------------------------------------------------------
 
-epa_def <- function(week, year, wp_lower, wp_upper, half_seconds_remaining, print_plot) {
+epa_def <- function(week, wp_lower, wp_upper, half_seconds_remaining, print_plot) {
   #define the values
   week = week
-  year = year
   wp_lower = wp_lower
   wp_upper = wp_upper
   half_seconds_remaining = half_seconds_remaining
   
-  assign(paste("nfl", year, sep = "_"), load_pbp(year), envir = .GlobalEnv)
-  
   #def pass epa
-  nfl_2022_def_pass <- nfl_2022 %>% 
+  pbp_def_pass <- pbp %>% 
     filter(pass == 1 &
              wp > 0.1 &
              wp < 0.9 &
@@ -38,7 +39,7 @@ epa_def <- function(week, year, wp_lower, wp_upper, half_seconds_remaining, prin
            def_pass_epa_sd = round((def_pass_epa - weighted.mean(def_pass_epa, n_plays, na.rm=T)) / sd(def_pass_epa, na.rm = T), digits = 2))
   
   #def rush epa
-  nfl_2022_def_rush <- nfl_2022 %>% 
+  pbp_def_rush <- pbp %>% 
     filter(rush == 1 &
              wp > 0.1 &
              wp < 0.9 &
@@ -50,8 +51,8 @@ epa_def <- function(week, year, wp_lower, wp_upper, half_seconds_remaining, prin
     mutate(def_rush_epa_rank = round(rank(def_rush_epa), digits = 0), 
            def_rush_epa_sd = round((def_rush_epa - weighted.mean(def_rush_epa, n_plays, na.rm=T)) / sd(def_rush_epa, na.rm = T), digits = 2))
   
-  nfl_2022_def <<- nfl_2022_def_pass %>% 
-    left_join(nfl_2022_def_rush, by = c('defteam')) %>% 
+  pbp_def <<- pbp_def_pass %>% 
+    left_join(pbp_def_rush, by = c('defteam')) %>% 
     mutate(total_plays = n_plays.x + n_plays.y,
            #defteam = gsub('JAX','JAC', defteam), 
            defteam = gsub('LA','LAR', defteam), 
@@ -59,20 +60,20 @@ epa_def <- function(week, year, wp_lower, wp_upper, half_seconds_remaining, prin
   
   #plot the data
   if (print_plot == 'yes') {
-    nfl_2022_def <- nfl_2022_def %>% 
+    pbp_def <- pbp_def %>% 
       left_join(teams_colors_logos, by = c('defteam' = 'team_abbr'))
     
-    nfl_2022_def %>%
+    pbp_def %>%
       ggplot(aes(x = def_pass_epa, y = def_rush_epa)) +
-      geom_hline(yintercept = mean(nfl_2022_def$def_rush_epa), color = "red", linetype = "dashed", alpha=0.5) +
-      geom_vline(xintercept =  mean(nfl_2022_def$def_pass_epa), color = "red", linetype = "dashed", alpha=0.5) +
-      geom_point(color = nfl_2022_def$team_color, cex = nfl_2022_def$total_plays / (0.1*max(nfl_2022_def$total_plays)), alpha = .6) +
-      #geom_image(aes(image = team_logo_espn), size = nfl_2022_def$total_plays / (0.1*max(nfl_2022_def$total_plays)), asp = 16 / 9) +
+      geom_hline(yintercept = mean(pbp_def$def_rush_epa), color = "red", linetype = "dashed", alpha=0.5) +
+      geom_vline(xintercept =  mean(pbp_def$def_pass_epa), color = "red", linetype = "dashed", alpha=0.5) +
+      geom_point(color = pbp_def$team_color, cex = pbp_def$total_plays / (0.1*max(pbp_def$total_plays)), alpha = .6) +
+      #geom_image(aes(image = team_logo_espn), size = pbp_def$total_plays / (0.1*max(pbp_def$total_plays)), asp = 16 / 9) +
       geom_text_repel(aes(label=defteam)) +
       scale_y_discrete(limits = rev) +
       labs(x = "Pass EPA Allowed",
            y = "Rush EPA Allowed",
-           title = paste("Def EPA Allowed, NFL Weeks 1-",(max(nfl_2022$week))),
+           title = paste("Def EPA Allowed, NFL Weeks 1-",(max(pbp$week))),
            caption = glue("{wp_lower} < wp < {wp_upper}, half_secs > {half_seconds_remaining}
        Twitter: Its_MikeF | Data: @nflfastR")) +
       theme_bw() +
@@ -84,13 +85,12 @@ epa_def <- function(week, year, wp_lower, wp_upper, half_seconds_remaining, prin
   }
   
 }
-epa_def(week, 2022, 0.1, 0.9, 120, 'no')
+epa_def(week, 0.1, 0.9, 120, 'no')
 
 # 2.0 offense epa table -------------------------------------------------------
 
 epa_off <- function(wp_lower, wp_upper, half_seconds_remaining, print_plot) {
-  get("nfl_2022", envir = .GlobalEnv)
-  nfl_2022_off_pass <- nfl_2022 %>% 
+  pbp_off_pass <- pbp %>% 
     filter(pass == 1 &
              wp > .10 &
              wp < .90 &
@@ -102,7 +102,7 @@ epa_off <- function(wp_lower, wp_upper, half_seconds_remaining, print_plot) {
     mutate(off_pass_epa_rank = round(rank(-off_pass_epa), digits = 0), 
            off_pass_epa_sd = round((off_pass_epa - weighted.mean(off_pass_epa, n_plays, na.rm=T)) / sd(off_pass_epa, na.rm = T), digits = 2))
   
-  nfl_2022_off_rush <- nfl_2022 %>% 
+  pbp_off_rush <- pbp %>% 
     filter(rush == 1 &
              wp > .10 &
              wp < .90 &
@@ -114,25 +114,25 @@ epa_off <- function(wp_lower, wp_upper, half_seconds_remaining, print_plot) {
     mutate(off_rush_epa_rank = round(rank(-off_rush_epa), digits = 0), 
            off_rush_epa_sd = round((off_rush_epa - weighted.mean(off_rush_epa, n_plays, na.rm=T)) / sd(off_rush_epa, na.rm = T), digits = 2))
   
-  nfl_2022_off <<- nfl_2022_off_pass %>% 
-    left_join(nfl_2022_off_rush, by = c('posteam')) %>% 
+  pbp_off <<- pbp_off_pass %>% 
+    left_join(pbp_off_rush, by = c('posteam')) %>% 
     mutate(total_plays = n_plays.x + n_plays.y)
   
   if (print_plot == 'yes') {
-    nfl_2022_off <- nfl_2022_off %>% 
+    pbp_off <- pbp_off %>% 
       left_join(teams_colors_logos, by = c('posteam' = 'team_abbr'))
     
-    nfl_2022_off %>%
+    pbp_off %>%
       ggplot(aes(x = off_pass_epa, y = off_rush_epa)) +
-      geom_hline(yintercept = mean(nfl_2022_off$off_rush_epa), color = "red", linetype = "dashed", alpha=0.5) +
-      geom_vline(xintercept =  mean(nfl_2022_off$off_pass_epa), color = "red", linetype = "dashed", alpha=0.5) +
-      geom_point(color = nfl_2022_off$team_color, cex = nfl_2022_off$total_plays / (0.1*max(nfl_2022_off$total_plays)), alpha = .6) +
-      #geom_image(aes(image = team_logo_espn), size = nfl_2022_off$total_plays / (0.1*max(nfl_2022_off$total_plays)), asp = 16 / 9) +
+      geom_hline(yintercept = mean(pbp_off$off_rush_epa), color = "red", linetype = "dashed", alpha=0.5) +
+      geom_vline(xintercept =  mean(pbp_off$off_pass_epa), color = "red", linetype = "dashed", alpha=0.5) +
+      geom_point(color = pbp_off$team_color, cex = pbp_off$total_plays / (0.1*max(pbp_off$total_plays)), alpha = .6) +
+      #geom_image(aes(image = team_logo_espn), size = pbp_off$total_plays / (0.1*max(pbp_off$total_plays)), asp = 16 / 9) +
       geom_text_repel(aes(label=posteam)) +
       scale_y_discrete(limits = rev) +
       labs(x = "Pass EPA",
            y = "Rush EPA",
-           title = paste("OFF EPA, NFL Weeks 1-",(max(nfl_2022$week))),
+           title = paste("OFF EPA, NFL Weeks 1-",(max(pbp$week))),
            caption = "0.2 < wp < 0.8, half_secs > 120
        Twitter: Its_MikeF | Data: @nflfastR") +
       theme_bw() +
@@ -148,10 +148,10 @@ epa_off(0.1, 0.9, 120, 'no')
 
 # 3.0 defense pff table -------------------------------------------------------
 
-pff_def_table <- function(week) {
-  nfl_pff_def <- read.csv(glue("./contests/2022_w{week}/pff/defense_summary.csv"))
+def_table <- function(week) {
+  def <- read.csv(glue("./contests/2022_w{week}/pff/defense_summary.csv"))
   
-  nfl_pff_def_table <- nfl_pff_def %>%
+  def_table <- def %>%
     group_by(team_name) %>%
     summarise(def = round(weighted.mean(grades_defense, snap_counts_defense), digits = 1),
               rdef = round(weighted.mean(grades_run_defense, snap_counts_run_defense), digits = 1),
@@ -159,20 +159,20 @@ pff_def_table <- function(week) {
               prsh = round(weighted.mean(grades_pass_rush_defense, snap_counts_pass_rush), digits = 1),
               cov = round(weighted.mean(grades_coverage_defense, snap_counts_coverage), digits =1))
   
-  nfl_pff_def_table <<- nfl_pff_def_table %>% 
+  def_table <<- def_table %>% 
     mutate(def_rank = round(rank(-def), digits = 0), 
            def_sd = round((def - mean(def)) / sd(def, na.rm = T), digits = 2),
            
-           rdef_rank = round(rank(-nfl_pff_def_table$rdef), digits = 0), 
+           rdef_rank = round(rank(-def_table$rdef), digits = 0), 
            rdef_sd = round((rdef - mean(rdef)) / sd(rdef, na.rm = T), digits = 2),
            
-           tack_rank = round(rank(-nfl_pff_def_table$tack), digits = 0), 
+           tack_rank = round(rank(-def_table$tack), digits = 0), 
            tack_sd = round((tack - mean(tack)) / sd(tack, na.rm = T), digits = 2),
            
-           prsh_rank = round(rank(-nfl_pff_def_table$prsh), digits = 0), 
+           prsh_rank = round(rank(-def_table$prsh), digits = 0), 
            prsh_sd = round((prsh - mean(prsh)) / sd(prsh, na.rm = T), digits = 2),
            
-           cov_rank = round(rank(-nfl_pff_def_table$cov), digits = 0),
+           cov_rank = round(rank(-def_table$cov), digits = 0),
            cov_sd = round((cov - mean(cov)) / sd(cov, na.rm = T), digits = 2),
            
            team_name = gsub('ARZ','ARI', team_name), 
@@ -183,12 +183,12 @@ pff_def_table <- function(week) {
            team_name = gsub('LA','LAR', team_name), 
            team_name = gsub('LARC','LAC', team_name))
 }
-pff_def_table(week)
+def_table(week)
 
 # 3.1 defense coverage scheme -------------------------------------------------
 
 defense_coverage_scheme <- function(week) {
-  nfl_pff_defense_coverage_scheme <- read.csv(glue("./contests/2022_w{week}/pff/defense_coverage_scheme.csv")) %>% 
+  defense_coverage_scheme <- read.csv(glue("./contests/2022_w{week}/pff/defense_coverage_scheme.csv")) %>% 
     mutate(team_name = gsub('ARZ','ARI', team_name), 
            team_name = gsub('BLT','BAL', team_name), 
            team_name = gsub('CLV','CLE', team_name), 
@@ -196,7 +196,7 @@ defense_coverage_scheme <- function(week) {
            team_name = gsub('JAX','JAC', team_name), 
            team_name = gsub('LA','LAR', team_name)) 
   
-  defense_coverage_scheme <<- nfl_pff_defense_coverage_scheme %>% 
+  defense_coverage_scheme <<- defense_coverage_scheme %>% 
     select(player,
            team_name,
            man_snap_counts_coverage, 

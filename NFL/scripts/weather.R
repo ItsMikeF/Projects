@@ -7,7 +7,6 @@ suppressMessages({
   library(glue) #interpreted literal strings
 })
 
-
 load <- load_pbp(2017:2022) 
 
 abc <- data.frame(names(load))

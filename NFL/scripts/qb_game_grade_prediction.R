@@ -54,9 +54,15 @@ week = 16
 
 # 2.0 PFF Def Table -------------------------------------------------------
 
+passing_reports <- c("passing_grades", "passing_depth", "passing_pressure", "passing_concept", "time_in_pocket", "allowed_pressure")
+receiving_reports <- c("receiving_grades", "receiving_depth", "receiving_concept", "receiving_scheme")
+rushing_reports <- c("rushing_grades")
+blocking_reports <- c("blocking_grades", "pass_blocking", "run_blocking", "ol_pbe")
+defense_reports <- c("grades_def","grades_prsh", "grades_rdef", "grades_cov", "scheme_cov", "slot_cov", "prp")
+
 def_list <- list()
 
-for (i in 1:week) {
+for (i in 1:(week-1)) {
   nfl_pff_def <- read.csv(glue("./contests/2022_w{i}/pff/defense_summary.csv"))
   
   nfl_pff_def_table <- nfl_pff_def %>%
@@ -85,7 +91,7 @@ pff_def <- bind_rows(def_list) %>%
 
 cov_list <- list()
 
-for (i in 1:week) {
+for (i in 1:(week-1)) {
   nfl_pff_defense_coverage_scheme <- read.csv(glue("./contests/2022_w{i}/pff/defense_coverage_scheme.csv")) %>% 
     mutate(week = i, 
            team_name = gsub('ARZ','ARI', team_name), 
@@ -182,7 +188,7 @@ off_pass_epa <- bind_rows(o_list) %>%
 # 4.0 Collect all QBs on slate --------------------------------------------
 
 slate_qbs <- read.csv(glue("./contests/2022_w16/DKSalaries.csv")) %>% 
-  filter(Position == "QB" & Salary > 6000) %>% 
+  filter(Position == "QB" & Salary > 4500) %>% 
   select(Name, Salary) %>% 
   mutate(player = Name) %>% 
   separate(Name, into = c("first_name", "last_name"), sep=" ") %>% 
@@ -234,16 +240,18 @@ player <- pbp %>%
          join_def_week_join = paste0(defteam, week_join), 
          join_off_week_join = paste0(posteam, week_join), 
          join = paste0(posteam, week)) %>% 
-  arrange(week) 
+  arrange(week)
 
-b <- load_schedules(2022) %>% 
+posteam = player$posteam[1]
+
+schedule <- load_schedules(2022) %>% 
   filter(away_team == player$posteam[1] | home_team == player$posteam[1]) %>% 
   select(week, away_team, away_score, home_team, home_score, result, total, spread_line, total_line, roof, surface) %>% 
   mutate(join = paste0(player$posteam[1], week))
 
 # 5.0 Load pff data -------------------------------------------------------
 
-i = as.numeric(1)
+#i = as.numeric(1)
 
 #read csv with qb grades and filter for player
 pff_game_log <- read.csv(glue("game_grades/qbs.csv")) %>% 
@@ -259,8 +267,17 @@ pff_game_log <- read.csv(glue("game_grades/qbs.csv")) %>%
 
 # 6.0 Combine it all ------------------------------------------------------
 
+#nfl dfs for reference
+nfl_qb <- nfl_salaries %>%
+  left_join(nfl_pff_qb, by = c('Name' = 'player')) %>% 
+  left_join(rg, by=c("Name" = "name")) %>% 
+  left_join(nfl_pff_dk_own, by = c('Name' = 'player')) %>%
+  filter(pos == "QB" & proj_own > 0) %>% 
+  left_join(nfl_pff_pblk, by = c('TeamAbbrev' = 'team_name')) %>% 
+  left_join(nfl_pff_passing_concept, by = c('Name' = 'player')) %>% 
+  left_join(nfl_reciever_salary, by = c('TeamAbbrev' = 'TeamAbbrev'))
 
-test <- b %>% 
+qb <- schedule %>% 
   left_join(player, by=c('join')) %>% 
   #left_join(def_pass_epa %>% select(def_pass_epa, join_def_week), by="join_def_week")  %>% 
   left_join(def_pass_epa %>% select(cumsum_epa_d, join_def_week_join), by="join_def_week_join")  %>% 
@@ -272,46 +289,36 @@ test <- b %>%
   
   left_join(pff_game_log %>% select(join, grades_pass, cumsum_grades_pass), by=c('join_off_week'='join')) %>% 
   
-  select(passer, grades_pass, cumsum_grades_pass, fpts, posteam, week, defteam, def, prsh, cov, cumsum_epa_d, off_pass_epa, cumsum_epa_o)
+  select(week, spread_line, total_line, roof, surface, passer, grades_pass, cumsum_grades_pass, fpts, posteam, week, defteam, def, prsh, cov, cumsum_epa_d, cumsum_epa_o)
 
-qb <- player %>% 
-  #left_join(def_pass_epa %>% select(def_pass_epa, join_def_week), by="join_def_week")  %>% 
-  left_join(def_pass_epa %>% select(cumsum_epa_d, join_def_week_join), by="join_def_week_join")  %>% 
-  
-  left_join(off_pass_epa %>% select(off_pass_epa, join_off_week), by="join_off_week") %>% 
-  left_join(off_pass_epa %>% select(cumsum_epa_o, join_off_week_join), by="join_off_week_join") %>% 
-  
-  left_join(pff_def %>% select(def, rdef, tack, prsh, cov, join_def_week_join),by="join_def_week_join") %>% 
-  
-  bind_cols(pff_game_log %>% select(grades_pass, cumsum_grades_pass)) %>% 
-  select(passer, grades_pass, cumsum_grades_pass, fpts, posteam, week, defteam, def, prsh, cov, cumsum_epa_d, off_pass_epa, cumsum_epa_o)
+#determine next week opponent
+next_week <- load_schedules(2022) %>% filter(week==16) %>% filter(away_team == posteam | home_team == posteam)
+opp <- if_else(next_week$away_team == posteam, next_week$home_team, next_week$away_team)
 
-#add row with opponent
-qb <- qb %>% add_row()
+qb$passer[week-1] = qb$passer[1]
+qb$defteam[week-1] = opp
+#qb$week[week-1] = week+1
 
-a <- load_schedules(2022) %>% filter(week==16) %>% filter(away_team == qb$posteam[1] | home_team == qb$posteam[1])
-opp <- if_else(a$away_team == qb$posteam[1], a$home_team, a$away_team)
+qb$def[week-1] <- nfl_pff_def_table[nfl_pff_def_table$team_name == opp,][2]
+qb$prsh[week-1] <- nfl_pff_def_table[nfl_pff_def_table$team_name == opp,][5]
+qb$cov[week-1] <- nfl_pff_def_table[nfl_pff_def_table$team_name == opp,][6]
 
-qb$passer[week] = qb$passer[1]
-qb$defteam[week] = opp
-qb$week[week] = week+1
+qb$cumsum_epa_d[week-1] <- round(def_pass_epa[def_pass_epa$join_def_week==paste0(opp,week-1) ,][8], digits = 3)
 
-qb$def[week] <- nfl_pff_def_table[nfl_pff_def_table$team_name == opp,][2]
-qb$prsh[week] <- nfl_pff_def_table[nfl_pff_def_table$team_name == opp,][5]
-qb$cov[week] <- nfl_pff_def_table[nfl_pff_def_table$team_name == opp,][6]
-
-qb$cumsum_epa_d[week] <- round(def_pass_epa[def_pass_epa$join_def_week=="HOU14" ,][8], digits = 3)
-
-qb$cumsum_epa_o[week] <- off_pass_epa[off_pass_epa$join_off_week=="KC14" ,][8]
-qb$cumsum_grades_pass[week] <- qb$cumsum_grades_pass[13]
+qb$posteam[week-1] <- qb$posteam[week-2]
+qb$cumsum_epa_o[week-1] <- off_pass_epa[off_pass_epa$join_off_week==paste0(qb$posteam[1],week-1) ,][8]
+qb$cumsum_grades_pass[week-1] <- qb$cumsum_grades_pass[week-2]
 
 # 7.0 Generate Fpts -------------------------------------------------------
 
 #split into training (80%) and testing set (20%)
-data <- qb %>% select(fpts, cumsum_grades_pass, prsh, cov, cumsum_epa_d)
-data$fpts[week] <- 0
-train = data[1:(week-1), ]
-test = data[week, ]
+data <- qb %>% select(fpts, cumsum_grades_pass, def, prsh, cov, cumsum_epa_d, cumsum_epa_o)
+data$fpts[week-1] <- 0
+
+train = data[1:(week-2), ] %>% drop_na() %>% filter(!grepl("NA", cumsum_epa_o))
+test = data[week-1, ]
+
+data <- data %>% drop_na() %>% filter(!grepl("NA", def)) %>% filter(!grepl("NA", cumsum_epa_o))
 
 #define predictor and response variables in training set
 train_x <- data.matrix(train[,-c(which(colnames(train)=="fpts"))])
@@ -346,13 +353,12 @@ mean((test_y - pred_y)^2) #mse
 caret::MAE(test_y, pred_y) #mae
 caret::RMSE(test_y, pred_y) #rmse
 
-df = cbind(pred_y, test_y)
 test$fpts[1] <- pred_y
-charlie <- bind_rows(train, test)
-qb$fpts[week] <- pred_y
-view(qb)
+qb$fpts[week-1] <- pred_y
 
 #add projection to player
-slate_qbs$fpts[which(slate_qbs$name == qb$passer[1])] <- pred_y
+slate_qbs$fpts[which(slate_qbs$name == player$passer[1])] <- pred_y
 
 }
+
+view(slate_qbs)

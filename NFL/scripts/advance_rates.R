@@ -75,7 +75,7 @@ wrs <- pbp %>%
   arrange(-plays)
 
 players <- rbind(qbs, rbs, wrs) %>% 
-  unique()
+  filter(duplicated(name)==F)
 
 
 # 3.0 merge pbp and adv rates ---------------------------------------------

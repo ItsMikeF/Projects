@@ -49,13 +49,14 @@ tes <- projections %>% filter(pos == "te")
 
 # 2.0 picks -------------------------------------------------------------------
 
-#define constants
-league_size <- 12
-rounds <- 18
-picks <- vector()
-
 #define function to determine pick positions based on first pick
 draft_positions <- function(i) {
+  
+  #define constants
+  league_size <- 12
+  rounds <- 18
+  picks <<- vector()
+  
   picks[1] <<- i
   
   for (j in 1:ceiling(rounds/2)) {
@@ -66,7 +67,6 @@ draft_positions <- function(i) {
   #filters out picks beyond the draft size
   picks <<- picks[picks %in% 1:(league_size*rounds)]
 }
-
 draft_positions(9)
 picks
 draft_picks <- projections[picks,]

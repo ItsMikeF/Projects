@@ -21,13 +21,14 @@ projections_udd <- read.csv("./season_projections/projections_underdog.csv") %>%
 
 # 2.0 Draft position function ---------------------------------------------
 
-#define constants
-league_size <- 12
-rounds <- 18
-picks <- vector()
-
 #define function to determine pick positions based on first pick
 draft_positions <- function(i) {
+  
+  #define constants
+  league_size <- 12
+  rounds <- 18
+  picks <<- vector()
+  
   print(i)
   picks[1] <<- i
   
@@ -44,10 +45,7 @@ draft_positions <- function(i) {
   #filters out picks beyond the draft size
   picks <<- picks[picks %in% 1:(league_size*rounds)]
 }
-
 draft_positions(11)
-picks
-
 
 # 3.0 Winning Draft -------------------------------------------------------
 
