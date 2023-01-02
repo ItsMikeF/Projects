@@ -300,7 +300,14 @@ blitz <- function(week) {
   team_blitz <<- def_blitz_pos %>% 
     group_by(team_name) %>% 
     summarise(blitz_team = sum(blitz_pos)) %>% 
-    mutate(blitz_rank = dense_rank(desc(blitz_team)))
+    mutate(blitz_rank = dense_rank(desc(blitz_team)), 
+           team_name = gsub('ARZ','ARI', team_name), 
+           team_name = gsub('BLT','BAL', team_name), 
+           team_name = gsub('CLV','CLE', team_name), 
+           team_name = gsub('HST','HOU', team_name), 
+           #team_name = gsub('JAX','JAC', team_name), 
+           team_name = gsub('LA','LAR', team_name), 
+           team_name = gsub('LARC','LAC', team_name))
   
   def_blitz_pos <<- def_blitz_pos %>% 
     left_join(team_blitz, by=c('team_name')) 

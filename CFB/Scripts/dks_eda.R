@@ -13,7 +13,7 @@ suppressMessages({
   library(gt) #easiyl create presentation ready display tables
 })
 
-week <- 13
+week <- 18
 
 # 1.0 Scrape DraftKings odds ----------------------------------------------
 
@@ -154,6 +154,17 @@ normalize <- function(x){
 #add defense data to the dks
 dks <- dks %>% 
   left_join(def, by=c("School.y"="team_name"))
+
+
+
+# 4.1 cornerbacks ---------------------------------------------------------
+
+cornerbacks <- read.csv(glue("./contests/2022_w{week}/pff/defense_coverage_summary.csv")) %>% 
+  arrange(-snap_counts_coverage) %>% 
+  filter(position == "CB" | position == "S") %>% 
+  filter(team_name == "GEORGIA") %>% 
+  select(player, position, snap_counts_coverage, grades_coverage_defense, yards_per_coverage_snap)
+cornerbacks
 
 # 4.2 offense team table --------------------------------------------------
 
