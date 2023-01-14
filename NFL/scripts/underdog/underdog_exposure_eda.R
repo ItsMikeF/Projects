@@ -6,15 +6,20 @@ suppressMessages({
   library(tidyverse) #ggplot2 dplyr tibble tidyr purrr forecats 
   library(ggrepel) #automatically position non-overlapping text labels
   library(glue) #interpreted literal strings
+  library(gt)
 })
 
-exposure <- read.csv("underdog_exposure_2022.csv") 
+year = 2023
+season = 0
+playoffs = 1
+
+exposure <- read.csv("./projections_playoffs/2023_nfl_playoff_expo.csv") 
 exposure <- exposure%>% 
   mutate(Picked.At = as.Date(as.POSIXct(exposure$Picked.At, format="%Y-%m-%d %H:%M:%S", tz="UTC")), 
          name = paste(First.Name, Last.Name)) %>% 
   select(name, Team, Position, Picked.At, Pick.Number, Draft)
 
-projections_udd <- read.csv("./season_projections/projections_underdog.csv") %>% 
+projections_udd <- read.csv("./projections_playoffs/underdog_playoff_projections_jan14.csv") %>% 
   mutate(name = paste(firstName, lastName), 
          adp = as.numeric(adp)) %>% 
   select(name, adp, projectedPoints, positionRank)
@@ -27,8 +32,8 @@ exposure_adp <- exposure %>%
 exposure_adp %>% 
   group_by(Picked.At) %>% 
   summarize(total_picks = n(),
-            total_value = sum(value), 
-            total_rel_value = sum(rel_value)) %>% 
+            total_value = sum(value, na.rm = T), 
+            total_rel_value = sum(rel_value, na.rm = T)) %>% 
   mutate(value_per_pick = total_value/total_picks, 
          rel_value_per_pick = total_rel_value/total_picks)
 
@@ -40,6 +45,23 @@ exposure_adp %>%
   mutate(value_per_pick = total_value/total_picks, 
          rel_value_per_pick = total_rel_value/total_picks) %>% 
   arrange(-rel_value_per_pick)
+
+#load players
+
+pbp_players <- function() {
+  pbp <- load_pbp(2022)
+  qb <- pbp %>% select(passer_id, passer) %>% drop_na() %>% unique() %>% rename(id=passer_id, player=passer) 
+  rb <- pbp %>% select(rusher_id, rusher) %>% drop_na() %>% unique() %>% rename(id=rusher_id, player=rusher) 
+  wr <- pbp %>% select(receiver_id, receiver) %>% drop_na() %>% unique() %>% rename(id=receiver_id, player=receiver) 
+  
+  players <<- rbind(qb, rb, wr) %>% unique()
+}
+pbp_players()
+
+exposure_adp %>% 
+  filter(Draft=="2608c829-c72a-4fbf-9376-50e367ae927e") %>% 
+  select(name, Team, Pick.Number, adp, value, rel_value) %>% 
+  arrange(Pick.Number) 
 
 exposure_adp %>% 
   select(name, Pick.Number, adp, value, rel_value, Picked.At) %>% 

@@ -118,7 +118,7 @@ for (i in 1:(week-1)) {
               forced_fumbles = round(weighted.mean(forced_fumbles, snap_counts_run, na.rm = T),digits = 2),
               grades_run_defense = round(weighted.mean(grades_run_defense, snap_counts_run, na.rm = T), digits = 1),
               grades_tackle = round(weighted.mean(grades_tackle, snap_counts_run, na.rm = T), digits = 1),
-              missed_tackles = round(weighted.mean(missed_tackles, snap_counts_run, na.rm = T), digits = 1),
+              missed_tackles = round(sum(missed_tackles, na.rm = T)/sum(snap_counts_run, na.rm = T), digits = 3),
               stops = round(weighted.mean(stops, snap_counts_run, na.rm = T),digits = 1))
 }
 
@@ -201,7 +201,7 @@ slate_rbs$name[1]
 
 # 4.1 Single Player analysis ----------------------------------------------
 
-i = as.numeric(1)
+i = as.numeric(2)
 
 for (i in 1:dim(slate_rbs)[1]) {
   
@@ -265,7 +265,7 @@ for (i in 1:dim(slate_rbs)[1]) {
   
   # 6.0 Combine it all ------------------------------------------------------
   
-  }
+  
   rb <- schedule %>% 
     left_join(player, by=c('join')) %>% 
     left_join(def_rush_epa %>% select(cumsum_epa_d, join_def_week_join), by="join_def_week_join")  %>% 
@@ -277,7 +277,7 @@ for (i in 1:dim(slate_rbs)[1]) {
     
     left_join(pff_game_log %>% select(join, grades_run, cumsum_grades_run), by=c('join_off_week'='join')) %>% 
     
-    select(week, spread_line, total_line, roof, surface, rusher, grades_run, fpts, posteam, week, defteam, def, rdef, tack, cumsum_epa_d, cumsum_epa_o)
+    select(week, spread_line, total_line, roof, surface, rusher, grades_run, cumsum_grades_run, fpts, posteam, week, defteam, def, rdef, tack, cumsum_epa_d, cumsum_epa_o)
   
   #determine next week opponent
   next_week <- load_schedules(2022) %>% filter(week==16) %>% filter(away_team == posteam | home_team == posteam)
@@ -296,11 +296,12 @@ for (i in 1:dim(slate_rbs)[1]) {
   rb$posteam[week-1] <- rb$posteam[week-2]
   rb$cumsum_epa_o[week-1] <- off_rush_epa[off_rush_epa$join_off_week==paste0(rb$posteam[1],week-1) ,][8]
   rb$cumsum_grades_run[week-1] <- rb$cumsum_grades_run[week-2]
+  rb$week.y[week-1] = week
   
   # 7.0 Generate Fpts -------------------------------------------------------
   
   #split into training (80%) and testing set (20%)
-  data <- rb %>% select(fpts, cumsum_grades_rush, def, rdef, cumsum_epa_d, cumsum_epa_o)
+  data <- rb %>% select(fpts, cumsum_grades_run, def, rdef, cumsum_epa_d, cumsum_epa_o)
   data$fpts[week-1] <- 0
   
   train = data[1:(week-2), ] %>% drop_na() %>% filter(!grepl("NA", cumsum_epa_o))
@@ -345,7 +346,7 @@ for (i in 1:dim(slate_rbs)[1]) {
   rb$fpts[week-1] <- pred_y
   
   #add projection to player
-  slate_rbs$fpts[which(slate_rbs$name == player$passer[1])] <- pred_y
+  slate_rbs$fpts[which(slate_rbs$name == player$rusher[1])] <- pred_y
   
 }
 

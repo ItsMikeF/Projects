@@ -49,7 +49,7 @@ combine_csv <- function(end_week) {
 
 # 1.1 Define Game week ----------------------------------------------------
 
-week = 17
+week = 18
 #week <- as.numeric(max(pbp$week))
 
 # 2.0 PFF Def Table -------------------------------------------------------
@@ -187,7 +187,7 @@ off_pass_epa <- bind_rows(o_list) %>%
 
 # 4.0 Collect all QBs on slate --------------------------------------------
 
-slate_qbs <- read.csv(glue("./contests/2022_w{17}/DKSalaries.csv")) %>% 
+slate_qbs <- read.csv(glue("./contests/2022_w{18}/DKSalaries.csv")) %>% 
   filter(Position == "QB" & Salary > 4500) %>% 
   select(Name, Salary) %>% 
   mutate(player = Name) %>% 
@@ -208,7 +208,7 @@ for (i in 1:dim(slate_qbs)[1]) {
   
 #start with a single player
 player <- pbp %>% 
-  filter(pass == 1 & passer == slate_qbs$name[i] & week < 16) %>% 
+  filter(pass == 1 & passer == slate_qbs$name[i] & week < 18) %>% 
   group_by(passer, posteam, defteam, week) %>% 
   summarize(pass_attempt = sum(pass_attempt, na.rm = T),
             passing_yards = sum(passing_yards, na.rm = T),
@@ -292,31 +292,32 @@ qb <- schedule %>%
   select(week, spread_line, total_line, roof, surface, passer, grades_pass, cumsum_grades_pass, fpts, posteam, week, defteam, def, prsh, cov, cumsum_epa_d, cumsum_epa_o)
 
 #determine next week opponent
-next_week <- load_schedules(2022) %>% filter(week==16) %>% filter(away_team == posteam | home_team == posteam)
+next_week <- load_schedules(2022) %>% filter(week==18) %>% filter(away_team == posteam | home_team == posteam)
 opp <- if_else(next_week$away_team == posteam, next_week$home_team, next_week$away_team)
 
-qb$passer[week-1] = qb$passer[1]
-qb$defteam[week-1] = opp
+qb$posteam[dim(qb)[1]] = qb$posteam[1]
+qb$passer[dim(qb)[1]] = qb$passer[1]
+qb$defteam[dim(qb)[1]] = opp
 #qb$week[week-1] = week+1
 
-qb$def[week-1] <- nfl_pff_def_table[nfl_pff_def_table$team_name == opp,][2]
-qb$prsh[week-1] <- nfl_pff_def_table[nfl_pff_def_table$team_name == opp,][5]
-qb$cov[week-1] <- nfl_pff_def_table[nfl_pff_def_table$team_name == opp,][6]
+qb$def[dim(qb)[1]] <- nfl_pff_def_table[nfl_pff_def_table$team_name == opp,][2]
+qb$prsh[dim(qb)[1]] <- nfl_pff_def_table[nfl_pff_def_table$team_name == opp,][5]
+qb$cov[dim(qb)[1]] <- nfl_pff_def_table[nfl_pff_def_table$team_name == opp,][6]
 
-qb$cumsum_epa_d[week-1] <- round(def_pass_epa[def_pass_epa$join_def_week==paste0(opp,week-1) ,][8], digits = 3)
+qb$cumsum_epa_d[dim(qb)[1]] <- round(def_pass_epa[def_pass_epa$join_def_week==paste0(opp,dim(qb)[1]) ,][8], digits = 3)
 
-qb$posteam[week-1] <- qb$posteam[week-2]
-qb$cumsum_epa_o[week-1] <- off_pass_epa[off_pass_epa$join_off_week==paste0(qb$posteam[1],week-1) ,][8]
-qb$cumsum_grades_pass[week-1] <- qb$cumsum_grades_pass[week-2]
+qb$posteam[dim(qb)[1]] <- qb$posteam[week-2]
+qb$cumsum_epa_o[dim(qb)[1]] <- off_pass_epa[off_pass_epa$join_off_week==paste0(qb$posteam[1],dim(qb)[1]) ,][8]
+qb$cumsum_grades_pass[dim(qb)[1]] <- qb$cumsum_grades_pass[dim(qb)[2]]
 
 # 7.0 Generate Fpts -------------------------------------------------------
 
 #split into training (80%) and testing set (20%)
 data <- qb %>% select(fpts, cumsum_grades_pass, def, prsh, cov, cumsum_epa_d, cumsum_epa_o)
-data$fpts[week-1] <- 0
+data$fpts[dim(qb)[1]] <- 0
 
-train = data[1:(week-2), ] %>% drop_na() %>% filter(!grepl("NA", cumsum_epa_o))
-test = data[week-1, ]
+train = data[1:(dim(data)[1]-1), ] %>% drop_na() %>% filter(!grepl("NA", cumsum_epa_o))
+test = data[dim(data)[1], ]
 
 data <- data %>% drop_na() %>% filter(!grepl("NA", def)) %>% filter(!grepl("NA", cumsum_epa_o))
 
@@ -354,7 +355,7 @@ caret::MAE(test_y, pred_y) #mae
 caret::RMSE(test_y, pred_y) #rmse
 
 test$fpts[1] <- pred_y
-qb$fpts[week-1] <- pred_y
+qb$fpts[dim(qb)[1]] <- pred_y
 
 #add projection to player
 slate_qbs$fpts[which(slate_qbs$name == player$passer[1])] <- pred_y
@@ -362,3 +363,13 @@ slate_qbs$fpts[which(slate_qbs$name == player$passer[1])] <- pred_y
 }
 
 view(slate_qbs)
+
+gt <- slate_qbs %>% 
+  left_join(pbp %>% group_by(passer, id, posteam) %>% summarise(yards=sum(passing_yards,na.rm = T)), by=c('name'='passer'))
+
+gt %>% 
+  gt() %>% 
+  
+
+ggplot2::ggplot(slate_qbs, aes(x = reorder(player, -fpts), y = fpts)) +
+  nflplotR::geom_nfl_headshots(aes(player_gsis = passer_id), width = 0.075, vjust = 0.45)

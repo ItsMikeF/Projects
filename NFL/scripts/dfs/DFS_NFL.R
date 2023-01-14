@@ -14,7 +14,7 @@ suppressMessages({
 team_names = c('ARZ'='ARI', 'BLT'='BAL', 'CLV'='CLE', 'HST'='HOU', 'JAX'='JAC', 'LA'='LAR')
 name_changes=c('DJ Moore'='D.J. Moore')
 
-week = 17
+week = 19
 folder = glue("./contests/2022_w{week}")
 
 salaries <- read.csv(glue("{folder}/DKSalaries.csv")) %>% 
@@ -43,6 +43,12 @@ defense()
 # 3.0 te ------------------------------------------------------------------
 
 chart_te_matchup <- read.csv(glue("{folder}/pff/te_matchup_chart.csv"))
+receiving_summary <- read.csv(glue("{folder}/pff/receiving_summary.csv"))
+receiving_summary <- replace(receiving_summary, receiving_summary =='D.K. Metcalf','DK Metcalf')
+
+receiving_scheme <- read.csv(glue("{folder}/pff/receiving_scheme.csv"))
+receiving_scheme <- replace(receiving_scheme, receiving_scheme =='D.K. Metcalf','DK Metcalf')
+
 
 te <- rg %>% filter(pos=="TE") %>% 
   left_join(chart_te_matchup, by = c('name'='offPlayer')) %>% 
@@ -77,12 +83,6 @@ te <- rg %>% filter(pos=="TE") %>%
          zone_routes) %>% view (title = "TEs")
 
 # 4.0 wr ------------------------------------------------------------------
-
-receiving_summary <- read.csv(glue("{folder}/pff/receiving_summary.csv"))
-receiving_summary <- replace(receiving_summary, receiving_summary =='D.K. Metcalf','DK Metcalf')
-
-receiving_scheme <- read.csv(glue("{folder}/pff/receiving_scheme.csv"))
-receiving_scheme <- replace(receiving_scheme, receiving_scheme =='D.K. Metcalf','DK Metcalf')
 
 #load the wr matchup table
 chart_wr_cb_matchup <- read.csv(glue("{folder}/pff/wr_cb_matchup_chart.csv")) %>% 
@@ -205,6 +205,14 @@ wr %>%
 
 rushing_summary <- read.csv(glue("{folder}/pff/rushing_summary.csv"))
 
+chart_oline_dline_matchup <- read.csv(glue("{folder}/pff/oline_dline_matchup_chart.csv"))
+chart_oline_dline_matchup <- chart_oline_dline_matchup %>% 
+  replace(., chart_oline_dline_matchup == 'ARZ', 'ARI') %>% 
+  replace(., chart_oline_dline_matchup == 'BLT', 'BAL') %>% 
+  replace(., chart_oline_dline_matchup == 'CLV', 'CLE') %>% 
+  replace(., chart_oline_dline_matchup == 'HST', 'HOU') %>% 
+  replace(., chart_oline_dline_matchup == 'LA', 'LAR')
+
 rb <- function(variables) {
   
 }
@@ -212,7 +220,7 @@ rb <- function(variables) {
 rb <- salaries %>%
   left_join(rushing_summary, by = c('Name' = 'player')) %>% 
   left_join(rg, by=c("Name" = "name")) %>% 
-  filter(pos == "RB" & proj_own > 0) %>% 
+  filter(pos == "RB" & proj_own >= 0) %>% 
   left_join(pbp_def, by = c('opp' = 'defteam')) %>% 
   left_join(pbp_off, by = c('team' = 'posteam')) %>%
   left_join(chart_oline_dline_matchup, by = c('TeamAbbrev' = 'offTeam')) %>% 
@@ -222,7 +230,7 @@ rb <- rb %>%
   mutate(name_salary = paste(Name, Salary), 
          name_salary_own = paste(Name, Salary, proj_own), 
          touches_game = round(total_touches / player_game_count, digits = 1), 
-         mtf_per_attempt = round(elu_rush_mtf / rushAtt, digits = 1), 
+         #mtf_per_attempt = round(elu_rush_mtf / rushAtt, digits = 1), 
          runBlockAdv_sd = round((runBlockAdv - mean(runBlockAdv, na.rm=T)) / sd(runBlockAdv, na.rm = T), digits = 2), 
          yco_attempt_sd = round((yco_attempt - mean(yco_attempt, na.rm=T)) / sd(yco_attempt, na.rm = T), digits = 2), 
          touches_game_sd = round((touches_game - mean(touches_game, na.rm=T)) / sd(touches_game, na.rm = T), digits = 2), 
@@ -250,7 +258,7 @@ rb %>%
          off_rush_epa_rank,
          def_rush_epa_rank,
          rdef_rank,
-         mtf_per_attempt,
+         #mtf_per_attempt,
          breakaway_percent,
          elusive_rating,
          tack_rank,
@@ -274,17 +282,11 @@ pblk <- pblk %>%
   mutate(pbe_rank = round(rank(-pblk$pbe), digits = 0), 
          pbe_sd = round((pblk$pbe - mean(pblk$pbe, na.rm=T)) / sd(pblk$pbe, na.rm = T), digits = 2))
 
-chart_oline_dline_matchup <- read.csv(glue("{folder}/pff/oline_dline_matchup_chart.csv"))
-chart_oline_dline_matchup <- chart_oline_dline_matchup %>% 
-  replace(., chart_oline_dline_matchup == 'ARZ', 'ARI') %>% 
-  replace(., chart_oline_dline_matchup == 'BLT', 'BAL') %>% 
-  replace(., chart_oline_dline_matchup == 'CLV', 'CLE') %>% 
-  replace(., chart_oline_dline_matchup == 'HST', 'HOU') %>% 
-  replace(., chart_oline_dline_matchup == 'LA', 'LAR')
-
 passing_summary <- read.csv(glue("{folder}/pff/passing_summary.csv"))
 passing_concept <- read.csv(glue("{folder}/pff/passing_concept.csv"))
 passing_pressure_blitz <- read.csv(glue("{folder}/pff/passing_pressure.csv"))
+
+qb_ids <- pbp %>% select(passer_id, passer) %>% drop_na() %>% unique()
 
 qb <- function(variables) {
   
@@ -294,7 +296,7 @@ qb <- function(variables) {
 qb <- salaries %>%
   left_join(passing_summary, by = c('Name' = 'player')) %>% 
   left_join(rg, by=c("Name" = "name")) %>% 
-  filter(pos == "QB" & proj_own > 0) %>% 
+  filter(pos == "QB" & proj_own >= 0) %>% 
   left_join(pblk, by = c('TeamAbbrev' = 'team_name')) %>% 
   left_join(passing_concept, by = c('Name' = 'player')) %>% 
   left_join(reciever_salary, by = c('TeamAbbrev' = 'TeamAbbrev'))
@@ -313,7 +315,7 @@ qb <- qb %>%
   left_join(team_blitz, by = c('opp' = 'team_name')) 
 
 qb <- qb %>% 
-  mutate(points_per_dollar = round(fantasyPoints / (Salary/100), digits = 3), 
+  mutate(#points_per_dollar = round(fantasyPoints / (Salary/100), digits = 3), 
          name_salary = paste(Name, Salary), 
          name_salary_own = paste(Name, Salary, proj_own), 
          btt_twp_ratio = round(btt_rate / twp_rate, digits = 1), 
