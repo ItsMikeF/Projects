@@ -31,9 +31,9 @@ books <- c("draftkings", "fanduel", "foxbet", "williamhill_us", "twinspires", "u
 
 ws_winner <- data.frame()
 
-for (i in 1:length(content[[1]][[8]][[3]][[4]][[1]][[2]])) {
-  ws_winner[i,1] <- content[[1]][[8]][[3]][[4]][[1]][[2]][[i]]$name
-  ws_winner[i,2] <- content[[1]][[8]][[3]][[4]][[1]][[2]][[i]]$price
+for (i in 1:length(content[[1]][[8]][[2]][[4]][[1]][[3]])) {
+  ws_winner[i,1] <- content[[1]][[8]][[2]][[4]][[1]][[3]][[i]]$name
+  ws_winner[i,2] <- content[[1]][[8]][[2]][[4]][[1]][[3]][[i]]$price
 }
 
 ### FD

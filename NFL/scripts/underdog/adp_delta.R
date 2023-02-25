@@ -10,6 +10,7 @@ suppressMessages({
   library(gt)
   library(gtExtras)
   library(ggrepel) #Automatically Position Non-Overlapping Text Labels with 'ggplot2'
+  library(glue)
 })
 
 # 1.0 rankings --------------------------------------------------------------
