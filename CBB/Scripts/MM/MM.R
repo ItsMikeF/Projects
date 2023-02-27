@@ -1,12 +1,7 @@
 library(tidyverse)
 
-user <- unlist(strsplit(getwd(), "/"))
-user <- user[3]
-
-setwd(paste("C://Users//",user,"//Documents//Github//DFS_Data//Data_CBB//2022MM", sep = ""))
-
 ### Import Kenpom Era data ###
-kenpom <- read.csv("Kenpom.csv")
+kenpom <- read.csv("/Training_data/2022MM/Kenpom.csv")
 
 ### Filter kenpom for current year and NCAA seeds ###
 kenpom_2022 <- kenpom %>% 

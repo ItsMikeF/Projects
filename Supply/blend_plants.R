@@ -5,6 +5,9 @@ library(usmap)
 #import data
 blend_plants <- read_csv("blend_plants.csv")
 
+
+#Example Code for reference
+
 plot_usmap(regions = "counties") + 
   labs(title = "US Counties",
        subtitle = "This is a blank map of the counties of the United States.") + 

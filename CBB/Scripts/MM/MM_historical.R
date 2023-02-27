@@ -1,3 +1,8 @@
+#this is the backtesting file 
+
+
+# 0.0 load packages -------------------------------------------------------
+
 library(XML)
 library(RCurl)
 library(dplyr)
@@ -7,19 +12,17 @@ library(tidyverse)
 library(lubridate)
 library(stats)
 
-user <- unlist(strsplit(getwd(), "/"))
-user <- user[3]
+# 1.0 Establish Point System ----------------------------------------------
 
-setwd(paste0("C://Users//",user,"//Documents//Github//DFS_Data//Data_CBB//2022MM"))
-
-### Point System
 
 point_system <- tibble(10,20,40,80,160,320)
 names(point_system) <- c("R32", "S16", "E8", "F4", "S2", "C")
 
-### MM Data ###
 
-historical_mm <- read.csv("NCAA Mens March Madness Historical Results.csv")
+# 2.0 Load Data -----------------------------------------------------------
+
+
+historical_mm <- read.csv("./Training_data/2022MM/NCAA Mens March Madness Historical Results.csv")
 
 historical_mm$Date <- year(format(as.Date(historical_mm$Date, "%m/%d/%Y")))
 #historical_mm$Date <- if_else(historical_mm$Date >80, historical_mm$Date + 1900, historical_mm$Date + 2000)
@@ -27,12 +30,12 @@ historical_mm <- historical_mm %>%
   filter(Date > 2001) %>% 
   filter(Round != "Opening Round")
 
-### Kenpom Data ###
-
-kenpom <- read.csv("Kenpom.csv")
+kenpom <- read.csv("./Training_data/2022MM/Kenpom.csv")
 kenpom$metric <- round((kenpom$adj_em^2) * kenpom$sos_adj_em, digits = 1)
 
-### Back Testing Metric ###
+
+# 3.0 create the metric table ---------------------------------------------
+
 
 kenpom_metric_table <- tibble(c(2002:2019, 2021))
 names(kenpom_metric_table) <- "year"
@@ -51,8 +54,8 @@ for(i in years){
   kenpom_metric_table[if_else(i<2020,i-2001,i-2002),4] <- historical_mm_metric[1,5]
 }
 
-names(kenpom_metric_table)[2:4] <- c("metric", "team", "winner")
-kenpom_metric_table$correct <- if_else(kenpom_metric_table$team == kenpom_metric_table$winner,1,0)
+names(kenpom_metric_table)[2:4] <- c("metric", "pick", "winner")
+kenpom_metric_table$correct <- if_else(kenpom_metric_table$pick == kenpom_metric_table$winner,1,0)
 
 cat("Metric:", "kenpom$adj_em^2 * kenpom$sos_adj_em\n", sum(kenpom_metric_table$correct), "predicted champions on", 
     dim(kenpom_metric_table)[1], "tournaments,",

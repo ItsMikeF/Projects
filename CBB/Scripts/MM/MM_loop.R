@@ -1,12 +1,9 @@
+# not sure what this does yet
+
 library(tidyverse)
 
-user <- unlist(strsplit(getwd(), "/"))
-user <- user[3]
-
-setwd(paste("C://Users//",user,"//Documents//Github//DFS_Data//Data_CBB//2022MM", sep = ""))
-
 ### Import Kenpom Era data ###
-kenpom <- read.csv("Kenpom.csv")
+kenpom <- read.csv("./Training_data/2022MM/Kenpom.csv")
 
 ### Filter kenpom for current year and NCAA seeds ###
 kenpom_2022 <- kenpom %>% 
@@ -18,7 +15,7 @@ kenpom_2022$metric <- round(kenpom_2022$adj_em^2 * kenpom_2022$sos_adj_em, digit
 
 ###Get the bracket###
 
-bracket <- read.csv("2022MM bracket.csv", header = F)
+bracket <- read.csv("./Training_data/2022MM/2022MM bracket.csv", header = F)
 names(bracket) <- c("rank", "team")
 bracket <- tibble(bracket[,2])
 names(bracket) <- "team"

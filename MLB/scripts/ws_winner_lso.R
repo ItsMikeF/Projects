@@ -4,8 +4,18 @@ library(httr)
 library(tidyverse)
 library(gt)
 library(stats)
+library(mlbplotR)
 
 ws_winner <- function(variables) {
+  teams_colors_logos <- mlbplotR::load_mlb_teams() %>% 
+    filter(!team_abbr %in% c("AL", "NL", "MLB")) %>% 
+    mutate(
+      a = rep(1:6, 5), 
+      b = sort(rep(1:5, 6), decreasing=T), 
+      alpha = ifelse(grepl("A", team_abbr),1,0.75),
+      color = ifelse(grepl("E", team_abbr), "b/w", NA)
+    )
+  
   sport_key <- "baseball_mlb_world_series_winner"
   url <- paste0("https://odds.p.rapidapi.com/v4/sports/",sport_key,"/odds")
   
@@ -37,8 +47,16 @@ ws_winner <- function(variables) {
   ws_winner <<- ws_winner %>% 
     rename("team"=V1, 
            "american_odds"=V2) %>% 
-    mutate(implied_odds = convert_ML(american_odds))
-    
+    mutate(implied_odds = convert_ML(american_odds)) %>% 
+    left_join(teams_colors_logos %>% select(team_name, team_abbr, team_logo_espn, team_color, team_color2), by=c('team'='team_name'))
+
 }
 
 ws_winner()
+
+ws_winner %>% 
+  ggplot(aes(x=team_abbr, y=implied_odds)) +
+  geom_col(aes(color=team_abbr, fill=team_abbr)) +
+  geom_mlb_logos(aes(team_abbr=team_abbr), width=.07, alpha=0.9) +
+  scale_color_mlb(type="secondary") +
+  scale_fill_mlb(alpha = 0.4)

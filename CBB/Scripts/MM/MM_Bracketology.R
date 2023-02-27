@@ -2,12 +2,7 @@ library(tidyverse)
 library(lubridate)
 library(stats)
 
-user <- unlist(strsplit(getwd(), "/"))
-user <- user[3]
-
-setwd(paste("C://Users//",user,"//Documents//Github//DFS_Data//Data_CBB//2022MM", sep = ""))
-
-bracket <- read.csv("2022MM bracket.csv", header = F)
+bracket <- read.csv("/Training_data/2022MM/2022MM bracket.csv", header = F)
 names(bracket) <- c("rank", "team")
 
 bracket <- replace(bracket, bracket == 'Uconn', 'Connecticut')
