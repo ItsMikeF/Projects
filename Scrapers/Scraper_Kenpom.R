@@ -1,18 +1,20 @@
-library(XML)
+#lets scrape Kenpom
+
+#library(XML)
+library(rvest)
 library(RCurl)
 library(dplyr)
 library(data.table)
-library(tictoc)
 
-tic()
-
-years <- 2002:2022
+years <- 2002:2023
 
 for(year in years) {
   cat("Getting", year,"\n")
   ### Pull Data
   url <- paste0("https://kenpom.com/index.php?y=", year)
-  x <- as.data.frame(readHTMLTable(getURL(url))[[1]])
+  page <- read_html(url)
+  tables <- page %>% html_nodes("table") %>% html_table()
+  x <- as.data.frame(tables)
   
   ### Clean Data
   names(x) <- c("rank", "team", "conference", "record", "adj_em", "adj_o", 
@@ -20,6 +22,7 @@ for(year in years) {
                 "luck", "luck_rank", "sos_adj_em", "sos_adj_em_rank", "sos_adj_o",
                 "sos_adj_o_rank","sos_adj_d", "sos_adj_d_rank", "nc_sos_adj_em", 
                 "nc_sos_adj_em_rank")
+  
   x <- filter(x, !team %in% c("", "Team"))
   
   for(i in 5:ncol(x)) {
@@ -38,8 +41,6 @@ for(year in years) {
     kenpom <- rbind(kenpom, x)
   }
 }
-
-setDT(kenpom)
 
 ####Clean Team Names so that they can be merged to NCAA data
 # Replacing Southern with Southen Univ forces recorrecting TX Southern & Miss Southern
@@ -115,4 +116,3 @@ teamKenpom[Season>=2002 & is.na(Seed),.(TeamName,Season)]
 fwrite(teamKenpom[Season>=2002,],"NCAA2021_Kenpom.csv")
 fwrite(kenpom, file = "Kenpom_2022.csv")
 
-toc()
