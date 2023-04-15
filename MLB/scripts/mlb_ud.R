@@ -8,6 +8,7 @@ suppressMessages({
   library(fs) #Cross-Platform File System Operations Based on 'libuv'
   library(gt)
   library(gtExtras)
+  library(webshot2)
   library(ggrepel) #Automatically Position Non-Overlapping Text Labels with 'ggplot2'
   library(glue)
   library(mlbplotR)
@@ -30,7 +31,7 @@ teams_colors_logos <- mlbplotR::load_mlb_teams() %>%
 # 1.0 rankings --------------------------------------------------------------
 
 date1 = "jan23"
-date2 = "mar19"
+date2 = "mar26"
 
 #load the rankings
 rankings_1 <- read.csv(glue("./projections_season/rankings_{date1}.csv")) %>% 
@@ -53,8 +54,8 @@ rankings <- rankings_2 %>%
          projectedPoints_jan23 = projectedPoints.y) %>% 
   select(name, slotName, adp.x, adp.y, delta, percent_change, projectedPoints, projectedPoints_jan23, projectedPoints_delta, positionRank, teamName) %>% 
   rename(.,"jan23"=adp.y) %>% 
-  rename(.,"mar19"=adp.x) %>% 
-  arrange(mar19) %>% 
+  rename(.,"mar26"=adp.x) %>% 
+  arrange(mar26) %>% 
   left_join(teams_colors_logos %>% select(team_name, team_abbr, team_logo_espn),by=c('teamName'='team_name')) %>% 
   rename(., team = team_logo_espn) %>% 
   distinct()
@@ -76,18 +77,28 @@ playerids <- read.csv("./data/playerids.csv")
 rankings$name <- iconv(rankings$name, to='ASCII//TRANSLIT')
 
 rankings <- rankings %>% 
-  drop_na(mar19) %>% 
+  drop_na(mar26) %>% 
   left_join(playerids, by=c('name'='Name')) %>% 
   mutate(playerid = as.double(playerid)) %>% 
   left_join(mlbplotR::load_headshots() %>% select(fangraphs_id, espn_headshot) %>% drop_na(fangraphs_id), by=c("playerid"="fangraphs_id"))
 
 rankings %>% 
-  arrange(mar19) %>% 
-  select(team, espn_headshot, name, mar19, delta, percent_change, projectedPoints) %>% 
+  arrange(mar26) %>% 
+  select(team, espn_headshot, name, mar26, delta, percent_change, projectedPoints) %>% 
   distinct() %>% 
   gt() %>% 
   gt_img_rows(columns = team, height = 50) %>% 
   gt_img_rows(columns = espn_headshot, height = 50)
+
+rankings %>% 
+  filter(projectedPoints_delta !=0) %>% 
+  gt() %>% 
+  gt_img_rows(columns = team, height = 50) %>% 
+  gt_img_rows(columns = espn_headshot, height = 50) %>% 
+  data_color(columns = projectedPoints_delta, colors = scales::col_numeric(
+    palette = c("red", "green"),
+    domain = c(-500, 500))) %>% 
+  gtsave(filename = "rankings_delta.html")
 
 # 2.0 team data -----------------------------------------------------------
 
@@ -100,27 +111,66 @@ team_1 <- rankings_2 %>%
 
 team <- rankings %>% 
   drop_na() %>% 
-  filter(mar19 < 239) %>% 
+  filter(mar26 < 239) %>% 
   group_by(teamName) %>% 
-  summarise(adp_mean = round(mean(mar19, na.rm = T),digits = 1),
+  summarise(adp_mean = round(mean(mar26, na.rm = T),digits = 1),
             adp_delta = round(mean(delta, na.rm = T),digits = 1), 
             percent_change= round(mean(percent_change, na.rm = T),digits = 2)) %>% 
   arrange(-adp_delta) %>% 
   left_join(teams_colors_logos %>% select(team_name, team_logo_espn),by=c('teamName'='team_name'))
 
-
 team %>%
-  select(teamName, team_logo_espn, adp_mean, adp_delta, percent_change) %>% 
+  arrange(adp_mean) %>% 
+  mutate(Rank = 1:30) %>% 
+  select(Rank, teamName, team_logo_espn, adp_mean, adp_delta, percent_change) %>% 
   gt() %>% 
   tab_header(title = "Playoff Best Ball - Mean Team ADP Movement", 
-             subtitle = "Period: Jan23 to mar19") %>% 
+             subtitle = "Period: Jan23 to mar26") %>% 
   gt_img_rows(columns=team_logo_espn) %>% 
-  tab_footnote(footnote = "Data from Underdog MLB Rankings, players ADP > 239 filtered out")
+  tab_footnote(footnote = "Data from Underdog MLB Rankings, players ADP > 239 filtered out") %>% 
+  data_color(columns = percent_change, colors = scales::col_numeric(
+    palette = c("red", "green"),
+    domain = c(min(team$percent_change), max(team$percent_change)))) %>% 
+  gt_theme_dark()
 
+#lets look at mean adp movement by team
+tab1 <- team %>%
+  select(teamName, team_logo_espn, adp_mean, adp_delta, percent_change) %>% 
+  arrange(adp_mean) %>% 
+  slice(1:15) %>% 
+  gt() %>% 
+  tab_header(title = "Playoff Best Ball - Mean Team ADP Movement", 
+             subtitle = "Period: Jan23 to mar26") %>% 
+  gt_img_rows(columns=team_logo_espn) %>% 
+  tab_footnote(footnote = "Data from Underdog MLB Rankings, players ADP > 239 filtered out") %>% 
+  data_color(columns = percent_change, colors = scales::col_numeric(
+    palette = c("red", "green"),
+    domain = c(min(team$percent_change), max(team$percent_change)))) %>% 
+  gt_theme_dark()
+
+#lets look at mean adp movement by team
+tab2 <- team %>%
+  select(teamName, team_logo_espn, adp_mean, adp_delta, percent_change) %>% 
+  arrange(adp_mean) %>%
+  slice(16:30) %>% 
+  gt() %>% 
+  tab_header(title = "Playoff Best Ball - Mean Team ADP Movement", 
+             subtitle = "Period: Jan23 to mar26") %>% 
+  gt_img_rows(columns=team_logo_espn) %>% 
+  tab_footnote(footnote = "Data from Underdog MLB Rankings, players ADP > 239 filtered out") %>% 
+  data_color(columns = percent_change, colors = scales::col_numeric(
+    palette = c("red", "green"),
+    domain = c(min(team$percent_change), max(team$percent_change)))) %>% 
+  gt_theme_dark()
+
+listed_tables <- list(tab1, tab2)
+
+#split the table into two tables side by side with 16 rows each
+gt_two_column_layout(listed_tables, output = "save", filename = "C:/Users/mikef/Documents/GitHub/Projects/MLB/gt_split.png")
 
 # 3.0 Pitchers ------------------------------------------------------------
 
-sp <- rankings %>% filter(slotName == "P") %>%  arrange(mar19) %>%  drop_na()
+sp <- rankings %>% filter(slotName == "P") %>%  arrange(mar26) %>%  drop_na()
 
 sp %>% slice_head(n=10) %>% gt() %>% gt_img_rows(columns = team) %>% gt_img_rows(columns = espn_headshot)
 
@@ -137,15 +187,15 @@ pitching_ranks[,3:10] <- as.numeric(unlist(pitching_ranks[,3:10]))
 sp %>% 
   left_join(eno_pitchers, by=c('name'='Player')) %>% 
   left_join(pitching_ranks, by=c('name'='Player')) %>% 
-  select(team, espn_headshot, name, jan23, mar19, delta, percent_change, projectedPoints, positionRank, FP, FPRank, SD, ENO, IP, PPERA, PPK, PPSTUFF., INJURY.PCT, NFC.ADP) %>% 
-  arrange(mar19) %>% 
+  select(team, espn_headshot, name, jan23, mar26, delta, percent_change, projectedPoints, positionRank, FP, FPRank, SD, ENO, IP, PPERA, PPK, PPSTUFF., INJURY.PCT, NFC.ADP) %>% 
+  arrange(mar26) %>% 
   #slice_head(n=10) %>% 
   gt() %>% 
   gt_img_rows(columns= espn_headshot, height = 50) %>% 
   gt_img_rows(columns = team, height = 50) %>% 
   tab_header(title = "MLB The Dinger - Starting Pitchers",
-             subtitle = "Period: Jan23 to mar19") %>% 
-  tab_spanner(label = "Underdog", columns = c(jan23, mar19, delta, percent_change, projectedPoints, positionRank)) %>% 
+             subtitle = "Period: Jan23 to mar26") %>% 
+  tab_spanner(label = "Underdog", columns = c(jan23, mar26, delta, percent_change, projectedPoints, positionRank)) %>% 
   tab_spanner(label = "Eno Fantasy Ranks", columns = c(FP, FPRank, SD)) %>% 
   tab_spanner(label = "Eno Pitching Ranks", columns = c(ENO, IP, PPERA, PPK, PPSTUFF., INJURY.PCT, NFC.ADP)) %>% 
   tab_footnote(footnote = "Data from Underdog MLB Rankings, players ADP > 240 filtered out") %>% 
@@ -177,11 +227,12 @@ sp %>%
     domain = c(140, 220))) %>% 
   data_color(columns = PPK, colors = scales::col_numeric(
     palette = c("red", "green"),
-    domain = c(0.2, 0.36))) %>% gtsave(filename = "2023 02 26 - MLB The Dinger - Starting Pitchers Overview.html") 
+    domain = c(0.2, 0.36))) %>% 
+  gtsave(filename = glue("{date2}, 2023 - MLB The Dinger - Starting Pitchers Overview.html"))
 
 # 4.0 IF ------------------------------------------------------------------
 
-infielders <- rankings %>% filter(slotName == "IF") %>% arrange(mar19) %>%  drop_na() 
+infielders <- rankings %>% filter(slotName == "IF") %>% arrange(mar26) %>%  drop_na() 
 
 infielders$name <- iconv(infielders$name, to='ASCII//TRANSLIT')
 
@@ -200,14 +251,14 @@ test2 <- test %>%
 
 # 5.0 OF ------------------------------------------------------------------
 
-outfielders <- rankings %>% filter(slotName == "OF") %>%  arrange(mar19) %>% 
+outfielders <- rankings %>% filter(slotName == "OF") %>%  arrange(mar26) %>% 
   drop_na() %>% distinct()
 
 outfielders %>% 
   #arrange() %>% 
-  select(team, espn_headshot, name, mar19, delta, percent_change, projectedPoints) %>% 
+  select(team, espn_headshot, name, mar26, delta, percent_change, projectedPoints) %>% 
   gt() %>% gt_img_rows(columns = team, height = 50) %>% gt_img_rows(columns = espn_headshot, height = 50) %>% 
-  tab_header(title = "MLB The Dinger - Biggest Risers", subtitle = "Period: Jan23 - mar19") %>% 
+  tab_header(title = "MLB The Dinger - Biggest Risers", subtitle = "Period: Jan23 - mar26") %>% 
   data_color(projectedPoints, colors = scales::col_numeric(
     palette = c("red", "green"),
     domain = c(400, 1650)))
@@ -216,17 +267,17 @@ outfielders %>%
 # 6.0 test ----------------------------------------------------------------
 
 rankings %>% 
-  arrange(mar19) %>% 
-  select(team, espn_headshot, name, positionRank,mar19, jan23, delta, percent_change, projectedPoints) %>% 
+  arrange(mar26) %>% 
+  select(team, espn_headshot, name, positionRank,mar26, jan23, delta, percent_change, projectedPoints) %>% 
   distinct() %>% 
   #slice_head(n=10) %>% 
   gt() %>% gt_img_rows(columns = team, height = 50) %>% gt_img_rows(columns = espn_headshot, height = 50) %>% 
-  tab_header(title = "2023 MLB The Dinger - Top 10 Fallers", subtitle = "Period: Jan23 - mar19") %>% 
+  tab_header(title = "2023 MLB The Dinger - Top 10 Fallers", subtitle = "Period: Jan23 - mar26") %>% 
   tab_footnote(footnote = "Data from Underdog Fantasy") %>% 
   data_color(projectedPoints, colors = scales::col_numeric(
     palette = c("red", "green"),
     domain = c(400, 1700))) %>% 
-  data_color(mar19, colors = scales::col_numeric(
+  data_color(mar26, colors = scales::col_numeric(
     palette = c("green", "red"),
     domain = c(1,240)
   )) %>% 
