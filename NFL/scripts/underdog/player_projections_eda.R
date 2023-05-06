@@ -12,14 +12,16 @@ suppressMessages({
 # 1.0 projections --------------------------------------------------------------
 
 #load the projections
-projections_pff <- read.csv("./season_projections/projections_pff.csv") %>% 
+projections_pff <- read.csv("./projections_season/2023/projections_pff.csv") %>% 
   select(playerName, position, fantasyPoints, fantasyPointsRank)
 
-projections_udd <- read.csv("./season_projections/projections_underdog.csv") %>% 
+projections_udd <- read.csv("./projections_season/2023/rankings_may05.csv") %>% 
   mutate(name = paste(firstName, lastName)) %>% 
   select(name, adp, projectedPoints, positionRank, slotName, teamName)
 
 #aggregate projections
+projections <- projections_udd
+
 projections <- projections_pff %>% 
   left_join(projections_udd, by=c("playerName"="name")) %>% 
   rename(pos=position, 
@@ -67,7 +69,7 @@ draft_positions <- function(i) {
   #filters out picks beyond the draft size
   picks <<- picks[picks %in% 1:(league_size*rounds)]
 }
-draft_positions(9)
+draft_positions(1)
 picks
 draft_picks <- projections[picks,]
 draft_picks

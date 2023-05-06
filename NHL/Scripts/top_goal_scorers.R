@@ -43,7 +43,7 @@ goal_scorerer_odds("https://sportsbook.draftkings.com/leagues/hockey/nhl?categor
 # 2.0 load prior year xg --------------------------------------------------
 
 #hockeyR
-pbp <- load_pbp(2021:2022)
+pbp <- load_pbp(2022:2023)
 names(pbp)
 
 xg_leaders <- pbp %>% 

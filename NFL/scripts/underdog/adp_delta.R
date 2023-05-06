@@ -15,17 +15,17 @@ suppressMessages({
 
 # 1.0 rankings --------------------------------------------------------------
 
-date1 = "dec28"
-date2 = "jan14"
+date1 = "apr30"
+date2 = "may05"
 
 #load the rankings
-rankings_udd_1 <- read.csv(glue("./projections_playoffs/underdog_playoff_projections_{date1}.csv")) %>% 
+rankings_udd_1 <- read.csv(glue("./projections_season/2023/rankings_{date1}.csv")) %>% 
   mutate(name = paste(firstName, lastName),
          adp = as.numeric(adp)) %>% 
   select(name, adp, projectedPoints, positionRank, slotName, teamName)
 
 #load the rankings
-rankings_udd_2 <- read.csv(glue("./projections_playoffs/underdog_playoff_projections_{date2}.csv")) %>% 
+rankings_udd_2 <- read.csv(glue("./projections_season/2023/rankings_{date2}.csv")) %>% 
   mutate(name = paste(firstName, lastName), 
          adp = as.numeric(adp)) %>% 
   select(name, adp, projectedPoints, positionRank, slotName, teamName)
@@ -35,14 +35,14 @@ rankings <- rankings_udd_1 %>%
   left_join(rankings_udd_2 %>% select(name, adp), by=c("name")) %>% 
   mutate(delta = adp.x-adp.y, 
          percent_change = round(delta/adp.x,digits = 2)) %>% 
-  select(name, adp.x, adp.y, delta, percent_change, projectedPoints, teamName) %>% 
+  select(name, slotName, adp.x, adp.y, delta, percent_change, projectedPoints, teamName) %>% 
   rename(.,date1=adp.x) %>% 
   rename(.,date2=adp.y) %>% 
-  arrange(-percent_change) #%>% gt() %>% tab_header(title = "Playoff Best Ball Risers", subtitle = "Dec28 to Jan 07") 
+  arrange(date1) #%>% gt() %>% tab_header(title = "Playoff Best Ball Risers", subtitle = "Dec28 to Jan 07") 
 
 team <- rankings %>% 
   drop_na() %>% 
-  filter(date1 < 59) %>% 
+  filter(date1 < 215) %>% 
   group_by(teamName) %>% 
   summarise(adp_mean = round(mean(date1, na.rm = T),digits = 1),
             adp_delta = round(mean(delta, na.rm = T),digits = 1), 

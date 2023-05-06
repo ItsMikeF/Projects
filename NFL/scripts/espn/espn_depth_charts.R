@@ -187,7 +187,7 @@ qb_team <- qb1 %>%
 pff_qb <- read.csv("./Training_Data/position_groups/qbs.csv") %>% 
   filter(year == max(year) & week == max(week)) 
 
-pff_qb <- read.csv("./Training_Data/2021/passing_summary (22).csv")
+pff_qb <- read.csv("./Training_Data/2022/passing_summary (17).csv")
 
 #sort for elu
 pff_qb_select <- pff_qb %>% 
@@ -237,12 +237,16 @@ plot_qb_pbp %>%
   #geom_nfl_logos(aes(team_abbr=team.x), width=0.065, alpha=0.7) +
   geom_nfl_headshots(aes(player_gsis = id), width = 0.075, vjust = 0.45) +
   geom_label_repel(aes(label = player)) +
-  xlab("Avg OT 2021 PBLK Grades") +
+  scale_y_continuous(limits = c(NA, 100)) +
   labs(
-    title = "2022 QB Review",
+    title = "2023 QB Review",
     caption = "2022 OT Grade based on starting LT and RT on 2022 ESPN Depth Chart.",
-    y = "QB Passing Grade"
-  )
+    x = "Avg OT 2022 PBLK Grades",
+    y = "2022 QB Passing Grade"
+  ) + 
+  theme(axis.title.x = element_text(size = 18), 
+        axis.title.y = element_text(size = 18)) +
+  ggsave("2022 QB Grades vs OT Grades.png", width = 1920/72, height = 1080/72, dpi = 72)
 
 # 5.0 rb eda ---------------------------------------------------------
 
@@ -298,17 +302,23 @@ plot_rb_pbp <- plot_rb %>%
 plot_rb_pbp %>% 
   ggplot(aes(x = rblk, y = elusive_rating)) +
   geom_vline(xintercept = mean(plot_rb_pbp$rblk), color="red",linetype="dashed", alpha=0.5) +
-  geom_hline(yintercept = mean(plot_rb_pbp$elusive_rating), color="red",linetype="dashed", alpha=0.5) +
+  geom_hline(yintercept = mean(plot_rb_pbp$elusive_rating, na.rm = T), color="red",linetype="dashed", alpha=0.5) +
   #geom_nfl_logos(aes(team_abbr=team.x), width=0.065, alpha=0.7) +
   geom_nfl_headshots(aes(player_gsis = id), width = 0.075, vjust = 0.45) +
   geom_label_repel(aes(label = player)) +
-  xlab("Avg IOL 2022 RBLK Grades") +
   labs(
-    title = "2022 RB Review",
-    caption = "2021 IOL Grade based on starting LG, C, RG on 2022 ESPN Depth Chart. \n 
+    title = "2023 RB Elu vs IOL Grades",
+    caption = "2022 IOL Grade based on starting LG, C, RG on 2022 ESPN Depth Chart. \n 
     The PFF Elusive Rating distills the success and impact of a runner with the ball independently of the blocking in front of him by looking at how hard he was to bring down.",
+    x = "Avg IOL 2022 RBLK Grades", 
     y = "Elusiveness Rating"
-  )
+  ) +
+  scale_y_continuous(limits = c(NA, 130)) +
+  theme(plot.title = element_text(size = 24), 
+        axis.title = element_text(size = 18), 
+        axis.text = element_text(size = 16), 
+        plot.caption = element_text(size = 12)) +
+  ggsave("2023 RB Elu vs IOL Grades.png", width = 1920/72, height = 1080/72, dpi = 72)
 
 
 # 6.0 wr eda --------------------------------------------------------------
