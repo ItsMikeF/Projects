@@ -10,7 +10,7 @@ suppressMessages({
 
 # 0.0 Define Inputs -------------------------------------------------------
 
-week = 19
+week = 17
 pbp <- load_pbp(2022)
 wp_lower = 0.1
 wp_upper = 0.9

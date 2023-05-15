@@ -1,4 +1,4 @@
-#lets scrape the nfl injury report
+#lets scrape the nfl injury report from espn
 #run this script 1st
 
 #load packages
@@ -7,8 +7,6 @@ suppressMessages({
   library(nflverse) #nflfastr nflseedr nfl4th nflreadr nflplotr
   library(rvest) #easily harvest (scrape) web pages
   library(janitor) #simplea little tools for examining and cleaning dirty data
-  library(ggrepel) #automatically position non-overlapping text labels with ggplot2
-  library(tictoc) #Functions for Timing R Scripts, as Well as Implementations of Stack and List Structures
   library(gt) #Easily Create Presentation-Ready Display Tables
 })
 

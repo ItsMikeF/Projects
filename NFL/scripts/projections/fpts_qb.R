@@ -1,40 +1,39 @@
 #lets predict a qb's next game grade based on past game grades and team epa data
 
-#need game grades from every game
+# Need game grades from every game
 
 # 1.0 Load packages, values, and functions --------------------------------------------
 
-#load packages
+# Load packages
 suppressMessages({
   library(nflfastR) #nflfastr nflseedr nflplotr
   library(nflreadr) #
+  library(nflplotR) 
   library(tidyverse) #ggplot2 dplyr tibble tidyr purrr forecats 
   library(glue) #interpreted literal strings
   library(xgboost) #extreme gradient boosting
   library(caret) #classification and regression training
+  library(gt)
 })
 
-#define folder to read files from
-folder <- "./game_grades/2022_qb"
-
-#load nflfastr pbp data
+# Load nflfastr pbp data
 pbp <- load_pbp(2022)
 
 #create vector of modern team abbreviations
 teams <- pull(teams_colors_logos %>% select(team_abbr)) 
 teams <- teams[! teams %in% c("LA","OAK","SD","STL")]
 
-#load normalize function
+# Load normalize function
 normalize <- function(x){
   return( round((x - min(x,na.rm = T))/( max(x, na.rm = T) - min(x, na.rm = T)), digits=3))
 }
 
-#write passing grade csvs to list
+# Write passing grade csvs to list
 combine_csv <- function(end_week) {
   qbs_list <- list()
   
   for (i in 1:week) {
-    passing_summary <- read.csv(glue("{folder}/passing_summary ({i}).csv")) %>% 
+    passing_summary <- read.csv(glue("./game_grades/2022_qb/passing_summary ({i}).csv")) %>% 
       select(player, team_name, grades_pass, passing_snaps)
     
     qbs_list[[i]] <- list(passing_summary %>% mutate(week=i, join=paste0(team_name,week))) 
@@ -49,7 +48,7 @@ combine_csv <- function(end_week) {
 
 # 1.1 Define Game week ----------------------------------------------------
 
-week = 18
+week = 15
 #week <- as.numeric(max(pbp$week))
 
 # 2.0 PFF Def Table -------------------------------------------------------
@@ -364,11 +363,15 @@ slate_qbs$fpts[which(slate_qbs$name == player$passer[1])] <- pred_y
 
 view(slate_qbs)
 
-gt <- slate_qbs %>% 
-  left_join(pbp %>% group_by(passer, id, posteam) %>% summarise(yards=sum(passing_yards,na.rm = T)), by=c('name'='passer'))
+game_week = week
 
-gt %>% 
-  gt() %>% 
+slate_qbs %>% 
+  left_join(pbp %>% 
+              filter(week < game_week) %>% 
+              group_by(passer, id, posteam) %>% 
+              summarise(yards=sum(passing_yards,na.rm = T)), 
+            by=c('name'='passer')) %>% 
+  knitr::kable()
   
 
 ggplot2::ggplot(slate_qbs, aes(x = reorder(player, -fpts), y = fpts)) +

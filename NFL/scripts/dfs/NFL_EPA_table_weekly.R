@@ -28,7 +28,7 @@ nfl_2021_def_pass_weekly$def_pass_epa_sd <- round((nfl_2021_def_pass_weekly$def_
 
 ###Def Rush EPA###
 
-nfl_2021_def_rush_weekly <- nfl_2021 %>% 
+nfl_2021_def_rush_weekly_weekly <- nfl_2021 %>% 
   filter(rush == 1 &
            wp > .05 &
            wp < .95 &
@@ -38,13 +38,14 @@ nfl_2021_def_rush_weekly <- nfl_2021 %>%
             n_plays = n()) %>% 
   arrange(def_rush_epa)
 
-nfl_2021_def_rush$def_rush_epa_rank <- round(rank(nfl_2021_def_rush$def_rush_epa), digits = 0)
+nfl_2021_def_rush_weekly$def_rush_epa_rank <- round(rank(nfl_2021_def_rush_weekly$def_rush_epa), digits = 0)
 
-nfl_2021_def_rush$def_rush_epa_multiplier <- round(nfl_2021_def_rush$def_rush_epa / mean(nfl_2021_def_rush$def_rush_epa), digits = 2)
-nfl_2021_def_rush$def_rush_epa_sd <- round((nfl_2021_def_rush$def_rush_epa - weighted.mean(nfl_2021_def_rush$def_rush_epa, nfl_2021_def_rush$n_plays, na.rm=T)) / sd(nfl_2021_def_rush$def_rush_epa, na.rm = T), digits = 2)
+nfl_2021_def_rush_weekly$def_rush_epa_multiplier <- round(nfl_2021_def_rush_weekly$def_rush_epa / mean(nfl_2021_def_rush_weekly$def_rush_epa), digits = 2)
+nfl_2021_def_rush_weekly$def_rush_epa_sd <- round((nfl_2021_def_rush_weekly$def_rush_epa - weighted.mean(nfl_2021_def_rush_weekly$def_rush_epa, nfl_2021_def_rush_weekly$n_plays, na.rm=T)) / sd(nfl_2021_def_rush_weekly$def_rush_epa, na.rm = T), digits = 2)
 
-nfl_2021_def <- nfl_2021_def_pass %>% 
-  left_join(nfl_2021_def_rush, by = c('defteam')) 
+# join the pass and run weekly 
+nfl_2021_def <- nfl_2021_def_pass_weekly %>% 
+  left_join(nfl_2021_def_rush_weekly, by = c('defteam')) 
 
 nfl_2021_def$total_plays <- nfl_2021_def$n_plays.x + nfl_2021_def$n_plays.y
 
@@ -64,8 +65,7 @@ nfl_2021_qb <- nfl_2021 %>%
   ) %>%
   arrange(-mean_epa) %>%
   filter(plays > 20) %>% 
-  drop_na() %>% 
-  view(title = "2021 QBs")
+  drop_na()
 
 nfl_2021_qb$three_hundred_pass <- if_else(nfl_2021_qb$passing_yards >= 300,1,0)
 nfl_2021_qb$one_hundred_rush <- if_else(nfl_2021_qb$rushing_yards >= 100,1,0)

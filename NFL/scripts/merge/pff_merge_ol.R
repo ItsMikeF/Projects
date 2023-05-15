@@ -66,7 +66,7 @@ for (j in which(list.dirs() == "./Training_Data/2014"):(length(list.dirs())-1)) 
   
   for(i in 1:17){
     
-    write.table(tibble(ols[[j-126]][[i]]), file = "ols.csv", sep = ",", col.names = !file.exists("ols.csv"), append = T, row.names = F)
+    write.table(tibble(ols[[j-(length(list.dirs())-1-9)]][[i]]), file = "ols.csv", sep = ",", col.names = !file.exists("ols.csv"), append = T, row.names = F)
     print(paste("Year:", year,"Week:", i))
     
   }
