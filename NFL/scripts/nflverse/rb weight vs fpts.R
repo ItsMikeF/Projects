@@ -3,7 +3,10 @@
 # Load packages
 library(nflreadr)
 library(dplyr)
+library(tidyr)
 library(ggplot2)
+library(nflfastR)
+library(nflplotR)
 
 # rosters
 
@@ -11,51 +14,72 @@ rosters <- load_rosters(2022)
 rbs <- rosters %>% filter(position=="RB")
 mean(rbs$weight)
 
-library(nflfastR)
-pbp <- load_pbp(2022)
+# Load 2022 regular season data
+pbp <- load_pbp(2022) %>% filter(season_type == "REG")
 
-pbp %>% filter(receiver == rusher)
-
-#rb historical stats and fpts
+# Get rushing stats
 rb_pbp <- pbp %>% 
-  group_by(rusher, rusher_id, posteam) %>% 
+  group_by(rusher, rusher_id) %>% 
   summarize(
     
-    rushing_yards = sum(rushing_yards, na.rm = T),
     rush_attempt = sum(rush_attempt, na.rm = T),
+    rushing_yards = sum(rushing_yards, na.rm = T),
     rush_touchdown = sum(rush_touchdown, na.rm = T),
+    
+    fumble = sum(fumble, na.rm = T), 
+    
+    epa_run = round(sum(epa)/sum(rush_attempt, na.rm = T), digits = 2)) %>% 
+  drop_na() %>% 
+  ungroup() %>% 
+  arrange(-rushing_yards)
+
+# Get receiving stats
+wr_pbp <- pbp %>% 
+  group_by(receiver, receiver_id) %>% 
+  summarize(
     fumble = sum(fumble, na.rm = T), 
     
     receptions = sum(complete_pass, na.rm = T),
     receiving_yards = sum(receiving_yards, na.rm = T), 
     rec_touchdown = sum(pass_touchdown, na.rm = T),
     
-    epa = round(mean(epa), digits = 2)) %>% 
-  mutate(big_rush = ifelse(rushing_yards > 100, 1,0), 
-         big_rec = ifelse(receiving_yards > 100, 1,0), 
-         fpts = 
-           rushing_yards * .1 +
-           rush_touchdown * 6 +
-           fumble * -1 +
-           
-           receptions * 0.5 +
-           rec_touchdown * 6 +
-           receiving_yards * .1 +
-           
-           big_rush * 3 +
-           big_rec * 3) %>% 
+    epa_pass = round(sum(epa)/sum(receiving_yards, na.rm = T), digits = 2)) %>% 
   drop_na() %>% 
   ungroup() %>% 
+  arrange(-receiving_yards)
+
+rbs_fpts <- rb_pbp %>% left_join(wr_pbp %>% select(receiver_id, receptions, receiving_yards, rec_touchdown, epa_pass), 
+                            by=c("rusher_id"="receiver_id")) %>% 
+  replace(is.na(.),0) %>% 
+  mutate(
+    #big_rush = ifelse(rushing_yards > 100, 1,0), 
+    #big_rec = ifelse(receiving_yards > 100, 1,0), 
+    fpts = 
+      #big_rush * 3 +
+      #big_rec * 3
+      rushing_yards * .1 +
+      rush_touchdown * 6 +
+      fumble * -1 +
+      
+      receptions * 0.5 +
+      rec_touchdown * 6 +
+      receiving_yards * .1, 
+    fpts_ntile = ntile(fpts, 100)
+  ) %>% 
   arrange(-fpts)
 
 # Join the weight data
-rb_pbp_join <- rb_pbp %>% left_join(rbs, by=c("rusher_id"="gsis_id"))
+rb_pbp_join <- rbs_fpts %>% 
+  left_join(rosters %>% select(gsis_id, position, height, weight),
+            by=c("rusher_id"="gsis_id")) %>% 
+  relocate(c("height", "weight"), .after = rusher) %>% 
+  filter(position == "RB")
 
 #slice top 25
 #switch between slicing top 25 and filtering > 10 pts
 rb_pbp_join_slice <- rb_pbp_join %>% 
-  filter(fpts > 10) %>% 
-  #slice_head(n=25) %>% 
+  #filter(fpts > 10) %>% 
+  slice_head(n=25) %>% 
   select(rusher, rusher_id, fpts, weight) %>% 
   drop_na()
 
