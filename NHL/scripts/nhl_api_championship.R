@@ -29,7 +29,7 @@ content <- content(response, "parsed")
 bookmakers <- data.frame()
 
 for (i in 1:length(content[[1]]$bookmakers)) {
-  for (j in 1:5) {
+  for (j in 1:4) {
     bookmakers[i,1] <- content[[1]]$bookmakers[[i]]$key
     
     bookmakers[i,2*j] <- content[[1]]$bookmakers[[i]]$markets[[1]]$outcomes[[j]]$name
