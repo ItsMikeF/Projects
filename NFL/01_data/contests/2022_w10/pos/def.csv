@@ -1,0 +1,21 @@
+"","id","player","team","opponent","position","salary","ownership","def_pass_epa_rank","def_rush_epa_rank","off_pass_epa_rank","off_rush_epa_rank","rush_adv","pass_adv","delta"
+"1",25195717,"Arizona Cardinals","ARI","LA","D",2700,12.9,24,15,24,29,14,0,14
+"2",25195722,"Minnesota Vikings","MIN","BUF","D",2200,9.7,22,2,2,24,22,-20,2
+"3",25195716,"Pittsburgh Steelers","PIT","NO","D",2800,9.1,23,18,22,9,-9,-1,-10
+"4",25195719,"Indianapolis Colts","IND","LV","D",2500,7.8,19,19,11,19,0,-8,-8
+"5",25195718,"Houston Texans","HOU","NYG","D",2600,7,25,30,10,14,-16,-15,-31
+"6",25195712,"Tennessee Titans","TEN","DEN","D",3200,6.5,9,1,21,30,29,12,41
+"7",25195711,"Los Angeles Rams","LAR","ARI","D",3300,6.2,21,3,25,27,24,4,28
+"8",25195714,"Denver Broncos","DEN","TEN","D",3000,5.3,2,22,12,4,-18,10,-8
+"9",25195710,"Kansas City Chiefs","KC","JAX","D",3400,5.3,18,12,9,8,-4,-9,-13
+"10",25195720,"Green Bay Packers","GB","DAL","D",2400,5.2,13,29,8,11,-18,-5,-23
+"11",25195709,"New Orleans Saints","NO","PIT","D",3500,4.1,27,7,27,22,15,0,15
+"12",25195705,"New York Giants","NYG","HOU","D",3900,3.4,26,28,28,16,-12,2,-10
+"13",25195706,"Las Vegas Raiders","LV","IND","D",3800,3.4,32,4,29,31,27,-3,24
+"14",25195707,"Buffalo Bills","BUF","MIN","D",3700,3.1,16,12,14,13,1,-2,-1
+"15",25195704,"Dallas Cowboys","DAL","GB","D",4000,2.8,11,9,19,25,16,8,24
+"16",25195713,"Chicago Bears","CHI","DET","D",3100,2.5,31,25,26,23,-2,-5,-7
+"17",25195721,"Cleveland Browns","CLE","MIA","D",2300,1.6,8,32,5,28,-4,-3,-7
+"18",25195723,"Jacksonville Jaguars","JAC","KC","D",2100,1.4,15,20,1,21,1,-14,-13
+"19",25195715,"Detroit Lions","DET","CHI","D",2900,1.4,30,27,16,10,-17,-14,-31
+"20",25195708,"Miami Dolphins","MIA","CLE","D",3600,1.3,28,8,13,2,-6,-15,-21

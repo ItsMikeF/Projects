@@ -14,6 +14,7 @@ suppressMessages({
   library(janitor) #clearning dirty data
   library(stringr) #simple consistent wrappers for common string operations
   library(reshape2) #flexibly Reshape Data
+  library(gt)
 })
 
 #entries
@@ -178,6 +179,53 @@ golfers_norm_cor %>%
   geom_text(aes(label=paste(round(value,2)*100,'%')), size=2.5, color='black') +
   labs(x='',y='',fill='correlations', title='Relationship between golfer variables') +
   theme(axis.text.x = element_text(angle = 90, vjust = .5))
+
+golfers %>% 
+  select(Name, Salary, fpts, proj_own, total_points, projected_ownership, 
+         sg_putt_rank, sg_arg_rank, sg_app_rank, sg_ott_rank, sg_total_rank, 
+         distance_rank, accuracy_rank, course_fit_total_adj, 
+         make_cut, top_20, win, residuals, course_fit, adj_own) %>% 
+  gt() %>% 
+  data_color(columns = fpts, colors = scales::col_numeric(
+    palette = c("red", "green"), 
+    domain = c(min(golfers$fpts), max(golfers$fpts))
+  )) %>% 
+  data_color(columns = proj_own, colors = scales::col_numeric(
+    palette = c("red", "green"), 
+    domain = c(min(golfers$proj_own), max(golfers$proj_own))
+  )) %>% 
+  data_color(columns = sg_putt_rank, colors = scales::col_numeric(
+    palette = c("green", "red"), 
+    domain = c(min(golfers$sg_putt_rank), max(sg_putt_rank))
+  )) %>% 
+  data_color(columns = sg_arg_rank, colors = scales::col_numeric(
+    palette = c("green", "red"), 
+    domain = c(min(golfers$sg_arg_rank), max(sg_arg_rank))
+  )) %>% 
+  data_color(columns = sg_app_rank, colors = scales::col_numeric(
+    palette = c("green", "red"), 
+    domain = c(min(golfers$sg_app_rank), max(sg_app_rank))
+  )) %>% 
+  data_color(columns = sg_ott_rank, colors = scales::col_numeric(
+    palette = c("green", "red"), 
+    domain = c(min(golfers$sg_ott_rank), max(sg_ott_rank))
+  )) %>% 
+  data_color(columns = distance_rank, colors = scales::col_numeric(
+    palette = c("green", "red"), 
+    domain = c(min(golfers$distance_rank), max(distance_rank))
+  )) %>% 
+  data_color(columns = win, colors = scales::col_numeric(
+    palette = c("red", "green"), 
+    domain = c(min(golfers$win), max(win))
+  )) %>% 
+  data_color(columns = residuals, colors = scales::col_numeric(
+    palette = c("red", "green"), 
+    domain = c(min(golfers$residuals), max(residuals))
+  )) %>% 
+  data_color(columns = course_fit, colors = scales::col_numeric(
+    palette = c("red", "green"), 
+    domain = c(min(golfers$course_fit), max(course_fit))
+  ))
 
 #Write
 write.csv(golfers, file = paste0(folder, "/golfers_",entries,".csv"))

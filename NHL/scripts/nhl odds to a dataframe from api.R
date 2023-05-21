@@ -54,13 +54,3 @@ df_list <- lapply(content, function(x) {
 
 df <- bind_rows(df_list)
 view(df)
-
-# Find average odds
-away_avg_odds <- sapply(list, function(x) round(mean(x$away_odds_imp), digits = 3))
-home_avg_odds <- sapply(list, function(x) round(mean(x$home_odds_imp), digits = 3))
-
-for (i in 1:length(content)) {
-  print(paste(content[[i]]$away_team[1], away_avg_odds[i]))
-  print(paste(content[[i]]$home_team[1], home_avg_odds[i]))
-}
-
