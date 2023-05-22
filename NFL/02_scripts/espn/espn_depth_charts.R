@@ -4,12 +4,11 @@
 
 #load packages
 suppressMessages({
-  library(tidyverse) #ggplot2 dplyr tidyr readr stringr forcats purrr tibble
+  library(dplyr) #ggplot2 dplyr tidyr readr stringr forcats purrr tibble
   library(nflverse) #nflfastr nflseedr nfl4th nflreadr nflplotr
   library(rvest) #easily harvest (scrape) web pages
   library(janitor) #simple little tools for examining and cleaning dirty data
   library(ggrepel) #automatically position non-overlapping text labels with ggplot2
-  library(tictoc) #Functions for Timing R Scripts, as Well as Implementations of Stack and List Structures
 })
 
 # 1.0 scrape and clean depth charts -------------------------------------------------
@@ -18,19 +17,19 @@ suppressMessages({
 css1 <- ".fw-medium .AnchorLink" #starters
 css2 <- ".Table__TD:nth-child(2) .AnchorLink" #second string
 css3 <- ".Table--fixed-left span" #positions
+#css4 <- ".Table__TD span , .Table__TD .AnchorLink" #all text
 
 #write css tags to a vector
 css <- c(css1, css2, css3)
+#css <- c(css4)
 
 #nfl team abbrev table
 teams <- teams_colors_logos %>% 
-  select(team_abbr, team_name, team_nick)
+  select(team_abbr, team_name) %>% 
+  filter(!team_abbr %in% c("LA", "OAK", "SD", "STL"))
 
 #replace spaces with dashes
 teams$team_name <- gsub(" ", "-", teams$team_name)
-
-#remove old team names
-teams <- teams[-c(17,27,30,33),]
 
 #fix Washington names
 teams$team_abbr[32] <- "WSH"
@@ -53,21 +52,56 @@ depth_off <- i %>%
         text <- trimws(html_text(html)) %>% as_tibble()
       })
     
+    # Get length of the position list element
     len <- length(depth_chart[[3]][[1]])
-    
+    # Extract the positions
     positions <- depth_chart[[3]][[1]][seq(2, len, 2)]
     positions <- tibble(positions[1:12])
     
-    off <- depth_chart[[1]][c(1:12),]
-    cbind(positions,off, teams$team_abbr[i])
+    # Extract the first string players
+    off1 <- depth_chart[[1]][c(1:12),]
+    
+    # Extract second string players
+    off2 <- depth_chart[[2]][c(1:12),]
+    
+    # column bind all
+    cbind(positions, off1, off2, teams$team_abbr[i])
  } )
 
 depth_off <- setNames(depth_off, teams$team_abbr)
 
-#create a data frame of the rosters from the list 
-nfl_depth <- Reduce(full_join,depth_off)
-names(nfl_depth) <- c("pos", "player", "team")
+# Create a data frame of the rosters from the list
+nfl_depth <- bind_rows(depth_off)
 
+# Assign column names
+names(nfl_depth) <- c("pos", "first_string", "second_string","team")
+
+# Remove FBs and blanks
+nfl_depth <- nfl_depth %>% filter(!(pos %in% c("", "FB")))
+
+# create a second dataframe
+nfl_depth2 <- nfl_depth %>% select(pos, second_string, team)
+
+# Extract pos values and assign depth chart numbers
+pos2 <- paste0(nfl_depth2$pos[1:11],2)
+
+pos2[3] <- "WR4"
+pos2[4] <- "WR5"
+pos2[5] <- "WR6"
+nfl_depth2$pos <- pos2
+
+# Extract pos values and assign depth chart numbers
+pos <- paste0(nfl_depth$pos[1:11],1)
+pos[4] <- "WR2"
+pos[5] <- "WR3"
+
+nfl_depth$pos <- rep(pos, 32)
+
+nfl_depth_full <- bind_rows(nfl_depth %>% select(pos, first_string, team) %>% rename(player = first_string), 
+                            nfl_depth2 %>% rename(player = second_string))
+
+# Lets get the second column, now obsolete
+i = 1
 depth_off2 <- i %>% 
   map(function (i) {
     print(teams$team_abbr[i])
@@ -95,6 +129,10 @@ depth_off2 <- setNames(depth_off2, teams$team_abbr)
 #create a data frame of the rosters from the list 
 nfl_depth2 <- Reduce(full_join,depth_off2)
 names(nfl_depth2) <- c("pos", "player", "team")
+
+
+
+nfl_depth2$pos <- rep(pos, 32)
 
 # 2.0 add injury report to starters ---------------------------------------
 

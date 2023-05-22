@@ -62,7 +62,7 @@ defense_reports <- c("grades_def","grades_prsh", "grades_rdef", "grades_cov", "s
 def_list <- list()
 
 for (i in 1:(week-1)) {
-  nfl_pff_def <- read.csv(glue("./contests/2022_w{i}/pff/defense_summary.csv"))
+  nfl_pff_def <- read.csv(glue("./01_data/contests/2022_w{i}/pff/defense_summary.csv"))
   
   nfl_pff_def_table <- nfl_pff_def %>%
     group_by(team_name) %>%
@@ -91,7 +91,7 @@ pff_def <- bind_rows(def_list) %>%
 cov_list <- list()
 
 for (i in 1:(week-1)) {
-  nfl_pff_defense_coverage_scheme <- read.csv(glue("./contests/2022_w{i}/pff/defense_coverage_scheme.csv")) %>% 
+  nfl_pff_defense_coverage_scheme <- read.csv(glue("./01_data/contests/2022_w{i}/pff/defense_coverage_scheme.csv")) %>% 
     mutate(week = i, 
            team_name = gsub('ARZ','ARI', team_name), 
            team_name = gsub('BLT','BAL', team_name), 
@@ -186,7 +186,7 @@ off_pass_epa <- bind_rows(o_list) %>%
 
 # 4.0 Collect all QBs on slate --------------------------------------------
 
-slate_qbs <- read.csv(glue("./contests/2022_w{18}/DKSalaries.csv")) %>% 
+slate_qbs <- read.csv(glue("./01_data/contests/2022_w{18}/DKSalaries.csv")) %>% 
   filter(Position == "QB" & Salary > 4500) %>% 
   select(Name, Salary) %>% 
   mutate(player = Name) %>% 
@@ -253,7 +253,7 @@ schedule <- load_schedules(2022) %>%
 #i = as.numeric(1)
 
 #read csv with qb grades and filter for player
-pff_game_log <- read.csv(glue("game_grades/qbs.csv")) %>% 
+pff_game_log <- read.csv(glue("01_data/game_grades/qbs.csv")) %>% 
   filter(player == slate_qbs$player[i]) %>% 
   separate(player, into = c("first_name", "last_name"), sep=" ") %>% 
   mutate(first = substr(first_name, 1, 1), 
@@ -366,6 +366,7 @@ view(slate_qbs)
 game_week = week
 
 slate_qbs %>% 
+  filter(fpts > 0) %>% 
   left_join(pbp %>% 
               filter(week < game_week) %>% 
               group_by(passer, id, posteam) %>% 
@@ -374,5 +375,9 @@ slate_qbs %>%
   knitr::kable()
   
 
-ggplot2::ggplot(slate_qbs, aes(x = reorder(player, -fpts), y = fpts)) +
+ggplot(slate_qbs %>% filter(fpts > 1), aes(x = reorder(player, -fpts), y = fpts)) +
+  geom_point() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
   nflplotR::geom_nfl_headshots(aes(player_gsis = passer_id), width = 0.075, vjust = 0.45)

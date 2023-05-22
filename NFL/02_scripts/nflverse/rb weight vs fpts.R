@@ -202,7 +202,8 @@ rb_pbp_join_slice %>%
   ggplot(aes(x=weight, y=fpts)) + 
   geom_point() +
   geom_nfl_headshots(aes(player_gsis = rusher_id), width = 0.075, vjust =0.45) +
-  theme_minimal() 
+  theme_minimal() + 
+  ggsave(filename = "./03_plots/RB fpts vs weight.html")
 
 # 3.3 Correlation ---------------------------------------------------------
 

@@ -76,7 +76,7 @@ bookmakers <- bookmakers %>%
            )-1)*100
          )
 
-view(bookmakers)
+View(bookmakers)
 
 # 3.0 Code Suggestions ---------------------------------------------------
 
