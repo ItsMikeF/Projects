@@ -52,23 +52,27 @@ injuries <- as.data.frame(do.call(rbind, injuries)) %>%
 # 3.0 gt tables ---------------------------------------------------------------
 
 #create gt tables for each position, status, and team
-injuries %>% 
-  count(pos) %>% 
-  arrange(-n) %>% 
-  gt() %>% 
-  tab_header(title = "NFL Injuries by Position") %>% 
-  tab_source_note(source_note = "https://www.espn.com/nfl/injuries")
 
-injuries %>% 
-  count(status) %>% 
-  arrange(-n) %>% 
-  gt() %>% 
-  tab_header(title = "NFL Injuries by Status") %>% 
-  tab_source_note(source_note = "https://www.espn.com/nfl/injuries")
+injuries_gt <- function(input){
+  injuries %>% 
+    count(pos) %>% 
+    arrange(-n) %>% 
+    gt() %>% 
+    tab_header(title = "NFL Injuries by Position") %>% 
+    tab_source_note(source_note = "https://www.espn.com/nfl/injuries")
+  
+  injuries %>% 
+    count(status) %>% 
+    arrange(-n) %>% 
+    gt() %>% 
+    tab_header(title = "NFL Injuries by Status") %>% 
+    tab_source_note(source_note = "https://www.espn.com/nfl/injuries")
+  
+  injuries %>% 
+    count(team) %>% 
+    arrange(-n) %>% 
+    gt() %>% 
+    tab_header(title = "NFL Injuries by Team") %>% 
+    tab_source_note(source_note = "https://www.espn.com/nfl/injuries")
+}
 
-injuries %>% 
-  count(team) %>% 
-  arrange(-n) %>% 
-  gt() %>% 
-  tab_header(title = "NFL Injuries by Team") %>% 
-  tab_source_note(source_note = "https://www.espn.com/nfl/injuries")

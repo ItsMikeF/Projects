@@ -100,6 +100,8 @@ nfl_depth$pos <- rep(pos, 32)
 nfl_depth_full <- bind_rows(nfl_depth %>% select(pos, first_string, team) %>% rename(player = first_string), 
                             nfl_depth2 %>% rename(player = second_string))
 
+nfl_depth_full %>% filter(team == "ARI") %>% arrange(pos)
+
 # Lets get the second column, now obsolete
 i = 1
 depth_off2 <- i %>% 
@@ -129,8 +131,6 @@ depth_off2 <- setNames(depth_off2, teams$team_abbr)
 #create a data frame of the rosters from the list 
 nfl_depth2 <- Reduce(full_join,depth_off2)
 names(nfl_depth2) <- c("pos", "player", "team")
-
-
 
 nfl_depth2$pos <- rep(pos, 32)
 

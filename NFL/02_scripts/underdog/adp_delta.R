@@ -25,19 +25,20 @@ teams <- pull(teams_colors_logos %>% select(team_abbr))
 teams <- teams[! teams %in% c("LA","OAK","SD","STL")]
 
 # Load the opening rankings
-rankings_udd_1 <- read.csv(glue("./projections/season/2023/rankings_apr30.csv")) %>% 
+rankings_udd_1 <- read.csv(glue("./01_data/projections/season/2023/rankings_apr30.csv")) %>% 
   mutate(name = paste(firstName, lastName),
          adp = as.numeric(adp)) %>% 
   select(name, adp, projectedPoints, positionRank, slotName, teamName)
 
 # Load the most current rankings by reading the last file in the directory
-rankings_udd_2 <- read.csv(paste0("./projections/season/2023/",list.files(path = "./projections/season/2023/")[length(list.files(path = "./projections_season/2023/"))])) %>% 
+rankings_udd_2 <- read.csv(paste0("./01_data/projections/season/2023/", 
+                                  list.files(path = "./01_data/projections/season/2023/")[length(list.files(path = "./01_data/projections/season/2023/"))])) %>% 
   mutate(name = paste(firstName, lastName), 
          adp = as.numeric(adp)) %>% 
   select(name, adp, projectedPoints, positionRank, slotName, teamName)
 
 # extract the date from the file name
-date <- str_extract(list.files(path = "./projections/season/2023/")[length(list.files(path = "./projections/season/2023/"))], 
+date <- str_extract(list.files(path = "./01_data/projections/season/2023/")[length(list.files(path = "./01_data/projections/season/2023/"))], 
                     "(?<=_)[a-z]+[0-9]+")
 
 # Combine rankings in a single dataframe
@@ -69,7 +70,7 @@ rankings %>%
     palette = c("red", "green"), 
     domain = c(min(rankings$percent_change, na.rm = T), max(rankings$percent_change, na.rm = T))
   )) %>% 
-  gtsave(filename = glue("./projections/season/2023/NFL_rankings_{date}.html"))
+  gtsave(filename = glue("./03_plots/NFL_rankings_{date}.html"))
 
 # Top 25 Risers
 rankings %>% 
