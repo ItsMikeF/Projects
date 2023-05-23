@@ -92,11 +92,11 @@ dg_skill <- read.csv(paste0(folder, "/", "dg_skill_ratings.csv")) %>%
 
 #Create golfer tibble
 own_multiplier <- 100/entries
-driv_dis <- 0.6
-driv_acc <- 0.6
-app <- 0.8
-arg <- 0.6
-putt <- 0.7
+driv_dis <- 0.1
+driv_acc <- 0.5
+app <- 0.7
+arg <- 0.9
+putt <- 0.6
 course <- data.frame(driv_dis, driv_acc, app, arg, putt) 
 course[2,] <- round(course/rowSums(course), digits = 2)
 
@@ -225,7 +225,8 @@ golfers %>%
   data_color(columns = course_fit, colors = scales::col_numeric(
     palette = c("red", "green"), 
     domain = c(min(golfers$course_fit), max(course_fit))
-  ))
+  )) %>% 
+  gtsave(.,filename = paste0(folder, "/golfer_table.html"))
 
 #Write
 write.csv(golfers, file = paste0(folder, "/golfers_",entries,".csv"))
