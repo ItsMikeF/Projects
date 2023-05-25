@@ -9,16 +9,23 @@ suppressMessages({
   library(binr) #cut numeric values into evenly distributed groups
 })
 
-#Inputs
+
+# Define inputs -----------------------------------------------------------
+
+
 entries <- 20
+own_multiplier <- 100/entries
 salary_filter <- 6500
 
 #Import CSVs
 golfers <- read.csv(paste0("./Results/golfers_",entries,".csv"))
 
+
+# Find Optimal Linuep -----------------------------------------------------
+
 #Optimal Lineup
 optimal <- lp(direction = "max", 
-              objective.in = golfers$course_fit, 
+              objective.in = golfers$fpts_avg, 
               rbind(golfers$Salary, golfers$Salary, golfers$one), 
               c("<=", ">=", "="), 
               c("50000", "49500", "6"), 
@@ -30,30 +37,33 @@ optimal_lineup <- optimal_lineup %>%
                       across(where(is.numeric), sum), 
                       across(where(is.character), ~"")))
 
-#Ownership table
+
+# Define table of lineups -------------------------------------------------
+
+# Ownership table
 golfer_own <- matrix(nrow = dim(golfers)[1], ncol = 3)
 golfer_own <- golfers$Name
 golfer_own <- tibble(golfer_own)
 
-own_multiplier <- 100 / entries
-
-#Salary Filter
+# Apply Salary Filter
 
 golfers2 <- golfers %>% 
   filter(Salary >= salary_filter)
 
 #Optimal Lineup Table
 optimal_list <- list()
-fpts_limit <- optimal$objval
+fpts_limit <- optimal$objval + 100
 lineup_names <- NULL
 dlist <- list()
 dlist_df <- data.frame()
 
+i=2
+
 for (i in 1:entries) {
   
   optimal <- lp(direction = "max", 
-                objective.in = golfers2$course_fit, 
-                rbind(golfers2$Salary, golfers2$Salary, golfers2$one, golfers2$course_fit), 
+                objective.in = golfers2$fpts_avg, 
+                rbind(golfers2$Salary, golfers2$Salary, golfers2$one, golfers2$fpts_avg), 
                 c("<=", ">=", "=", "<"), 
                 c("50000", "49500", "6", fpts_limit-.01),
                 binary.vec = c(1:dim(golfers2)[1]))
@@ -64,9 +74,9 @@ for (i in 1:entries) {
                         across(where(is.numeric), sum), 
                         across(where(is.character), ~"")))
   
-  fpts_limit <- optimal_lineup$course_fit[7]
+  fpts_limit <- optimal_lineup$fpts_avg[7]
   
-  optimal_list[[i]] <- optimal_lineup
+  optimal_list[[i]] <- optimal_lineup %>% select(1:54)
   
   new_names<- optimal_lineup$Name[1:6]
   lineup_names <- c(lineup_names, new_names)
@@ -92,7 +102,7 @@ for (i in 1:entries) {
   
   golfers2 <- golfers2 %>% filter(filter == 0)
   
-  golfers2 <- golfers2[,-c(55:58)]
+  golfers2 <- golfers2 %>% select(1:54)
 }
 
 optimal_table <- do.call("rbind", optimal_list)
@@ -100,13 +110,13 @@ optimal_table <- do.call("rbind", optimal_list)
 #Lineup Check
 entries_wp <- data.frame()
 for (m in 1:entries) {
-  entries_wp[m,1] <- optimal_table$course_fit[(m*7)]
+  entries_wp[m,1] <- optimal_table$fpts_avg[(m*7)]
 }
 names(entries_wp) <- "Lineup WP"
 
 #Check ownership
 ownership_table <- golfers %>% 
-  select(Name, ID, Salary, ceil, fpts, course_fit, total_points, final_prediction, win, residuals, course_fit, proj_own_avg, own_change)
+  select(Name, ID, Salary, ceil, fpts, total_points, fpts_avg, course_fit, final_prediction, win, residuals, course_fit, proj_own_avg, own_change)
 
 for(i in 1:dim(golfers)[1]){
   ownership_table$own[i] <- sum(str_count(optimal_table$Name, ownership_table$Name[i])) / entries

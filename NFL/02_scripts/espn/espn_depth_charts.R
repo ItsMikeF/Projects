@@ -5,6 +5,7 @@
 #load packages
 suppressMessages({
   library(dplyr) #ggplot2 dplyr tidyr readr stringr forcats purrr tibble
+  library(purrr)
   library(nflverse) #nflfastr nflseedr nfl4th nflreadr nflplotr
   library(rvest) #easily harvest (scrape) web pages
   library(janitor) #simple little tools for examining and cleaning dirty data
@@ -103,7 +104,7 @@ nfl_depth_full <- bind_rows(nfl_depth %>% select(pos, first_string, team) %>% re
 nfl_depth_full %>% filter(team == "ARI") %>% arrange(pos)
 
 # Lets get the second column, now obsolete
-i = 1
+i = 1:32
 depth_off2 <- i %>% 
   map(function (i) {
     print(teams$team_abbr[i])
@@ -137,14 +138,14 @@ nfl_depth2$pos <- rep(pos, 32)
 # 2.0 add injury report to starters ---------------------------------------
 
 nfl_depth_inj <- nfl_depth %>% 
-  left_join(injuries %>% select(name, status, comment), by=c("player"="name"))
+  left_join(injuries %>% select(name, status, comment), by=c("first_string"="name"))
 
 # 3.0 separate into positions and load data -----------------------------------
 
 #separate into position groups
-qb1 <- nfl_depth[seq(1,dim(nfl_depth)[1],12),]
-rb1 <- nfl_depth[seq(2,dim(nfl_depth)[1],12),]
-wr1 <- nfl_depth[seq(3,dim(nfl_depth)[1],12),]
+qb1 <- nfl_depth_full$player[which(nfl_depth_full$pos == "QB1")]
+rb1 <- nfl_depth_full$player[which(nfl_depth_full$pos == "RB1")]
+wr1 <- nfl_depth_full$player[which(nfl_depth_full$pos == "WR1")]
 
 iol <- nfl_depth %>% 
   filter(pos == "LG" | pos == "C" | pos == "RG")
