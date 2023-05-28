@@ -72,7 +72,7 @@ colnames(bookmakers) <- bookmakers_cols
 bookmakers <- bookmakers %>% 
   mutate(hold = 
            ((convert_ML(team1_odds) + convert_ML(team2_odds) +
-           convert_ML(team3_odds) + convert_ML(team4_odds)
+           convert_ML(team3_odds)
            )-1)*100
          )
 

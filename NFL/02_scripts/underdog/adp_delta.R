@@ -118,5 +118,5 @@ team %>%
   tab_header(title = "2023 Best Ball - Mean Team ADP Movement", 
              subtitle = "Period: Jan07 to May13") %>% 
   gt_img_rows(columns=team_logo_espn, height = 50) %>% 
-  tab_footnote(footnote = "Data from Underdog NFL Rankings, players ADP > 59 filtered out")
+  tab_footnote(footnote = "Data from Underdog NFL Rankings, players ADP > 215 filtered out")
 

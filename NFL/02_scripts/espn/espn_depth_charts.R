@@ -6,6 +6,7 @@
 suppressMessages({
   library(dplyr) #ggplot2 dplyr tidyr readr stringr forcats purrr tibble
   library(purrr)
+  library(stringr)
   library(nflverse) #nflfastr nflseedr nfl4th nflreadr nflplotr
   library(rvest) #easily harvest (scrape) web pages
   library(janitor) #simple little tools for examining and cleaning dirty data
@@ -144,6 +145,9 @@ nfl_depth_inj <- nfl_depth %>%
 
 #separate into position groups
 qb1 <- nfl_depth_full$player[which(nfl_depth_full$pos == "QB1")]
+qb1_pbp <- paste(substr(qb1, 1, 1), 
+                 str_split(qb1," ") %>% unlist() %>% .[seq(2, length(.), 2)], sep = ".")
+
 rb1 <- nfl_depth_full$player[which(nfl_depth_full$pos == "RB1")]
 wr1 <- nfl_depth_full$player[which(nfl_depth_full$pos == "WR1")]
 

@@ -22,39 +22,39 @@ suppressMessages({
 
 Load the position group
 ```{r}
-rbs <- read_csv("./Training_Data/position_groups/rbs.csv")
+rbs <- read_csv("./01_data/Training_Data/position_groups/rbs.csv")
 str(rbs, give.attr=F)
 ```
 ```{r}
 player_search <- function(name){
   rbs_player <- rbs %>% 
     filter(player == name) %>% 
-    filter(week == 16) %>% 
     group_by(year) %>% 
     summarise(
       team = team_name,
-      run_plays = run_plays,
-      grades_offense = grades_offense, 
-      grades_run = grades_run, 
-      grades_pass_route = grades_pass_route,
+      run_plays = last(run_plays),
+      grades_offense = round(mean(grades_offense), digits = 1),
+      grades_run = round(mean(grades_run), digits = 1),
+      grades_pass_route = round(mean(grades_pass_route), digits = 1),
       
-      attempts = attempts,
-      gap_attempts = gap_attempts, 
-      zone_attempts = zone_attempts, 
-      yards = yards,
-      elusive_rating = elusive_rating, 
-      ypa = ypa, 
-      yco_attempt = yco_attempt, 
+      attempts = last(attempts),
+      gap_attempts = last(gap_attempts), 
+      zone_attempts = last(zone_attempts), 
+      yards = last(yards),
+      elusive_rating = round(mean(elusive_rating), digits = 1),
+      ypa = round(mean(ypa), digits = 1), 
+      yco_attempt = round(mean(yco_attempt), digits = 1), 
       
-      routes = routes, 
-      receptions = receptions,
-      yprr = yprr, 
-      targets_per_game = round(targets / player_game_count, digits = 1), 
+      routes = last(routes), 
+      receptions = last(receptions),
+      yprr = round(mean(yprr), digits =1),
+      targets_per_game = round(mean(round(targets / player_game_count, digits = 1)),  digits = 1), 
       
-      total_touches_per_game = round(total_touches / player_game_count, digits = 1), 
-      touchdowns = touchdowns, 
-      fumbles = fumbles) %>% 
-    arrange(-year)
+      total_touches_per_game = round(mean(round(total_touches / player_game_count, digits =1)),  digits = 1), 
+      touchdowns = last(touchdowns), 
+      fumbles = last(fumbles)) %>% 
+    arrange(-year) %>% 
+    distinct()
   
   gt <- gt(rbs_player) %>% 
     tab_header(paste(name, "Summary")) %>% 
@@ -84,7 +84,7 @@ player_search <- function(name){
       domain = NULL
       ))
   
-  gtsave(gt, filename = paste("./Outputs/",name, "summary.html"))
+  gtsave(gt, filename = paste("./03_plots/", Sys.Date(), name, "summary.html"))
   
   gt(rbs_player) %>% 
     tab_header(paste(name, "Summary"))

@@ -12,7 +12,6 @@ suppressMessages({
   library(stats) #R statistical functions
   library(XML) #tools for parsing and generating XML
   library(binr) #cut numeric values into evenly distributed bins
-  library(officer) #manipulation of word and pptx 
   library(janitor) #clearning dirty data
   library(stringr) #simple consistent wrappers for common string operations
   library(reshape2) #flexibly Reshape Data
@@ -111,7 +110,7 @@ dg_skill <- read.csv(paste0(folder, "/", "dg_skill_ratings.csv")) %>%
                          "Haotong Li" = "Hao-Tong Li", 
                          "Dimitrios Papadatos" = "Dimi Papadatos"))
 
-# Create course table -----------------------------------------------------
+# 2.0 Create course table -----------------------------------------------------
 
 # these must be manually updated for every course
 driv_dis <- 0.1
@@ -123,7 +122,7 @@ course <- data.frame(driv_dis, driv_acc, app, arg, putt)
 course[2,] <- round(course/rowSums(course), digits = 2)
 
 
-# Define golfer table -----------------------------------------------------
+# 3.0 Create golfer table -----------------------------------------------------
 
 golfers <- golf_salaries %>% 
   left_join(rg %>% select(-c(salary, player_id)), by=c("Name" = "name")) %>% 
@@ -135,7 +134,7 @@ golfers <- golf_salaries %>%
   mutate(odds_per_dollar = round(win / Salary * 10^6, digits = 2),
          residuals = round(residuals(loess(odds_per_dollar ~ Salary)), digits = 2))
 
-# Normalized golfer table -------------------------------------------------
+# 3.1 Normalized golfer table -------------------------------------------------
 
 # Define normalize function
 normalize <- function(x){
@@ -148,14 +147,14 @@ golfers_norm <- golfers %>%
 row <- 2
 
 golfers_norm <- golfers_norm %>% 
-  mutate(proj_own_avg = round((0.6*projected_ownership) + (0.4*proj_own),digits=2), 
+  mutate(proj_own_avg = round((0.5*projected_ownership) + (0.5*proj_own),digits=2), 
          course_fit = 
            (course$driv_dis[row] * distance_pred) +
            (course$driv_acc[row] * accuracy_pred) +
            (course$app[row] * sg_app_pred) +
            (course$arg[row] * sg_arg_pred) +
            (course$putt[row] * sg_putt_pred),
-         own_change = course_fit, 
+         own_change = round(((0.1 * residuals) + (0.9*course_fit))*5, digits = 2), 
          adj_own = case_when(proj_own_avg + own_change <= 0 ~ 0,
                              proj_own_avg + own_change < 40 ~ round((proj_own_avg + own_change)/own_multiplier)*own_multiplier, 
                              proj_own_avg + own_change >= 40 ~ 40), 
@@ -163,24 +162,42 @@ golfers_norm <- golfers_norm %>%
          tournament = tournament)
 
 
-# Create final golfer tibble ----------------------------------------------
+# 3.2 Create final golfer tibble ----------------------------------------------
 
 
 # Create golfer tibble
-max_own = 60
+max_own = 80
 
 golfers <- golfers %>% 
   mutate(proj_own_avg = round((0.5*projected_ownership) + (0.5*proj_own),digits = 2),
          fpts_avg = round(0.5*fpts + 0.5*total_points, digits = 2),
          course_fit = round((golfers_norm$course_fit - mean(golfers_norm$course_fit)) / sd(golfers_norm$course_fit),digits = 2), 
          own_change = round(((0.1 * residuals) + (0.9*course_fit))*5, digits = 2), 
-         adj_own = case_when(proj_own_avg + 2*own_change <= 0 ~ 0,
-                             proj_own_avg + 2*own_change < max_own ~ round((rowMeans(golfers[,c(6,13)]) + own_change)/own_multiplier)*own_multiplier, 
-                             proj_own_avg + 2*own_change >= max_own ~ max_own), 
+         manual_change = 0)
+
+
+# 3.3 Identify Values -----------------------------------------------------
+
+golfers %>% 
+  mutate(value = course_fit/Salary) %>% 
+  arrange(-value)
+
+
+# 3.3 Manual Changes ------------------------------------------------------
+
+golfers$manual_change[which(golfers$Name == "Scottie Scheffler")] = 50
+golfers$manual_change[which(golfers$Name == "Brendan Todd")] = 50
+
+
+# 3.4 Adjusted own  -------------------------------------------------------
+
+golfers <- golfers %>% 
+  mutate(adj_own = case_when(proj_own_avg + 2*own_change + manual_change <= 0 ~ 0,
+                             proj_own_avg + 2*own_change + manual_change < max_own ~ round((rowMeans(golfers[,c(6,13)]) + own_change)/own_multiplier)*own_multiplier, 
+                             proj_own_avg + 2*own_change + manual_change >= max_own ~ max_own),
          one = 1, 
          date = date, 
          tournament = tournament)
-
 
 # Data presentations ----------------------------------------------------------
 

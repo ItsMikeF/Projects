@@ -62,6 +62,18 @@ df_list <- lapply(content, function(x) {
 df <- bind_rows(df_list)
 view(df)
 
+df %>% 
+  group_by(away_team) %>% 
+  summarise(avg_odds = mean(away_odds_ml), 
+            min = min(away_odds_ml), 
+            max = max(away_odds_ml))
+
+df %>% 
+  group_by(home_team) %>% 
+  summarise(avg_odds = mean(home_odds_ml), 
+            min = min(home_odds_ml), 
+            max = max(home_odds_ml))
+
 
 # 3.0 Convert to Don Best Format ------------------------------------------
 

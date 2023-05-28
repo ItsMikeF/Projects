@@ -89,7 +89,7 @@ schedules_def_rush <- schedules %>%
 schedules_def_list <- map(teams_colors_logos$team_abbr, 
                           function(x) schedules_def_rush %>% 
                             filter(grepl(x, game_id)) %>% 
-                            dplyr::mutate(opponent = if_else(away_team==x, home_team, away_team), 
+                            mutate(opponent = if_else(away_team==x, home_team, away_team), 
                                           opponent_rush_def = if_else(opponent == away_team, def_rush_epa_away, def_rush_epa_home), 
                                           opponent_rush_def_rank = if_else(opponent == away_team, def_rush_epa_rank_away, def_rush_epa_rank_home), 
                                           team = if_else(away_team==x, away_team, home_team))

@@ -76,7 +76,7 @@ for (i in 1:entries) {
   
   fpts_limit <- optimal_lineup$fpts_avg[7]
   
-  optimal_list[[i]] <- optimal_lineup %>% select(1:54)
+  optimal_list[[i]] <- optimal_lineup %>% select(1:55)
   
   new_names<- optimal_lineup$Name[1:6]
   lineup_names <- c(lineup_names, new_names)
@@ -102,7 +102,7 @@ for (i in 1:entries) {
   
   golfers2 <- golfers2 %>% filter(filter == 0)
   
-  golfers2 <- golfers2 %>% select(1:54)
+  golfers2 <- golfers2 %>% select(1:55)
 }
 
 optimal_table <- do.call("rbind", optimal_list)
