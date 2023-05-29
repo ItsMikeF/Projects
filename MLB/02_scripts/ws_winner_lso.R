@@ -1,12 +1,17 @@
 #get mlb world series odds via the Live Sports Odds API
 
-library(httr)
-library(tidyverse)
-library(gt)
-library(stats)
-library(mlbplotR)
+# Load packages
+suppressMessages({
+  library(httr)
+  library(dplyr)
+  library(ggplot2)
+  library(gt)
+  library(stats)
+  library(mlbplotR)
+})
 
-ws_winner <- function(variables) {
+# Write function to read LSO api
+ws_odds <- function(variables) {
   teams_colors_logos <- mlbplotR::load_mlb_teams() %>% 
     filter(!team_abbr %in% c("AL", "NL", "MLB")) %>% 
     mutate(
@@ -31,11 +36,11 @@ ws_winner <- function(variables) {
   
   content <- content(response, "parsed")
 
-  ws_winner <- data.frame()
+  ws_odds <- data.frame()
   
   for (i in 1:length(content[[1]][[8]][[2]][[4]][[1]][[3]])) {
-    ws_winner[i,1] <- content[[1]][[8]][[2]][[4]][[1]][[3]][[i]]$name
-    ws_winner[i,2] <- content[[1]][[8]][[2]][[4]][[1]][[3]][[i]]$price
+    ws_odds[i,1] <- content[[1]][[8]][[2]][[4]][[1]][[3]][[i]]$name
+    ws_odds[i,2] <- content[[1]][[8]][[2]][[4]][[1]][[3]][[i]]$price
   }
   
   #Add Functions
@@ -44,7 +49,7 @@ ws_winner <- function(variables) {
     return(round(breakeven, digits = 4))
   }
   
-  ws_winner <<- ws_winner %>% 
+  ws_odds <<- ws_odds %>% 
     rename("team"=V1, 
            "american_odds"=V2) %>% 
     mutate(implied_odds = convert_ML(american_odds)) %>% 
@@ -52,11 +57,21 @@ ws_winner <- function(variables) {
 
 }
 
-ws_winner()
+# Call function
+ws_odds()
 
-ws_winner %>% 
+# Run function and save the ggplot
+ws_odds %>% 
   ggplot(aes(x=team_abbr, y=implied_odds)) +
   geom_col(aes(color=team_abbr, fill=team_abbr)) +
-  geom_mlb_logos(aes(team_abbr=team_abbr), width=.07, alpha=0.9) +
+  geom_mlb_logos(aes(team_abbr=team_abbr), width = 0.05, alpha=0.9) +
   scale_color_mlb(type="secondary") +
-  scale_fill_mlb(alpha = 0.4)
+  scale_fill_mlb(alpha = 0.4) +
+  labs(title = paste(Sys.Date(), "World Series Odds"), 
+       caption = "Odds via Live Sports Odds API | Twitter: @Its_MikeF") +
+  theme_dark() +
+  ggsave(filename = paste0("./03_plots/",Sys.Date()," World Series Odds.png"), 
+         width = 20, 
+         height = 11, 
+         dpi = 300, 
+         units = "in")
