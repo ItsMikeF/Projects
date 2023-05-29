@@ -1,10 +1,13 @@
 # contest analysis
 
 # Load packages
-library(dplyr)
-library(tidyr)
-library(stringr)
-library(janitor)
+suppressMessages({
+  library(dplyr)
+  library(tidyr)
+  library(stringr)
+  library(janitor)
+  library(gt)
+})
 
 # Gather folder and file information
 folder <- list.dirs()[length(list.dirs())]
@@ -23,6 +26,16 @@ contest <- read.csv(paste0(folder, "/",list.files(path = folder, pattern = "cont
   separate(Lineup, into = paste0("G", seq(1,6)), sep = " G ") %>% 
   separate(G1, into = c("G11", "G1"), sep = "G ") %>% 
   select(-G11)
+
+# OWnership figures from contest file
+ownership <- read.csv(paste0(folder, "/",list.files(path = folder, pattern = "contest-standings")
+                             )
+                      ) %>%
+  select(8,10,11) %>% 
+  rename(Name = Player, 
+         own = X.Drafted, 
+         fpts = FPTS) %>% 
+  mutate(own = as.numeric(str_remove_all(own, "%")))
 
 # group by number of entries per username
 contest %>% 
@@ -45,9 +58,14 @@ exposure_wd <- contest %>%
   table() %>% 
   as_tibble() %>% 
   arrange(-n) %>% 
-  mutate(expo = n/20) %>% 
+  mutate(expo = n*100/(sum(n)/6)) %>% 
   rename(Name = ".") %>% 
-  left_join(golfers, by=c("Name"))
+  left_join(ownership, by=c("Name")) %>% 
+  left_join(golfers %>% select(-fpts), by=c("Name")) %>% 
+  mutate(delta = expo - own) %>% 
+  select(Name, Salary, n, expo, own, delta, proj_own_avg, fpts, fpts_avg, course_fit, 
+         sg_putt_rank, sg_arg_rank, sg_app_rank, sg_ott_rank, 
+         distance_rank, accuracy_rank, age, make_cut, win, residuals)
 
 # check exposure of the top 100 lineups
 top_100 <- contest %>% 
@@ -57,9 +75,14 @@ top_100 <- contest %>%
   table() %>% 
   as_tibble() %>% 
   arrange(-n) %>% 
-  mutate(expo = round(n/(100), digits = 2)) %>% 
+  mutate(expo = n*100/100) %>% 
   rename(Name = ".") %>% 
-  left_join(golfers, by=c("Name"))
+  left_join(ownership, by=c("Name")) %>% 
+  left_join(golfers %>% select(-fpts), by=c("Name")) %>% 
+  mutate(delta = expo - own) %>% 
+  select(Name, Salary, n, expo, own, delta, proj_own_avg, fpts, fpts_avg, course_fit, 
+         sg_putt_rank, sg_arg_rank, sg_app_rank, sg_ott_rank, 
+         distance_rank, accuracy_rank, age, make_cut, win, residuals)
 
 test <- top_100 %>% select(-c(Name,expo)) %>% drop_na()
 test <- as.data.frame(apply(test, 2, as.numeric))
@@ -67,6 +90,8 @@ test <- as.data.frame(apply(test, 2, as.numeric))
 # find correlation of stats with higher expo
 correlation <- cor(test, 
                    test$expo)
+
+cor(test$n, test$course_fit)
 correlation <- as.data.frame(correlation)
 
 # find correlation of stats with higher expo
@@ -82,4 +107,4 @@ top_10_users <- contest %>%
   as_tibble() %>% 
   arrange(-n) %>% 
   rename(Name = ".") %>% 
-  mutate(expo = round(n/dim(top_10_users)[1], digits = 2))
+  mutate(expo = round(n/(sum(n)/6), digits = 2))

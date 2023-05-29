@@ -146,10 +146,24 @@ nfl_depth_inj <- nfl_depth %>%
 #separate into position groups
 qb1 <- nfl_depth_full$player[which(nfl_depth_full$pos == "QB1")]
 qb1_pbp <- paste(substr(qb1, 1, 1), 
-                 str_split(qb1," ") %>% unlist() %>% .[seq(2, length(.), 2)], sep = ".")
+                 str_split(qb1," ") %>% unlist() %>% .[seq(2, length(.), 2)], 
+                 sep = ".")
 
 rb1 <- nfl_depth_full$player[which(nfl_depth_full$pos == "RB1")]
+rb1_pbp <- paste(substr(rb1, 1, 1), 
+                  str_split(rb1," ") %>% unlist() %>% .[seq(2, length(.), 2)], 
+                  sep = ".")
+
 wr1 <- nfl_depth_full$player[which(nfl_depth_full$pos == "WR1")]
+
+
+# Save to Rdata file ------------------------------------------------------
+
+save(nfl_depth, nfl_depth_full, qb1, qb1_pbp,
+     file = "./01_data/depth_chart/depth_chart_data.Rdata")
+
+# IOL  --------------------------------------------------------------------
+
 
 iol <- nfl_depth %>% 
   filter(pos == "LG" | pos == "C" | pos == "RG")

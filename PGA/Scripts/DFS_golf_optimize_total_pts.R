@@ -142,3 +142,4 @@ entries_upload <- unique(entries_upload)
 #Write
 write.csv(ownership_table, file = paste0("./Results/ownership_table_",entries,".csv"))
 write.csv(entries_upload, file = paste0("./Results/entries_upload_",entries,".csv"))
+write.csv(entries_upload, file = paste0(folder, "/entries_upload_",entries,".csv"))
