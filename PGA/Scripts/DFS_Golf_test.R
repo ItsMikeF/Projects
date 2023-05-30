@@ -3,6 +3,7 @@
 #load packages
 suppressMessages({
   library(dplyr) 
+  library(tidyr)
   library(ggplot2)
   library(ggrepel) #positions non-overlapping text labels
   library(lubridate) #make dealing with dates a little easier
@@ -113,11 +114,11 @@ dg_skill <- read.csv(paste0(folder, "/", "dg_skill_ratings.csv")) %>%
 # 2.0 Create course table -----------------------------------------------------
 
 # these must be manually updated for every course
-driv_dis <- 0.1
-driv_acc <- 0.5
+driv_dis <- 0.3
+driv_acc <- 0.7
 app <- 0.7
 arg <- 0.9
-putt <- 0.6
+putt <- 0.3
 course <- data.frame(driv_dis, driv_acc, app, arg, putt) 
 course[2,] <- round(course/rowSums(course), digits = 2)
 
@@ -166,7 +167,7 @@ golfers_norm <- golfers_norm %>%
 
 
 # Create golfer tibble
-max_own = 80
+max_own = 40
 
 golfers <- golfers %>% 
   mutate(proj_own_avg = round((0.5*projected_ownership) + (0.5*proj_own),digits = 2),
@@ -185,9 +186,9 @@ golfers %>%
 
 # 3.3 Manual Changes ------------------------------------------------------
 
-golfers$manual_change[which(golfers$Name == "Scottie Scheffler")] = 50
-golfers$manual_change[which(golfers$Name == "Brendan Todd")] = 50
-
+golfers$manual_change[which(golfers$Name == "Russel Henley")] = 20
+golfers$manual_change[which(golfers$Name == "Brendan Todd")] = 20
+golfers$manual_change[which(golfers$Name == "Matt Kuchar")] = 20
 
 # 3.4 Adjusted own  -------------------------------------------------------
 
@@ -219,6 +220,7 @@ golfer_plot <- function() {golfers %>%
     scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
     scale_x_continuous(breaks = scales::pretty_breaks(n = 10))
 }
+#golfer_plot()
 
 # create gt table
 golfers_gt <- function() {golfers %>% 
@@ -276,6 +278,7 @@ golfers_gt <- function() {golfers %>%
   gtsave(.,filename = paste0(folder, "/golfer_table.html"))
   
 }
+#golfers_gt()
 
 # Cor plot function
 cor_plot <- function() {
