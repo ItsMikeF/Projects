@@ -16,12 +16,12 @@ date1 = "mar13"
 date2 = "apr16"
 
 #load the rankings
-rankings_1 <- read.csv(glue("./playoffs/rankings_{date1}.csv")) %>% 
+rankings_1 <- read.csv(glue("./01_data/playoffs/rankings_{date1}.csv")) %>% 
   mutate(name = paste(firstName, lastName),
          adp = as.numeric(adp)) %>% 
   select(name, slotName, adp, projectedPoints, positionRank, slotName, teamName)
 
-rankings_2 <- read.csv(glue("./playoffs/rankings_{date2}.csv")) %>% 
+rankings_2 <- read.csv(glue("./01_data/playoffs/rankings_{date2}.csv")) %>% 
   mutate(name = paste(firstName, lastName),
          adp = as.numeric(adp)) %>% 
   select(name, slotName, adp, projectedPoints, positionRank, slotName, teamName)

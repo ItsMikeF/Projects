@@ -1,11 +1,11 @@
-#playoff best ball analysis
-#source for the gt table
-#https://jthomasmock.github.io/gtExtras/reference/gt_img_rows.html
+# best ball ranking analysis
 
 #load packages
 suppressMessages({
-  library(tidyverse) #metapackage
-  library(nflverse) #functions to efficiently access NFL pbp data
+  library(dplyr)
+  library(tidyr)
+  library(nflfastR) 
+  library(nflplotR)
   library(fs) #Cross-Platform File System Operations Based on 'libuv'
   library(gt)
   library(gtExtras)
@@ -13,7 +13,7 @@ suppressMessages({
   library(glue)
 })
 
-# 1.0 Player Rankings --------------------------------------------------------------
+# 1.0 Define team logos --------------------------------------------------------------
 
 # Filter the teams colors logos
 teams_colors_logos <- teams_colors_logos %>% 
@@ -24,8 +24,13 @@ teams_colors_logos <- teams_colors_logos %>%
 teams <- pull(teams_colors_logos %>% select(team_abbr)) 
 teams <- teams[! teams %in% c("LA","OAK","SD","STL")]
 
+
+# 2.0 Load rankings -------------------------------------------------------
+
+date2 <- "may13"
+
 # Load the opening rankings
-rankings_udd_1 <- read.csv(glue("./01_data/projections/season/2023/rankings_apr30.csv")) %>% 
+rankings_udd_1 <- read.csv(glue("./01_data/projections/season/2023/rankings_{date2}.csv")) %>% 
   mutate(name = paste(firstName, lastName),
          adp = as.numeric(adp)) %>% 
   select(name, adp, projectedPoints, positionRank, slotName, teamName)
@@ -40,6 +45,10 @@ rankings_udd_2 <- read.csv(paste0("./01_data/projections/season/2023/",
 # extract the date from the file name
 date <- str_extract(list.files(path = "./01_data/projections/season/2023/")[length(list.files(path = "./01_data/projections/season/2023/"))], 
                     "(?<=_)[a-z]+[0-9]+")
+
+
+# 3.0 Merge rankings to one dataframe -------------------------------------
+
 
 # Combine rankings in a single dataframe
 rankings <- rankings_udd_1 %>% 
@@ -61,8 +70,9 @@ rankings <- rankings_udd_1 %>%
 # create a GT table with the rankings
 rankings %>% 
   select(name, team, date1, date2, delta, percent_change, projectedPoints) %>% 
-  rename(apr30 = date2) %>% 
+  #rename(date2, date2) %>% 
   rename_with(~ date, "date1") %>% 
+  rename_with(~ date2, "date2") %>% 
   drop_na() %>% 
   gt() %>% 
   gt_img_rows(columns = team, height = 50) %>% 
@@ -70,7 +80,14 @@ rankings %>%
     palette = c("red", "green"), 
     domain = c(min(rankings$percent_change, na.rm = T), max(rankings$percent_change, na.rm = T))
   )) %>% 
+  gt_theme_dark() %>% 
+  tab_header(
+    title = glue("{date} NFL Best Ball Rankings")
+  ) %>% 
   gtsave(filename = glue("./03_plots/NFL_rankings_{date}.html"))
+
+
+# 4.0 Risers and Fallers --------------------------------------------------
 
 # Top 25 Risers
 rankings %>% 
@@ -99,7 +116,7 @@ rankings %>%
   ))
 
 
-# 2.0 Team Rankings -------------------------------------------------------
+# 5.0 Team Rankings -------------------------------------------------------
 
 team <- rankings %>% 
   drop_na() %>% 
@@ -116,7 +133,8 @@ team %>%
   arrange(adp_mean) %>% 
   gt() %>% 
   tab_header(title = "2023 Best Ball - Mean Team ADP Movement", 
-             subtitle = "Period: Jan07 to May13") %>% 
+             subtitle = glue("Period: Jan07 to {date}")) %>% 
   gt_img_rows(columns=team_logo_espn, height = 50) %>% 
+  gt_theme_dark() %>% 
   tab_footnote(footnote = "Data from Underdog NFL Rankings, players ADP > 215 filtered out")
 
