@@ -114,7 +114,7 @@ for (m in 1:entries) {
 }
 names(entries_wp) <- "Lineup WP"
 
-#Check ownership
+# Check ownership
 ownership_table <- golfers %>% 
   select(Name, ID, Salary, ceil, fpts, total_points, fpts_avg, course_fit, final_prediction, win, residuals, course_fit, proj_own_avg, own_change)
 
@@ -122,9 +122,10 @@ for(i in 1:dim(golfers)[1]){
   ownership_table$own[i] <- sum(str_count(optimal_table$Name, ownership_table$Name[i])) / entries
 }
 
+# View ownership table
 ownership_table %>% 
   arrange(-own) %>% 
-  view(title = "Golfers Own")
+  view(title = "ownership_table")
 
 #Create Entries CSV
 entries_upload <- tibble(.rows = entries)

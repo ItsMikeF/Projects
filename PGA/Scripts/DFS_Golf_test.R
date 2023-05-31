@@ -1,6 +1,6 @@
 # Aggregate pga dfs data
 
-#load packages
+# Load packages
 suppressMessages({
   library(dplyr) 
   library(tidyr)
@@ -8,7 +8,7 @@ suppressMessages({
   library(ggrepel) #positions non-overlapping text labels
   library(lubridate) #make dealing with dates a little easier
   library(filesstrings) #handy file and string manipulation
-  library(xtable) #export tables to latex or HTML
+  #library(xtable) #export tables to latex or HTML
   library(lpSolve) #solver for general linear/integer problems
   library(stats) #R statistical functions
   library(XML) #tools for parsing and generating XML
