@@ -1,9 +1,14 @@
 # predict team epa of nfl defenses based on pff grade of espn depth chart
 
 # Load packages
-library(dplyr)
-library(tidyr)
-library(caret)
+suppressMessages({
+  library(nflfastR)
+  library(dplyr)
+  library(tidyr)
+  library(caret)
+  library(gt)
+  library(gtExtras)
+})
 
 # run dfs nfl defense script tp get pbp_def
 
@@ -70,36 +75,128 @@ epa_def_team <- lapply(2014:2022, function(year){
 })
 
 # bind data to a dataframe
-epa_def_team_df <- bind_rows(epa_def_team)
+epa_def_team_df <- bind_rows(epa_def_team) %>% 
+  mutate(join = paste0(year, defteam))
+
+
+# 2.0 load pff defense data -----------------------------------------------
+
+# load pff defense data
+pff <- read.csv("./01_data/training_data/position_groups/def.csv")
+
+#group by team by year
+pff_team <- pff %>% 
+  filter(week == 17) %>% 
+  group_by(team_name, year) %>% 
+  summarise(rdef = round(weighted.mean(grades_run_defense.x,snap_counts_run_defense, na.rm = T), digits = 1),
+            tack = round(weighted.mean(grades_tackle.x, tackles.x, na.rm = T), digits = 1),
+            prsh = round(weighted.mean(true_pass_set_grades_pass_rush_defense, true_pass_set_snap_counts_pass_rush, na.rm = T), digits = 1),
+            cov = round(weighted.mean(grades_coverage_defense.x, snap_counts_coverage.x, na.rm = T), digits = 1)) %>% 
+  ungroup() %>% 
+  mutate(team_name = case_when(
+           team_name == "LA" ~ "LAR",
+           team_name == "LARC" ~ "LAC", 
+           team_name == "HST" ~ "HOU", 
+           team_name == "ARZ" ~ "ARI", 
+           team_name == "BLT" ~ "BAL", 
+           team_name == "CLV" ~ "CLE", 
+           T ~ team_name
+           ),
+         join = paste0(year, team_name)
+         )
+
+
+# 3.0 Join pff and pbp dataframes -----------------------------------------
+
+
+
+# join dataframes
+def <- epa_def_team_df %>% 
+  left_join(pff_team %>% select(-c(team_name, year)), by=c("join")) %>% 
+  drop_na()
+
+# 4.0 PFF grades of 2023 starting defense ------------------------------------------
+
+# Run espn depth chart defense script
+
+# aggregate pff ratings for 2023 rosters
+depth_def_join <- depth_def %>% 
+  select(player1, team) %>% 
+  left_join(pff %>% filter(week == 17), by=c("player1" = "player")) %>% 
+  group_by(team) %>% 
+  summarise(
+    rdef = round(weighted.mean(grades_run_defense.x,snap_counts_run_defense, na.rm = T), digits = 1),
+    tack = round(weighted.mean(grades_tackle.x, tackles.x, na.rm = T), digits = 1),
+    prsh = round(weighted.mean(true_pass_set_grades_pass_rush_defense, true_pass_set_snap_counts_pass_rush, na.rm = T), digits = 1),
+    cov = round(weighted.mean(grades_coverage_defense.x, snap_counts_coverage.x, na.rm = T), digits = 1) 
+  )
+
+
+# 5,0 Add 2023 pff grades to team dataframe to bind to -----------------------
 
 # add blank df for 2023
-
-teams <- data.frame(matrix(ncol = 11, nrow = 32))
-teams$X1 <- unique(epa_def_team_df$defteam)
+teams <- data.frame(matrix(ncol = dim(def)[2]-4, nrow = 32)) 
 teams$X11 <- 2023
-names(teams) <- names(epa_def_team_df)
+teams <- cbind(teams, depth_def_join[,2:5])
+teams$X1 <- unique(epa_def_team_df$defteam)
+
+names(teams) <- names(def)
 teams <- replace(teams, is.na(teams), 0)
 
-test <- rbind(epa_def_team_df, teams)
+def <- rbind(def, teams)
+
+
+# 6.0 Build model ---------------------------------------------------------
+
 
 # Step 3: Split the data
 set.seed(1)
-train_set <- test[which(test$year < 2023),]
-test_set  <- test[which(test$year == 2023),]
+train_set <- def[which(def$year < 2022),]
+test_set  <- def[which(def$year == 2022),]
+new_data <- def[which(def$year == 2023),]
 
 # Step 4 Choose a regression model
-model <- train(def_pass_epa_rank ~., data = train_set, method = "lm")
+model <- train(def_pass_epa ~ prsh + cov, data = train_set, method = "lm")
 
 # Step 5 Train the regression model
 trained_model <- model$finalModel
 trained_model
 
 # Step 6 Evaluate the model
-predictions <- predict(trained_model, newdata = test_set )
+predictions <- predict(trained_model, newdata = new_data )
+predictions
 
-# Step 7 Predict 2023 rankings
-input_features <- test_set[, !colnames(test_set) %in% c("year", "defteam", "def_pass_epa_rank")]
+# add predictions to def dataframe
+new_data$def_pass_epa <- predictions
+new_data$def_pass_epa_rank <- rank(new_data$def_pass_epa)
 
-predicted_rankings <- predict(trained_model, newdata = input_features)
 
-print(predicted_rankings) 
+# build run defense model -------------------------------------------------
+
+model_run <- train(def_rush_epa ~ rdef, data = train_set, method = "lm")
+
+trained_model_run <- model_run$finalModel
+
+predictions_run <- predict(trained_model_run, newdata = new_data)
+
+new_data$def_rush_epa <- predictions_run
+new_data$def_rush_epa_rank <- rank(new_data$def_rush_epa)
+
+View(new_data)
+
+
+# build gt table ----------------------------------------------------------
+
+names(teams_colors_logos)
+names(new_data)
+
+new_data %>% 
+  left_join(teams_colors_logos %>% select(team_abbr, team_logo_espn), by = c("defteam"="team_abbr")) %>% 
+  relocate(team_logo_espn, .after = defteam) %>% 
+  select(defteam, team_logo_espn, def_pass_epa, def_pass_epa_rank, def_rush_epa, def_rush_epa_rank) %>% 
+  arrange(def_pass_epa) %>% 
+  gt() %>% 
+  gt_img_rows(columns = team_logo_espn) %>% 
+  gtsave(filename = "./03_plots/2023 defense rankings.png")
+
+

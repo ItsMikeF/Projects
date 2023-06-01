@@ -56,6 +56,7 @@ depth_off <- i %>%
     
     # Get length of the position list element
     len <- length(depth_chart[[3]][[1]])
+    
     # Extract the positions
     positions <- depth_chart[[3]][[1]][seq(2, len, 2)]
     positions <- tibble(positions[1:12])
