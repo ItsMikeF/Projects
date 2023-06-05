@@ -11,6 +11,7 @@ suppressMessages({
   library(gtExtras)
   library(ggrepel) #Automatically Position Non-Overlapping Text Labels with 'ggplot2'
   library(glue)
+  library(lubridate)
 })
 
 # 1.0 Define team logos --------------------------------------------------------------
@@ -27,23 +28,27 @@ teams <- teams[! teams %in% c("LA","OAK","SD","STL")]
 
 # 2.0 Load rankings -------------------------------------------------------
 
-date2 <- "may13"
+first_date <- "may05"
 
 # Load the opening rankings
-rankings_udd_1 <- read.csv(glue("./01_data/projections/season/2023/rankings_{date2}.csv")) %>% 
+rankings_udd_1 <- read.csv(glue("./01_data/projections/season/2023/rankings_{first_date}.csv")) %>% 
   mutate(name = paste(firstName, lastName),
          adp = as.numeric(adp)) %>% 
   select(name, adp, projectedPoints, positionRank, slotName, teamName)
 
 # Load the most current rankings by reading the last file in the directory
 rankings_udd_2 <- read.csv(paste0("./01_data/projections/season/2023/", 
-                                  list.files(path = "./01_data/projections/season/2023/")[length(list.files(path = "./01_data/projections/season/2023/"))])) %>% 
+                                  list.files(path = "./01_data/projections/season/2023/")
+                                  [max(which(grepl("jun",list.files(path = "./01_data/projections/season/2023/"))))]
+                                  )
+                           ) %>% 
   mutate(name = paste(firstName, lastName), 
          adp = as.numeric(adp)) %>% 
   select(name, adp, projectedPoints, positionRank, slotName, teamName)
 
 # extract the date from the file name
-date <- str_extract(list.files(path = "./01_data/projections/season/2023/")[length(list.files(path = "./01_data/projections/season/2023/"))], 
+second_date <- str_extract(list.files(path = "./01_data/projections/season/2023/")
+                    [max(which(grepl("jun",list.files(path = "./01_data/projections/season/2023/"))))], 
                     "(?<=_)[a-z]+[0-9]+")
 
 
@@ -55,10 +60,10 @@ rankings <- rankings_udd_1 %>%
   left_join(rankings_udd_2 %>% select(name, adp), by=c("name")) %>% 
   mutate(delta = adp.x-adp.y, 
          percent_change = round(delta/adp.x,digits = 2)) %>% 
-  select(name, slotName, adp.x, adp.y, delta, percent_change, projectedPoints, teamName) %>% 
-  rename(.,date1=adp.y) %>% 
-  rename(.,date2=adp.x) %>% 
-  arrange(date1) %>% 
+  select(name, slotName, adp.y, adp.x, delta, percent_change, projectedPoints, teamName) %>% 
+  rename_with(~ first_date, adp.x) %>% 
+  rename_with(~ second_date, adp.y) %>% 
+  arrange(first_date) %>% 
   mutate(teamName = case_when(
     teamName == "NY Giants" ~ "New York Giants", 
     teamName == "NY Jets" ~ "New York Jets", 
@@ -67,12 +72,11 @@ rankings <- rankings_udd_1 %>%
   left_join(teams_colors_logos, by=c('teamName'='team_name')) %>% 
   rename(team = team_logo_espn)
 
+
 # create a GT table with the rankings
 rankings %>% 
-  select(name, team, date1, date2, delta, percent_change, projectedPoints) %>% 
-  #rename(date2, date2) %>% 
-  rename_with(~ date, "date1") %>% 
-  rename_with(~ date2, "date2") %>% 
+  relocate(team, .after = name) %>% 
+  select(1:8) %>% 
   drop_na() %>% 
   gt() %>% 
   gt_img_rows(columns = team, height = 50) %>% 
@@ -82,47 +86,70 @@ rankings %>%
   )) %>% 
   gt_theme_dark() %>% 
   tab_header(
-    title = glue("{date} NFL Best Ball Rankings")
-  ) %>% 
-  gtsave(filename = glue("./03_plots/NFL_rankings_{date}.html"))
+    title = glue("{toupper(second_date)} NFL Best Ball Rankings")
+  ) 
 
 
 # 4.0 Risers and Fallers --------------------------------------------------
 
 # Top 25 Risers
 rankings %>% 
-  select(name, team, date1, date2, delta, percent_change, projectedPoints) %>% 
+  relocate(team, .after = name) %>% 
+  select(1:8) %>% 
   drop_na() %>% 
   arrange(-percent_change) %>% 
   slice_head(n=25) %>% 
   gt() %>% 
+  tab_header(title = "2023 NFL Top 25 Risers") %>% 
   gt_img_rows(columns = team, height = 50) %>% 
   data_color(columns = percent_change, colors = scales::col_numeric(
     palette = c("red", "green"), 
     domain = c(min(rankings$percent_change, na.rm = T), max(rankings$percent_change, na.rm = T))
-  )) 
+  )) %>% 
+  gt_theme_dark()
+
+# top 25 late round risers
+rankings %>% 
+  filter(.[[3]] > 180) %>% 
+  relocate(team, .after = name) %>% 
+  select(1:8) %>% 
+  drop_na() %>% 
+  arrange(-percent_change) %>% 
+  slice_head(n=25) %>% 
+  gt() %>% 
+  tab_header(title = "2023 NFL Late Round Risers") %>% 
+  gt_img_rows(columns = team, height = 50) %>% 
+  data_color(columns = percent_change, colors = scales::col_numeric(
+    palette = c("red", "green"), 
+    domain = c(min(rankings$percent_change, na.rm = T), max(rankings$percent_change, na.rm = T))
+  )) %>% 
+  gt_theme_dark()
+
 
 # Top 25 Fallers
 rankings %>% 
-  select(name, team, date1, date2, delta, percent_change, projectedPoints) %>% 
+  relocate(team, .after = name) %>% 
+  select(1:8) %>% 
   drop_na() %>% 
   arrange(percent_change) %>% 
   slice_head(n=25) %>% 
   gt() %>% 
+  tab_header(title = "2023 NFL Top 25 Fallers") %>% 
   gt_img_rows(columns = team, height = 50) %>% 
   data_color(columns = percent_change, colors = scales::col_numeric(
     palette = c("red", "green"), 
     domain = c(min(rankings$percent_change, na.rm = T), max(rankings$percent_change, na.rm = T))
-  ))
+  )) %>% 
+  gt_theme_dark()
 
 
 # 5.0 Team Rankings -------------------------------------------------------
 
 team <- rankings %>% 
   drop_na() %>% 
-  filter(date1 < 216) %>% 
+  filter(.[[3]] < 216) %>% 
   group_by(teamName) %>% 
-  summarise(adp_mean = round(mean(date1, na.rm = T),digits = 1),
+  summarise(adp_mean = round(mean(jun04, na.rm = T),digits = 1),
             adp_delta = round(mean(delta, na.rm = T),digits = 1), 
             percent_change= round(mean(percent_change, na.rm = T),digits = 2)) %>% 
   arrange(-percent_change) %>% 
@@ -133,7 +160,7 @@ team %>%
   arrange(adp_mean) %>% 
   gt() %>% 
   tab_header(title = "2023 Best Ball - Mean Team ADP Movement", 
-             subtitle = glue("Period: Jan07 to {date}")) %>% 
+             subtitle = glue("Period: {first_date} to {second_date}")) %>% 
   gt_img_rows(columns=team_logo_espn, height = 50) %>% 
   gt_theme_dark() %>% 
   tab_footnote(footnote = "Data from Underdog NFL Rankings, players ADP > 215 filtered out")

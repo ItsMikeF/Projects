@@ -62,8 +62,11 @@ exposure_wd <- contest %>%
   rename(Name = ".") %>% 
   left_join(ownership, by=c("Name")) %>% 
   left_join(golfers %>% select(-fpts), by=c("Name")) %>% 
-  mutate(delta = expo - own) %>% 
-  select(Name, Salary, n, expo, own, delta, proj_own_avg, fpts, fpts_avg, course_fit, 
+  mutate(own_delta = expo - own, 
+         fpts_delta = fpts - fpts_avg) %>% 
+  select(Name, Salary, n, expo, own, own_delta, 
+         proj_own_avg, fpts, fpts_avg, fpts_delta,
+         course_fit, 
          sg_putt_rank, sg_arg_rank, sg_app_rank, sg_ott_rank, 
          distance_rank, accuracy_rank, age, make_cut, win, residuals)
 
