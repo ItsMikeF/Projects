@@ -69,6 +69,8 @@ exposure_wd <- contest %>%
          course_fit, 
          sg_putt_rank, sg_arg_rank, sg_app_rank, sg_ott_rank, 
          distance_rank, accuracy_rank, age, make_cut, win, residuals)
+#print username of winning lineup
+contest$username[1]
 
 # check exposure of the top 100 lineups
 top_100 <- contest %>% 

@@ -4,7 +4,8 @@
 suppressMessages({
   library(dplyr)
   library(tidyr)
-  library(nflfastR) 
+  library(nflfastR)
+  library(nflreadr)
   library(nflplotR)
   library(fs) #Cross-Platform File System Operations Based on 'libuv'
   library(gt)
@@ -24,6 +25,9 @@ teams_colors_logos <- teams_colors_logos %>%
 #create vector of modern team abbreviations
 teams <- pull(teams_colors_logos %>% select(team_abbr)) 
 teams <- teams[! teams %in% c("LA","OAK","SD","STL")]
+
+# load rosters
+rosters <- load_rosters(2022)
 
 
 # 2.0 Load rankings -------------------------------------------------------
@@ -69,17 +73,16 @@ rankings <- rankings_udd_1 %>%
     teamName == "NY Jets" ~ "New York Jets", 
     T ~ teamName
   )) %>% 
-  left_join(teams_colors_logos, by=c('teamName'='team_name')) %>% 
-  rename(team = team_logo_espn)
-
+  left_join(teams_colors_logos, by=c('teamName'='team_name')) 
 
 # create a GT table with the rankings
 rankings %>% 
   relocate(team, .after = name) %>% 
-  select(1:8) %>% 
+  select(1:8, 10, 12) %>% 
   drop_na() %>% 
   gt() %>% 
   gt_img_rows(columns = team, height = 50) %>% 
+  gt_img_rows(columns = id)
   data_color(columns = percent_change, colors = scales::col_numeric(
     palette = c("red", "green"), 
     domain = c(min(rankings$percent_change, na.rm = T), max(rankings$percent_change, na.rm = T))
