@@ -8,7 +8,6 @@ suppressMessages({
   library(ggrepel) #positions non-overlapping text labels
   library(lubridate) #make dealing with dates a little easier
   library(filesstrings) #handy file and string manipulation
-  #library(xtable) #export tables to latex or HTML
   library(lpSolve) #solver for general linear/integer problems
   library(stats) #R statistical functions
   library(XML) #tools for parsing and generating XML
@@ -114,11 +113,11 @@ dg_skill <- read.csv(paste0(folder, "/", "dg_skill_ratings.csv")) %>%
 # 2.0 Create course table -----------------------------------------------------
 
 # these must be manually updated for every course
-driv_dis <- 0.3
-driv_acc <- 0.7
-app <- 0.7
-arg <- 0.9
-putt <- 0.3
+driv_dis <- 0.5
+driv_acc <- 0.5
+app <- 0.5
+arg <- 0.5
+putt <- 0.5
 course <- data.frame(driv_dis, driv_acc, app, arg, putt) 
 course[2,] <- round(course/rowSums(course), digits = 2)
 
@@ -181,14 +180,13 @@ golfers <- golfers %>%
 
 golfers %>% 
   mutate(value = course_fit/Salary) %>% 
-  arrange(-value)
-
+  arrange(-value) %>% 
+  select(Name, Salary, value, fpts_avg, proj_own_avg)
 
 # 3.3 Manual Changes ------------------------------------------------------
 
-golfers$manual_change[which(golfers$Name == "Russel Henley")] = 20
-golfers$manual_change[which(golfers$Name == "Brendan Todd")] = 20
-golfers$manual_change[which(golfers$Name == "Matt Kuchar")] = 20
+golfers$manual_change[which(golfers$Name == "C.T. Pan")] = 20
+
 
 # 3.4 Adjusted own  -------------------------------------------------------
 
@@ -199,6 +197,11 @@ golfers <- golfers %>%
          one = 1, 
          date = date, 
          tournament = tournament)
+
+golfers %>% 
+  mutate(metric = fpts_avg / Salary) %>% 
+  arrange(-metric) %>% 
+  select(Name, Salary, fpts_avg, proj_own_avg)
 
 # Data presentations ----------------------------------------------------------
 

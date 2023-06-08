@@ -36,12 +36,16 @@ teams_colors_logos <- teams_colors_logos %>%
 teams <- pull(teams_colors_logos %>% select(team_abbr)) 
 teams <- teams[! teams %in% c("LA","OAK","SD","STL")]
 
+# load rosters
+rosters <- load_rosters(2022) %>% select(full_name, headshot_url)
+
 ```
 
 Load the rankings
 
 ```{r}
-first_date <- "may05"
+first_date <- "apr30"
+current_month <- "jun"
 
 # Load the opening rankings
 rankings_udd_1 <- read.csv(glue("./01_data/projections/season/2023/rankings_{first_date}.csv")) %>% 
@@ -52,7 +56,7 @@ rankings_udd_1 <- read.csv(glue("./01_data/projections/season/2023/rankings_{fir
 # Load the most current rankings by reading the last file in the directory
 rankings_udd_2 <- read.csv(paste0("./01_data/projections/season/2023/", 
                                   list.files(path = "./01_data/projections/season/2023/")
-                                  [max(which(grepl("jun",list.files(path = "./01_data/projections/season/2023/"))))]
+                                  [max(which(grepl(current_month,list.files(path = "./01_data/projections/season/2023/"))))]
                                   )
                            ) %>% 
   mutate(name = paste(firstName, lastName), 
@@ -61,7 +65,7 @@ rankings_udd_2 <- read.csv(paste0("./01_data/projections/season/2023/",
 
 # extract the date from the file name
 second_date <- str_extract(list.files(path = "./01_data/projections/season/2023/")
-                    [max(which(grepl("jun",list.files(path = "./01_data/projections/season/2023/"))))], 
+                    [max(which(grepl(current_month,list.files(path = "./01_data/projections/season/2023/"))))], 
                     "(?<=_)[a-z]+[0-9]+")
 
 ```
@@ -74,27 +78,31 @@ Merge the rankings
 rankings <- rankings_udd_1 %>% 
   left_join(rankings_udd_2 %>% select(name, adp), by=c("name")) %>% 
   mutate(delta = adp.x-adp.y, 
-         percent_change = round(delta/adp.x,digits = 2)) %>% 
+         percent_change = round(delta/adp.x*100,digits = 1)) %>% 
   select(name, slotName, adp.y, adp.x, delta, percent_change, projectedPoints, teamName) %>% 
   rename_with(~ first_date, adp.x) %>% 
   rename_with(~ second_date, adp.y) %>% 
-  arrange(first_date) %>% 
+  arrange(.[[3]]) %>% 
   mutate(teamName = case_when(
     teamName == "NY Giants" ~ "New York Giants", 
     teamName == "NY Jets" ~ "New York Jets", 
     T ~ teamName
   )) %>% 
   left_join(teams_colors_logos, by=c('teamName'='team_name')) %>% 
-  rename(team = team_logo_espn)
-
+  rename(team = team_logo_espn) %>% 
+  left_join(rosters, by=c("name"="full_name")) %>% 
+  rename(headshot = headshot_url) %>% 
+  distinct(name, .keep_all = T)
 
 # create a GT table with the rankings
 rankings %>% 
+  select(-c(8,9)) %>% 
   relocate(team, .after = name) %>% 
-  select(1:8) %>% 
+  relocate(headshot, .before = name) %>% 
   drop_na() %>% 
   gt() %>% 
   gt_img_rows(columns = team, height = 50) %>% 
+  gt_img_rows(columns = headshot, height = 50) %>% 
   data_color(columns = percent_change, colors = scales::col_numeric(
     palette = c("red", "green"), 
     domain = c(min(rankings$percent_change, na.rm = T), max(rankings$percent_change, na.rm = T))
@@ -111,16 +119,20 @@ Risers
 
 ```{r}
 
-# Top 25 Risers
+top <- 10
+  
+# Top 10 Risers
 rankings %>% 
+  select(-c(8,9)) %>% 
   relocate(team, .after = name) %>% 
-  select(1:8) %>% 
+  relocate(headshot, .before = name) %>% 
   drop_na() %>% 
   arrange(-percent_change) %>% 
-  slice_head(n=25) %>% 
+  slice_head(n=top) %>% 
   gt() %>% 
-  tab_header(title = "2023 NFL Top 25 Risers") %>% 
+  tab_header(title = glue("{toupper(second_date)} 2023 NFL Top {top} Risers")) %>% 
   gt_img_rows(columns = team, height = 50) %>% 
+  gt_img_rows(columns = headshot, height = 50) %>% 
   data_color(columns = percent_change, colors = scales::col_numeric(
     palette = c("red", "green"), 
     domain = c(min(rankings$percent_change, na.rm = T), max(rankings$percent_change, na.rm = T))
@@ -133,39 +145,42 @@ Late round risers
 
 ```{r}
 
-# top 25 late round risers
+# top 10 late round risers
 rankings %>% 
+  select(-c(8,9)) %>% 
   filter(.[[3]] > 180) %>% 
   relocate(team, .after = name) %>% 
-  select(1:8) %>% 
+  relocate(headshot, .before = name) %>% 
   drop_na() %>% 
   arrange(-percent_change) %>% 
-  slice_head(n=25) %>% 
+  slice_head(n=top) %>% 
   gt() %>% 
-  tab_header(title = "2023 NFL Late Round Risers") %>% 
+  tab_header(title = glue("{toupper(second_date)} 2023 NFL Late Round Risers")) %>% 
   gt_img_rows(columns = team, height = 50) %>% 
+  gt_img_rows(columns = headshot, height = 50) %>% 
   data_color(columns = percent_change, colors = scales::col_numeric(
     palette = c("red", "green"), 
     domain = c(min(rankings$percent_change, na.rm = T), max(rankings$percent_change, na.rm = T))
   )) %>% 
   gt_theme_dark()
-
 ```
 
 Fallers
 
 ```{r}
 
-# Top 25 Fallers
+# Top 10 Fallers
 rankings %>% 
+  select(-c(8,9)) %>% 
   relocate(team, .after = name) %>% 
-  select(1:8) %>% 
+  relocate(headshot, .before = name) %>% 
   drop_na() %>% 
   arrange(percent_change) %>% 
-  slice_head(n=25) %>% 
+  slice_head(n=top) %>% 
   gt() %>% 
-  tab_header(title = "2023 NFL Top 25 Fallers") %>% 
+  tab_header(title = glue("{toupper(second_date)} 2023 NFL Top {top} Fallers")) %>% 
   gt_img_rows(columns = team, height = 50) %>% 
+  gt_img_rows(columns = headshot, height = 50) %>% 
   data_color(columns = percent_change, colors = scales::col_numeric(
     palette = c("red", "green"), 
     domain = c(min(rankings$percent_change, na.rm = T), max(rankings$percent_change, na.rm = T))
@@ -182,8 +197,8 @@ team <- rankings %>%
   drop_na() %>% 
   filter(.[[3]] < 216) %>% 
   group_by(teamName) %>% 
-  summarise(adp_mean = round(mean(jun04, na.rm = T),digits = 1),
-            adp_delta = round(mean(delta, na.rm = T),digits = 1), 
+  summarise(adp_mean = round(mean(.[[3]], na.rm = T),digits = 1),
+            adp_delta = round(mean(.[[5]], na.rm = T),digits = 1), 
             percent_change= round(mean(percent_change, na.rm = T),digits = 2)) %>% 
   arrange(-percent_change) %>% 
   left_join(teams_colors_logos %>% select(team_name, team_logo_espn),by=c('teamName'='team_name'))

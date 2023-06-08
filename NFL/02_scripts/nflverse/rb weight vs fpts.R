@@ -121,8 +121,18 @@ rb_pbp_join_slice <- rbs_combined %>%
 cor(rb_pbp_join_slice$weight, rb_pbp_join_slice$fpts)
 
 # check model
-model <- MASS::rlm(weight ~ fpts, data = rb_pbp_join_slice)
-model
+model_rb_weight_fpts <- MASS::rlm(fpts ~ weight, data = rb_pbp_join_slice)
+model_rb_weight_fpts
+saveRDS(model, file = "./04_models/rb_weight_to_fpts.rds")
+readRDS("./04_models/rb_weight_to_fpts.rds")
+
+# run model
+new_data <- data.frame(rusher = "Bijan",weight = 220, fpts = NA)
+predict(model_rb_weight_fpts, new_data)
+
+
+# 3.0 Plot the data -------------------------------------------------------
+
 
 # Function to save the plot
 my_ggsave <- function(my_plot) {
@@ -132,13 +142,21 @@ my_ggsave <- function(my_plot) {
   gg <- rb_pbp_join_slice %>% 
     ggplot(aes(x=weight, y=fpts)) + 
     geom_point() +
-    labs(title = "Rb Weight vs Fpts", 
-         caption = "Data from nflfastR | Twitter: @Its_MikeF") +
+    ylim(NA, max(rb_pbp_join_slice$fpts)+20) +
     geom_nfl_headshots(aes(player_gsis = rusher_id), width = 0.075, vjust =0.45) +
     geom_smooth(method = MASS::rlm, se = F, color = "red", linetype = "dashed") +
-    annotate("text", x = 240, y = 200,
+    annotate("text", x = 240, y = 200, size = 6, 
              label = paste("Correlation:", 
-                           round(cor(rb_pbp_join_slice$weight, rb_pbp_join_slice$fpts), digits = 2)))
+                           round(cor(rb_pbp_join_slice$weight, rb_pbp_join_slice$fpts), digits = 2))) +
+    labs(title = "Top 25 2023 Rb: Weight vs Fpts",
+         subtitle = "0.5 ppr scoring",
+         caption = "Data from nflfastR | Twitter: @Its_MikeF") +
+    theme_dark() +
+    theme(plot.title = element_text(size = 20, face = "bold"), 
+          plot.subtitle = element_text(size = 12), 
+          axis.text = element_text(size = 12),
+          axis.title = element_text(size = 12), 
+          plot.caption = element_text(size = 12)) 
   
   ggsave(filename = "./03_plots/RB fpts vs weight.png",
          plot = gg,
@@ -146,5 +164,4 @@ my_ggsave <- function(my_plot) {
          width = 20,
          units = "in")
 }
-#my_ggsave(gg)
-
+my_ggsave(gg)
