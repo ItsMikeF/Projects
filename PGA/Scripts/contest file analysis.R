@@ -69,8 +69,29 @@ exposure_wd <- contest %>%
          course_fit, 
          sg_putt_rank, sg_arg_rank, sg_app_rank, sg_ott_rank, 
          distance_rank, accuracy_rank, age, make_cut, win, residuals)
-#print username of winning lineup
+
+# print username of winning lineup
 contest$username[1]
+
+# check my exposures vs the field
+my_expo <- contest %>% 
+  filter(username == "DeepSeaMike") %>% 
+  select(7:12) %>% 
+  unlist() %>% 
+  table() %>% 
+  as_tibble() %>% 
+  arrange(-n) %>% 
+  mutate(expo = n*100/(sum(n)/6)) %>% 
+  rename(Name = ".") %>% 
+  left_join(ownership, by=c("Name")) %>% 
+  left_join(golfers %>% select(-fpts), by=c("Name")) %>% 
+  mutate(own_delta = expo - own, 
+         fpts_delta = fpts - fpts_avg) %>% 
+  select(Name, Salary, n, expo, own, own_delta, 
+         proj_own_avg, fpts, fpts_avg, fpts_delta,
+         course_fit, 
+         sg_putt_rank, sg_arg_rank, sg_app_rank, sg_ott_rank, 
+         distance_rank, accuracy_rank, age, make_cut, win, residuals)
 
 # check exposure of the top 100 lineups
 top_100 <- contest %>% 
