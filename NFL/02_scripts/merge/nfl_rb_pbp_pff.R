@@ -5,7 +5,7 @@ suppressMessages({
 })
 
 #load play by play data
-pbp <- load_pbp(seasons = 2014:2021)
+pbp <- load_pbp(seasons = 2014:2022)
 pbp$year <- as.numeric(substr(pbp$game_date, 1, 4))
 
 #rb historical stats and fpts
@@ -42,8 +42,9 @@ rb_pbp <- pbp %>%
   drop_na()
 
 #load pff merge files
-def <- read.csv("./Training_Data/position_groups/def.csv")
+def <- read_rds("./01_data/training_data/position_groups/def.Rdata")
 names(def)
+names(def)[which(grepl(".x", names(def)))]
 
 #rushing defense summary
 def_rush <- def %>% 
@@ -62,7 +63,7 @@ def_rush <- def_rush %>%
   mutate(merge2 = paste0(def_rush$team_name, def_rush$year, def_rush$week))
 
 #load pff rb merge file
-rbs <- read.csv("./Training_Data/position_groups/rbs.csv") %>% 
+rbs <- read_rds("./01_data/training_data/position_groups/rbs.RData") %>% 
   mutate(name = player) %>% 
   separate(name, into = c("first_name", "last_name"), sep=" ") %>% 
   mutate(designed_ypg = round(designed_yards/player_game_count, digits = 1),
@@ -84,4 +85,4 @@ rbs_full_def <- rbs_full_def %>%
 names(rbs_full_def)
 
 rbs_select <- rbs_full_def %>% 
-  select(player, team_name.x, designed_ypg, targets_pg, yprr, grades_run, grades_defense, grades_run_defense, yco_attempt, fpts)
+  select(player, team_name.x, year.x, week.x, designed_ypg, targets_pg, yprr, grades_run, grades_defense, grades_run_defense, yco_attempt, fpts)

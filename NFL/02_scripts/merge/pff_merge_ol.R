@@ -1,15 +1,19 @@
+# Merge all PFF
+
 #load packages
 library(tidyverse, warn.conflicts = F) #metapackage
+library(glue)
+library(tictoc)
 
-#set year folder
-folder <- list.dirs()[which(list.dirs() == "./Training_Data/2014")]
+# Get training data folder
+folder <- list.dirs()[which(list.dirs() == "./01_data/training_data/2014")]
 year <- substring(folder, nchar(folder)-3, nchar(folder))
 
 #obtain column names from week 1 files
 offense_blocking <- read.csv(paste0(folder,"/offense_blocking (1).csv"))
 offense_blocking_cols <- colnames(offense_blocking)
 
-offense_pass_blocking <- read.csv(paste0(folder,"/offense_pass_blocking (1).csv"))
+offense_pass_blocking <- read.csv(paste0(folder,"/offense_pass_blocking (1).csv")) 
 offense_pass_blocking_cols <- colnames(offense_pass_blocking)
 
 offense_run_blockng <- read.csv(paste0(folder,"/offense_run_blockng (1).csv"))
@@ -22,8 +26,13 @@ dim_table <- data.frame()
 ols <- list()
 ols_list <- list()
 
-#loop for all years into list
-for (j in which(list.dirs() == "./Training_Data/2014"):(length(list.dirs())-1)) {
+# Define folder indices
+folder_index_start <- which(list.dirs() == "./01_data/training_data/2014")
+folder_index_end <- folder_index_start + (year(Sys.Date())- 1 - 2014)
+# minus 1 in offseason, remove for in season
+
+# loop for all years into list
+for (j in folder_index_start:folder_index_end) {
   
   folder <- list.dirs()[j]
   year <- substring(folder, nchar(folder)-3, nchar(folder))
@@ -37,11 +46,18 @@ for (j in which(list.dirs() == "./Training_Data/2014"):(length(list.dirs())-1)) 
     dim_table[1,i] <- dim(offense_blocking)[2]
     
     offense_pass_blocking <- read.csv(paste0(folder,"/offense_pass_blocking (", i,").csv")) %>% 
-      select(offense_pass_blocking_cols[c(2,7:length(offense_pass_blocking_cols))])
+      select(offense_pass_blocking_cols[c(2,7:length(offense_pass_blocking_cols))]) %>% 
+      select(-c("grades_pass_block", "grades_pass_block", "hits_allowed", 
+                "hurries_allowed", "non_spike_pass_block", 
+                "non_spike_pass_block_percentage", "pass_block_percent", 
+                "pbe", "penalties", "pressures_allowed", "sacks_allowed", 
+                "snap_counts_pass_block", "snap_counts_pass_play"))
     dim_table[2,i] <- dim(offense_pass_blocking)[2]
     
     offense_run_blockng <- read.csv(paste0(folder,"/offense_run_blockng (", i,").csv")) %>% 
-      select(offense_run_blockng_cols[c(2,6:length(offense_run_blockng_cols))])
+      select(offense_run_blockng_cols[c(2,6:length(offense_run_blockng_cols))]) %>% 
+      select(-grades_run_block)
+      
     dim_table[3,i] <- dim(offense_run_blockng)[2]
     
     ols_list[[i]] <- list(offense_blocking, offense_pass_blocking, offense_run_blockng) %>% 
@@ -54,20 +70,13 @@ for (j in which(list.dirs() == "./Training_Data/2014"):(length(list.dirs())-1)) 
   
   rownames(dim_table) <- c("offense_blocking", "offense_pass_blocking", "offense_run_blockng")
   
-  ols[[j-(which(list.dirs() == "./Training_Data/2014")-1)]] <- ols_list
+  ols[[j-folder_index_start+1]] <- ols_list
   
 }
 
-#write nested years list to csv
-for (j in which(list.dirs() == "./Training_Data/2014"):(length(list.dirs())-1)) {
-  
-  folder <- list.dirs()[j]
-  year <- substring(folder, nchar(folder)-3, nchar(folder))
-  
-  for(i in 1:17){
-    
-    write.table(tibble(ols[[j-(length(list.dirs())-1-9)]][[i]]), file = "ols.csv", sep = ",", col.names = !file.exists("ols.csv"), append = T, row.names = F)
-    print(paste("Year:", year,"Week:", i))
-    
-  }
-}
+# bind list to a dataframe
+ol <- map(ols, bind_rows)
+ol <- bind_rows(ol)
+
+# save RDS data 
+saveRDS(ol, file = "./01_data/training_data/position_groups/ol.RData")

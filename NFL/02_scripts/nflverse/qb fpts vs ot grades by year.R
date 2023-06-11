@@ -98,6 +98,8 @@ data <- qbs %>%
   drop_na() %>% # have some clean up work to do 
   filter(fpts > 200)
 
+
+
 cor(data$fpts, data$true_pass_set_grades_pass_block)
 
 

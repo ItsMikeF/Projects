@@ -1,8 +1,10 @@
+# merge all defense pff files
+
 #load packages
 library(tidyverse, warn.conflicts = F) #metapackage
 
-#set year folder
-folder <- list.dirs()[which(list.dirs() == "./Training_Data/2014")]
+# Get training data folder
+folder <- list.dirs()[which(list.dirs() == "./01_data/training_data/2014")]
 year <- substring(folder, nchar(folder)-3, nchar(folder))
 
 #obtain column names from week 1 files
@@ -34,8 +36,13 @@ dim_table <- data.frame()
 def <- list()
 def_list <- list()
 
+# Define folder indices
+folder_index_start <- which(list.dirs() == "./01_data/training_data/2014")
+folder_index_end <- folder_index_start + (year(Sys.Date())- 1 - 2014)
+# minus 1 in offseason, remove for in season
+
 #loop for all years into list
-for (j in which(list.dirs() == "./Training_Data/2014"):(length(list.dirs())-1)) {
+for (j in folder_index_start:folder_index_end) {
   
   folder <- list.dirs()[j]
   year <- substring(folder, nchar(folder)-3, nchar(folder))
@@ -82,20 +89,11 @@ for (j in which(list.dirs() == "./Training_Data/2014"):(length(list.dirs())-1)) 
   
   rownames(dim_table) <- c("defense_summary", "pass_rush_summary", "run_defense_summary", "defense_coverage_summary", "defense_coverage_scheme", "slot_coverage", "pass_rush_productivity")
   
-  def[[j-(which(list.dirs() == "./Training_Data/2014")-1)]] <- def_list
+  def[[j-folder_index_start+1]] <- def_list
   
 }
 
-#write nested years list to csv
-for (j in which(list.dirs() == "./Training_Data/2014"):(length(list.dirs())-1)) {
-  
-  folder <- list.dirs()[j]
-  year <- substring(folder, nchar(folder)-3, nchar(folder))
-  
-  for(i in 1:17){
-    
-    write.table(tibble(def[[j-127]][[i]]), file = "def.csv", sep = ",", col.names = !file.exists("def.csv"), append = T, row.names = F)
-    print(paste("Year:", year,"Week:", i))
-    
-  }
-}
+defense <- map(def, bind_rows)
+def <- bind_rows(defense)
+
+saveRDS(def, file = "./01_data/training_data/position_groups/def.RData")
