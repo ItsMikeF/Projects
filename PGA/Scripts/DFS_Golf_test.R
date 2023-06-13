@@ -113,10 +113,10 @@ dg_skill <- read.csv(paste0(folder, "/", "dg_skill_ratings.csv")) %>%
 # 2.0 Create course table -----------------------------------------------------
 
 # these must be manually updated for every course
-driv_dis <- 0.5
+driv_dis <- 0.8
 driv_acc <- 0.5
-app <- 0.5
-arg <- 0.5
+app <- 0.7
+arg <- 0.4
 putt <- 0.5
 course <- data.frame(driv_dis, driv_acc, app, arg, putt) 
 course[2,] <- round(course/rowSums(course), digits = 2)
@@ -185,7 +185,7 @@ golfers %>%
 
 # 3.3 Manual Changes ------------------------------------------------------
 
-golfers$manual_change[which(golfers$Name == "C.T. Pan")] = 20
+#golfers$manual_change[which(golfers$Name == "C.T. Pan")] = 20
 
 
 # 3.4 Adjusted own  -------------------------------------------------------
@@ -213,7 +213,7 @@ golfer_plot <- function() {golfers %>%
     geom_smooth(method=loess, se=F) +
     geom_point(aes(color = residuals), alpha = 0.7, cex = 3) +
     scale_color_gradient(low = "red", high = "green", guide = "colourbar") +
-    geom_text_repel(aes(label=Name)) +
+    geom_text_repel(aes(label=Name), box.padding = 0.25) +
     labs(x = "Salary",
          y = "odds_per_dollar",
          title = paste(tournament, "Golfers"),
@@ -281,7 +281,6 @@ golfers_gt <- function() {golfers %>%
   gtsave(.,filename = paste0(folder, "/golfer_table.html"))
   
 }
-#golfers_gt()
 
 # Cor plot function
 cor_plot <- function() {
@@ -301,8 +300,8 @@ cor_plot <- function() {
     theme(axis.text.x = element_text(angle = 90, vjust = .5))
 }
 
-# Write to csv ------------------------------------------------------------
+# Save golfers object as Rdata------------------------------------------------
 
-#Write
-write.csv(golfers, file = paste0(folder, "/golfers_",entries,".csv"))
-write.csv(golfers, file = paste0("./Results/golfers_",entries,".csv"))
+#
+saveRDS(golfers, file = glue("{folder}/golfers.RData"))
+saveRDS(golfers, file = glue("./Results/golfers.Rdata"))

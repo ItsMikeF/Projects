@@ -17,8 +17,12 @@ entries <- 20
 own_multiplier <- 100/entries
 salary_filter <- 7000
 
-#Import CSVs
-golfers <- read.csv(paste0("./Results/golfers_",entries,".csv"))
+# Read in golfers RData file
+if ("golfers" %in% ls()) {
+  message("Object already exists. Move along")
+} else {
+  golfers <- readRDS(file = glue("{folder}/golfers.RData"))
+}
 
 
 # Find Optimal Linuep -----------------------------------------------------

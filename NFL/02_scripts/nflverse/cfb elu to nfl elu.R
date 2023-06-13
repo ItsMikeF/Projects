@@ -44,10 +44,18 @@ rb <- nfl_rb %>% select(player_id, player, attempts, elusive_rating) %>%
 
 # Correlation between nfl and cfb elu
 cor(rb$elu_nfl, rb$elu_cfb)
-model <- lm(elu_nfl ~ elu_cfb + grades_run, data = rb)
-model <- lm(elu_nfl ~ elu_cfb + grades_run + yco_attempt + designed_yards_attempt, data = rb)
 
+# create linear model
+rb_elu <- lm(elu_nfl ~ elu_cfb + grades_run, data = rb)
+rb_elu <- lm(elu_nfl ~ elu_cfb + grades_run + yco_attempt + designed_yards_attempt, data = rb)
+
+# save model
+saveRDS(rb_elu, file = "./04_modelS/rb_elu.rds")
+
+# load depth chart data
 load(file = "./01_data/depth_chart/depth_chart_data.Rdata")
+
+# load starting running backs
 rb1 <- nfl_depth_full$player[which(nfl_depth_full$pos == "RB1")]
 
 rb1[which(rb$player %in% rb1 == F)]
@@ -59,4 +67,4 @@ new_data <- cfb_rb %>%
   #select(elusive_rating, grades_run, yco_attempt, designed_yards_attempt) %>% 
   rename(elu_cfb = elusive_rating)
 
-predict(model, newdata = new_data)
+predict(rb_elu, newdata = new_data)
