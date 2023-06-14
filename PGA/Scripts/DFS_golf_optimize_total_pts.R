@@ -61,8 +61,6 @@ lineup_names <- NULL
 dlist <- list()
 dlist_df <- data.frame()
 
-i=2
-
 for (i in 1:entries) {
   
   optimal <- lp(direction = "max", 
@@ -118,13 +116,18 @@ for (m in 1:entries) {
 }
 names(entries_wp) <- "Lineup WP"
 
-# Check ownership
+# create ownership table
 ownership_table <- golfers %>% 
-  select(Name, ID, Salary, ceil, fpts, total_points, fpts_avg, course_fit, final_prediction, win, residuals, course_fit, proj_own_avg, own_change)
+  select(Name, ID, Salary, ceil, fpts, total_points, fpts_avg, course_fit, final_prediction, win, residuals, course_fit, proj_own_avg, own_change) 
 
+# get ownership values
 for(i in 1:dim(golfers)[1]){
-  ownership_table$own[i] <- sum(str_count(optimal_table$Name, ownership_table$Name[i])) / entries
+  ownership_table$own[i] <- sum(str_count(optimal_table$Name, ownership_table$Name[i]))*100 / entries
 }
+
+# add ow/uw percentages
+ownership_table <- ownership_table %>% 
+  mutate(weight = own - proj_own_avg)
 
 # View ownership table
 ownership_table %>% 
@@ -144,7 +147,9 @@ entries_upload <- entries_upload[,-c(7)]
 names(entries_upload) <- c("G","G","G","G","G","G")
 entries_upload <- unique(entries_upload)
 
-#Write
-write.csv(ownership_table, file = paste0("./Results/ownership_table_",entries,".csv"))
-write.csv(entries_upload, file = paste0("./Results/entries_upload_",entries,".csv"))
-write.csv(entries_upload, file = paste0(folder, "/entries_upload_",entries,".csv"))
+# save ownership
+saveRDS(ownership_table, file = glue("{folder}/ownership_table.RData"))
+
+# write lineup csv
+write.csv(entries_upload, file = glue("./Results/entries_upload_{entries}.csv"))
+write.csv(entries_upload, file = glue("{folder}/entries_upload_entries.csv"))

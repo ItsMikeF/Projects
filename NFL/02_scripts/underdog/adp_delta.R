@@ -4,6 +4,7 @@
 suppressMessages({
   library(dplyr)
   library(tidyr)
+  library(stringr)
   library(nflfastR)
   library(nflreadr)
   library(nflplotR)
