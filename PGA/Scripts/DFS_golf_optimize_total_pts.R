@@ -132,6 +132,7 @@ ownership_table <- ownership_table %>%
 # View ownership table
 ownership_table %>% 
   arrange(-own) %>% 
+  select(Name, Salary, fpts_avg, proj_own_avg, own, weight) %>% 
   view(title = "ownership_table")
 
 #Create Entries CSV
