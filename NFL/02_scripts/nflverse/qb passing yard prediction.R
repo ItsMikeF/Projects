@@ -8,6 +8,7 @@ library(lubridate)
 # Create list of processed pbp dataframes
 pbp_list <- lapply(2018:2022, function(year){
   pbp <- load_pbp(year) %>% 
+    print(paste("Loading:", year))
     filter(season_type == "REG") %>% 
     mutate(year = year(ymd(game_date))) %>% 
     group_by(passer) %>% 

@@ -8,7 +8,8 @@ suppressMessages({
 })
 
 #load pbp
-pbp <- load_pbp(seasons = 2014:2021)
+pbp <- load_pbp(seasons = 2014:2022)
+saveRDS(pbp, file = "./01_data/pbp/pbp_2014_2022.RData")
 pbp$year <- as.numeric(substr(pbp$game_date, 1, 4))
 
 #sort for qb pbp
@@ -44,7 +45,7 @@ qb_pbp <- pbp %>%
          merge_def = paste0(defteam, year, week_minus1))
 
 #load pff qb data
-qbs_pff <- read.csv("./Training_Data/position_groups/qbs.csv") 
+qbs_pff <- readRDS("01_data/training_data/position_groups/qbs.RData")
 
 qbs_pff_test <- qbs_pff %>%
   mutate(name = player) %>% 
@@ -53,7 +54,7 @@ qbs_pff_test <- qbs_pff %>%
   filter(attempts > 10)
 
 #load pff def data
-def <- read_csv("./Training_Data/position_groups/def.csv")
+def <- readRDS("01_data/training_data/position_groups/def.RData")
 
 #sort pff def
 def_pass <- def %>% 
@@ -128,8 +129,8 @@ def_blitz_pos %>%
   filter(week==17 & year==2021) %>% 
   arrange(-blitz) 
 
-#pbe
-pbe <- read.csv("./Training_Data/position_groups/pbe.csv")
+# pbe
+pbe <- readRDS("01_data/training_data/position_groups/pbe.RData")
 
 pbe <- pbe %>% 
   mutate(merge_off = paste0(team_name, year, week))

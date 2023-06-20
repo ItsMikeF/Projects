@@ -22,6 +22,7 @@ col1 <- rb_elu$terms[[3]][[2]]
 col2 <- rb_elu$terms[[3]][[3]]
 
 # add col cnames
-names(new_data) <- c(col1,col2 )
+names(new_data) <- c(col1,col2)
 
+# predict rb elu
 predict(rb_elu, newdata = new_data)
