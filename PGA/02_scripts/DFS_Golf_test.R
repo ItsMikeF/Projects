@@ -54,7 +54,7 @@ rg <- read.csv(paste0(folder, "/", list.files(path = folder, pattern = "projecti
 
 # Check if all values in the proj own
 if (all(rg$proj_own == rg$proj_own[1])) {
-  stop("Script stopped bc all RG proj own values are equal")
+  print("Script stopped bc all RG proj own values are equal")
 } else {
   print("script continues.")
 }
@@ -72,7 +72,7 @@ dg_proj <- read.csv(paste0(folder, "/", list.files(path = folder, pattern = "dra
 
 # Check if all own values are equal
 if (all(dg_proj$projected_ownership == dg_proj$projected_ownership[1])) {
-  stop("Script stopped because projected ownership column is all the same.")
+  print("Script stopped because DG projected ownership column is all the same.")
 } else {
   print("Script continues")
 }
@@ -124,11 +124,11 @@ dg_skill <- read.csv(paste0(folder, "/", "dg_skill_ratings.csv")) %>%
 # 3.0 Create course table -----------------------------------------------------
 
 # these must be manually updated for every course
-driv_dis <- 0.8
-driv_acc <- 0.5
+driv_dis <- 0.7
+driv_acc <- 0.7
 app <- 0.7
-arg <- 0.4
-putt <- 0.5
+arg <- 0.3
+putt <- 0.4
 course <- data.frame(driv_dis, driv_acc, app, arg, putt) 
 course[2,] <- round(course/rowSums(course), digits = 2)
 

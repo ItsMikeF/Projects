@@ -1,3 +1,5 @@
+# DFS optiimizer for total points
+
 #load packages
 suppressMessages({
   library(tidyverse) #metapackage
@@ -7,6 +9,7 @@ suppressMessages({
   library(lpSolve) #solver for linear / integer programs
   library(stats) #R statistical functions
   library(binr) #cut numeric values into evenly distributed groups
+  library(glue)
 })
 
 
@@ -16,6 +19,10 @@ suppressMessages({
 entries <- 20
 own_multiplier <- 100/entries
 salary_filter <- 7000
+
+# Gather folder and file information
+folder <- list.dirs()[length(list.dirs())-4]
+
 
 # Read in golfers RData file
 if ("golfers" %in% ls()) {
@@ -152,5 +159,5 @@ entries_upload <- unique(entries_upload)
 saveRDS(ownership_table, file = glue("{folder}/ownership_table.RData"))
 
 # write lineup csv
-write.csv(entries_upload, file = glue("./Results/entries_upload_{entries}.csv"))
+write.csv(entries_upload, file = glue("./03_results/entries_upload_{entries}.csv"))
 write.csv(entries_upload, file = glue("{folder}/entries_upload_entries.csv"))
