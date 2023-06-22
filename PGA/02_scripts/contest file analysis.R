@@ -31,7 +31,6 @@ tournament <- str_sub(folder, slash+1, nchar(folder))
 date <- as.Date(str_sub(tournament, 1, slash))
 
 
-
 # 2.0 oad data ------------------------------------------------------------
 
 

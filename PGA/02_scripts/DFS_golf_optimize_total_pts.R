@@ -14,15 +14,14 @@ suppressMessages({
 
 
 # 1.0 Define inputs -----------------------------------------------------------
-
+!
 
 entries <- 20
 own_multiplier <- 100/entries
 salary_filter <- 7000
 
 # Gather folder and file information
-folder <- list.dirs()[length(list.dirs())-4]
-
+folder <- list.dirs()[length(list.dirs())-3]
 
 # Read in golfers RData file
 if ("golfers" %in% ls()) {
@@ -160,4 +159,4 @@ saveRDS(ownership_table, file = glue("{folder}/ownership_table.RData"))
 
 # write lineup csv
 write.csv(entries_upload, file = glue("./03_results/entries_upload_{entries}.csv"))
-write.csv(entries_upload, file = glue("{folder}/entries_upload_entries.csv"))
+write.csv(entries_upload, file = glue("{folder}/entries_upload_{entries}.csv"))

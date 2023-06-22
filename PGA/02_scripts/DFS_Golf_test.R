@@ -23,6 +23,7 @@ suppressMessages({
 
 # 1.0 Gather input values  ------------------------------------------------
 
+
 # Set number of entries to generate
 entries <- 20
 own_multiplier <- 100/entries
