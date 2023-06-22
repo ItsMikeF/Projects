@@ -14,11 +14,11 @@ suppressMessages({
 
 
 # 1.0 Define inputs -----------------------------------------------------------
-!
+
 
 entries <- 20
 own_multiplier <- 100/entries
-salary_filter <- 7000
+salary_filter <- 6900
 
 # Gather folder and file information
 folder <- list.dirs()[length(list.dirs())-3]
@@ -110,7 +110,7 @@ for (i in 1:entries) {
   
   golfers2 <- golfers2 %>% filter(filter == 0)
   
-  golfers2 <- golfers2 %>% select(1:55)
+  golfers2 <- golfers2 %>% select(1:dim(golfers)[2])
 }
 
 optimal_table <- do.call("rbind", optimal_list)
@@ -137,11 +137,11 @@ ownership_table <- ownership_table %>%
 
 # View ownership table
 ownership_table %>% 
-  arrange(-own) %>% 
+  arrange(-Salary) %>% 
   select(Name, Salary, fpts_avg, proj_own_avg, own, weight) %>% 
   view(title = "ownership_table")
 
-#Create Entries CSV
+# Write Entries CSV
 entries_upload <- tibble(.rows = entries)
 
 for (i in 1:entries) {

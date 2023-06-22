@@ -2,8 +2,7 @@
 
 # Load packages
 suppressMessages({
-  library(dplyr) 
-  library(tidyr)
+  library(tidyverse) 
   library(ggplot2)
   library(ggrepel) #positions non-overlapping text labels
   library(lubridate) #make dealing with dates a little easier
@@ -197,18 +196,28 @@ golfers %>%
 
 # 5.1 Manual Changes ------------------------------------------------------
 
-#golfers$manual_change[which(golfers$Name == "C.T. Pan")] = 20
+
+golfers$manual_change[which(golfers$Name == "Mark Hubbard")] = 5
+golfers$manual_change[which(golfers$Name == "Alex Smalley")] = -15
+golfers$manual_change[which(golfers$Name == "J.J. Spaun")] = -15
+golfers$manual_change[which(golfers$Name == "Lee Hodges")] = -15
+golfers$manual_change[which(golfers$Name == "Doug Ghim")] = -15
+golfers$manual_change[which(golfers$Name == "Seonghyeon Kim")] = -15
+golfers$manual_change[which(golfers$Name == "Michael Kim")] = -15
 
 
 # 6.0 Adjusted own  -------------------------------------------------------
 
 golfers <- golfers %>% 
   mutate(adj_own = case_when(proj_own_avg + 2*own_change + manual_change <= 0 ~ 0,
-                             proj_own_avg + 2*own_change + manual_change < max_own ~ round((rowMeans(golfers[,c(6,13)]) + own_change)/own_multiplier)*own_multiplier, 
+                             proj_own_avg + 2*own_change + manual_change < max_own ~ round((rowMeans(golfers[,c(6,13)]) + own_change)/own_multiplier + manual_change/own_multiplier)*own_multiplier, 
                              proj_own_avg + 2*own_change + manual_change >= max_own ~ max_own),
          one = 1, 
          date = date, 
          tournament = tournament)
+
+golfers %>% 
+  select(Name, own_change, manual_change, adj_own)
 
 golfers %>% 
   mutate(metric = fpts_avg / Salary) %>% 
