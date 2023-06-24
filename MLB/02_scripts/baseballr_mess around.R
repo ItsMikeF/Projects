@@ -6,7 +6,7 @@ library(baseballr)
 
 # 2.0 Baseball Reference -------------------------------------------------------------
 
-bref_standings_on_date(Sys.Date(), "NL East", from = F)
+bref_standings_on_date(Sys.Date(), "AL East", from = F)
 
 # 2.1 BR bats ---------------------------------------------
 
@@ -16,6 +16,10 @@ batters <- bref_daily_batter("2023-03-30", Sys.Date()) %>%
   mutate(K_rate = SO/PA, 
          BB_rate = BB/PA, 
          fpts = (X1B*3) + (X2B*6) + (X3B*8) + (HR*10) + (BB*3) + (HBP*3) + (RBI*3) + (R*2) + (SB*2))
+
+batters %>% 
+  select(Name, Age, PA, HR, RBI, SB, fpts) %>% 
+  arrange(-fpts)
 
 #filter for qualified batters
 #based on fangraphs figure for number of qualifed bats
