@@ -81,11 +81,11 @@ exposure_wd <- contest %>%
   table() %>% 
   as_tibble() %>% 
   arrange(-n) %>% 
-  mutate(expo = n*100/(sum(n)/6)) %>% 
+  mutate(expo = round(n*100/(sum(n)/6), digits = 2)) %>% 
   rename(Name = ".") %>% 
   left_join(ownership, by=c("Name")) %>% 
   left_join(golfers %>% select(-fpts), by=c("Name")) %>% 
-  mutate(own_delta = expo - own, 
+  mutate(own_delta = round(expo - own, digits = 2), 
          fpts_delta = fpts - fpts_avg) %>% 
   select(Name, Salary, n, expo, own, own_delta, 
          proj_own_avg, fpts, fpts_avg, fpts_delta,

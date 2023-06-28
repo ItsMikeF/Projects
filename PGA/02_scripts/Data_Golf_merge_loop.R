@@ -1,14 +1,36 @@
-library(tidyverse)
+# merge contest files into 1 file
 
-#Get list of tournaments
-dir_list <- list.dirs("C:/Users/mikef/Documents/GitHub/Projects/Golf", recursive = TRUE)
+# load packages
+library(dplyr)
+library(purrr)
+library(stringr)
 
-tournaments <- NULL
-for (i in 5:(length(dir_list))) {
-  tournaments[i-4] <- unlist(strsplit(dir_list[i], "/"))[9]
-}
+# find the contest directories
+directories <- list.dirs()
 
-tournaments <- tournaments[-which(tournaments %in% c("2020-01-05 Sentry ToC",
+# find indices of the contests
+indices <- grep("./01_data/", directories)
+
+# get contests
+contests_paths <- directories[indices]
+
+# check how many files in each contest directory
+file_count <- map_int(contests_paths, ~ length(list.files(.)))
+file_count
+
+# tbd if the below code is needed
+contests <- map(1:length(contests_paths), function(x){
+  unlist(str_split(contests_paths[x], "/"))[4]
+})
+
+contests <- na.omit(unlist(contests))
+
+# count the number of files in each director
+list.files(path = contests[1])
+
+
+# remove contests without proper files
+contests <- contests[-which(contests %in% c("2020-01-05 Sentry ToC",
                                                      "2020-01-12 Sony Open",
                                                      "2020-03-15 The Players", 
                                                      "2021-05-16 AT&T Byron Nelson",
@@ -30,8 +52,8 @@ convert_ML <- function(odds) {
 #Compile data
 dg <- list()
 
-for(i in c(1:(length(tournaments)-1))) {
-  setwd(paste0("C://Users//",unlist(strsplit(getwd(), "/"))[3],"//Documents//GitHub//Projects//Golf/Training_data//",tournaments[i]))
+for(i in c(1:(length(contests)-1))) {
+  setwd(paste0("C://Users//",unlist(strsplit(getwd(), "/"))[3],"//Documents//GitHub//Projects//Golf/Training_data//",contests[i]))
   
   files <- length(list.files())
   
@@ -82,7 +104,7 @@ for(i in c(1:(length(tournaments)-1))) {
   dg[[i]] <- list(dk, pn, cam, sg) %>% 
     reduce(left_join, by = "player_name")
   
-  print(tournaments[i])
+  print(contests[i])
 }
 
 setwd(paste0("C://Users//",unlist(strsplit(getwd(), "/"))[3],"//Documents//GitHub//Projects//Golf//Results"))

@@ -18,10 +18,10 @@ suppressMessages({
 
 entries <- 20
 own_multiplier <- 100/entries
-salary_filter <- 6900
+salary_filter <- 7000
 
 # Gather folder and file information
-folder <- list.dirs()[length(list.dirs())-3]
+folder <- list.dirs()[length(list.dirs())-4]
 
 # Read in golfers RData file
 if ("golfers" %in% ls()) {

@@ -28,7 +28,7 @@ entries <- 20
 own_multiplier <- 100/entries
 
 # Gather folder and file information
-folder <- list.dirs()[length(list.dirs())-3]
+folder <- list.dirs()[length(list.dirs())-4]
 
 # find the index of the 'forward slash'
 slash <- which(strsplit(folder, "")[[1]] == "/")[2]
@@ -125,9 +125,9 @@ dg_skill <- read.csv(paste0(folder, "/", "dg_skill_ratings.csv")) %>%
 
 # these must be manually updated for every course
 driv_dis <- 0.7
-driv_acc <- 0.7
+driv_acc <- 0.5
 app <- 0.7
-arg <- 0.3
+arg <- 0.4
 putt <- 0.4
 course <- data.frame(driv_dis, driv_acc, app, arg, putt) 
 course[2,] <- round(course/rowSums(course), digits = 2)
@@ -197,13 +197,7 @@ golfers %>%
 # 5.1 Manual Changes ------------------------------------------------------
 
 
-golfers$manual_change[which(golfers$Name == "Mark Hubbard")] = 5
-golfers$manual_change[which(golfers$Name == "Alex Smalley")] = -15
-golfers$manual_change[which(golfers$Name == "J.J. Spaun")] = -15
-golfers$manual_change[which(golfers$Name == "Lee Hodges")] = -15
-golfers$manual_change[which(golfers$Name == "Doug Ghim")] = -15
-golfers$manual_change[which(golfers$Name == "Seonghyeon Kim")] = -15
-golfers$manual_change[which(golfers$Name == "Michael Kim")] = -15
+#golfers$manual_change[which(golfers$Name == "Mark Hubbard")] = 5
 
 
 # 6.0 Adjusted own  -------------------------------------------------------

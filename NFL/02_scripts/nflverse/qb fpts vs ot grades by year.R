@@ -16,6 +16,7 @@ suppressMessages({
 
 
 # load position groups
+ol <- readRDS("./01_data/Training_Data/position_groups/ols.csv")
 ol <- read.csv("./01_data/Training_Data/position_groups/ols.csv")
 
 names(ol)
