@@ -18,6 +18,23 @@ contests_paths <- directories[indices]
 file_count <- map_int(contests_paths, ~ length(list.files(.)))
 file_count
 
+# Import rotogrinders csv
+rg <- read.csv(paste0(folder, "/", list.files(path = folder, pattern = "projections_draftkings_golf"))) %>% 
+  select(name, salary, fpts, proj_own, ceil, floor, player_id) %>% 
+  arrange(-salary)
+
+# Import dg projections
+dg <- read.csv(paste0(folder, "/", list.files(path = folder, pattern = "draftkings_main_projections"))) %>%
+  select(dk_name, scoring_points, finish_points, total_points, value, projected_ownership) %>% 
+  mutate(projected_ownership = round(projected_ownership, digits = 2))
+
+# import milly ownership and points
+contest_own <- list.files(path = folder, pattern = "draftkings_pga")
+
+# review below code  ------------------------------------------------------
+
+
+
 # tbd if the below code is needed
 contests <- map(1:length(contests_paths), function(x){
   unlist(str_split(contests_paths[x], "/"))[4]
@@ -27,6 +44,7 @@ contests <- na.omit(unlist(contests))
 
 # count the number of files in each director
 list.files(path = contests[1])
+
 
 
 # remove contests without proper files
