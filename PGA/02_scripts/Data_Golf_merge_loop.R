@@ -18,6 +18,10 @@ contests_paths <- directories[indices]
 file_count <- map_int(contests_paths, ~ length(list.files(.)))
 file_count
 
+grep("projections_draftkings_golf",list.files(contests_paths[118]))
+grep("draftkings_main_projections",list.files(contests_paths[118]))
+grep("draftkings_pga",list.files(contests_paths[118]))
+
 # Import rotogrinders csv
 rg <- read.csv(paste0(folder, "/", list.files(path = folder, pattern = "projections_draftkings_golf"))) %>% 
   select(name, salary, fpts, proj_own, ceil, floor, player_id) %>% 
@@ -29,7 +33,27 @@ dg <- read.csv(paste0(folder, "/", list.files(path = folder, pattern = "draftkin
   mutate(projected_ownership = round(projected_ownership, digits = 2))
 
 # import milly ownership and points
-contest_own <- list.files(path = folder, pattern = "draftkings_pga")
+milly <- list.files(path = folder, pattern = "draftkings_pga")
+
+
+# gpt suggested -----------------------------------------------------------
+
+
+# Function to check if the required files exist in the directory
+check_files_exist <- function(dir){
+  files <- list.files(dir)
+  file1 <- any(grepl("projections_draftkings_golf", files))
+  file2 <- any(grepl("draftkings_main_projections", files))
+  file3 <- any(grepl("draftkings_pga", files))
+  return(file1 & file2 & file3)
+}
+
+# Apply the function to each directory
+files_exist <- map_lgl(contests_paths, check_files_exist)
+
+# Print directories where all 3 files exist
+indices_with_files <- which(files_exist)
+contests_paths[indices_with_files]
 
 # review below code  ------------------------------------------------------
 

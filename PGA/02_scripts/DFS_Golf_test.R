@@ -89,7 +89,8 @@ decomp <- read.csv(paste0(folder, "/", list.files(path = folder, pattern = "dg_d
                          "Kyounghoon Lee" = "Kyoung-Hoon Lee",
                          "Jordan Smith" = "Jordan L. Smith", 
                          "Haotong Li" = "Hao-Tong Li", 
-                         "Dimitrios Papadatos" = "Dimi Papadatos"))
+                         "Dimitrios Papadatos" = "Dimi Papadatos",
+                         "Samuel Stevens"= "Sam Stevens"))
 
 # Import data golf model predictions
 cam <- read.csv(paste0(folder, "/", list.files(path = folder, pattern = "_model"))) %>%
@@ -105,7 +106,8 @@ cam <- read.csv(paste0(folder, "/", list.files(path = folder, pattern = "_model"
                          "Kyounghoon Lee" = "Kyoung-Hoon Lee",
                          "Jordan Smith" = "Jordan L. Smith", 
                          "Haotong Li" = "Hao-Tong Li", 
-                         "Dimitrios Papadatos" = "Dimi Papadatos"))
+                         "Dimitrios Papadatos" = "Dimi Papadatos",
+                         "Samuel Stevens"= "Sam Stevens"))
 
 # Import skill ratings
 dg_skill <- read.csv(paste0(folder, "/", "dg_skill_ratings.csv")) %>%
@@ -119,7 +121,8 @@ dg_skill <- read.csv(paste0(folder, "/", "dg_skill_ratings.csv")) %>%
                          "Kyounghoon Lee" = "Kyoung-Hoon Lee",
                          "Jordan Smith" = "Jordan L. Smith", 
                          "Haotong Li" = "Hao-Tong Li", 
-                         "Dimitrios Papadatos" = "Dimi Papadatos"))
+                         "Dimitrios Papadatos" = "Dimi Papadatos",
+                         "Samuel Stevens"= "Sam Stevens"))
 
 # 3.0 Create course table -----------------------------------------------------
 
@@ -141,9 +144,17 @@ golfers <- golf_salaries %>%
   left_join(dg_skill, by = c("Name" = "Golfer")) %>% 
   left_join(decomp, by =c("Name" = "Player")) %>%
   left_join(cam, by=c("Name" = "Golfer")) %>% 
-  drop_na() %>% 
+  drop_na(fpts)
+
+golfers <- golfers %>% 
   mutate(odds_per_dollar = round(win / Salary * 10^6, digits = 2),
          residuals = round(residuals(loess(odds_per_dollar ~ Salary)), digits = 2))
+
+
+# 4.0.1 find indices of NA ------------------------------------------------
+
+
+which(apply(golfers, 1, function(x) any(is.na(x))))
 
 # 4.1 Normalized golfer table -------------------------------------------------
 
