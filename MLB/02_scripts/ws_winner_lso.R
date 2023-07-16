@@ -69,7 +69,7 @@ ws_odds %>%
   scale_fill_mlb(alpha = 0.4) +
   labs(title = paste(Sys.Date(), "World Series Odds"), 
        caption = "Odds via Live Sports Odds API | Twitter: @Its_MikeF") +
-  ggsave(filename = paste0("./03_plots/",Sys.Date()," World Series Odds.png"), 
+  ggsave(filename = paste0("./03_plots/ws_odds/",Sys.Date()," World Series Odds.png"), 
          width = 20, 
          height = 11, 
          dpi = 300, 

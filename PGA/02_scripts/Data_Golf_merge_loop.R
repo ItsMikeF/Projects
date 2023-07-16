@@ -22,6 +22,9 @@ grep("projections_draftkings_golf",list.files(contests_paths[118]))
 grep("draftkings_main_projections",list.files(contests_paths[118]))
 grep("draftkings_pga",list.files(contests_paths[118]))
 
+# Gather folder and file information
+folder <- list.dirs()[length(list.dirs())-4]
+
 # Import rotogrinders csv
 rg <- read.csv(paste0(folder, "/", list.files(path = folder, pattern = "projections_draftkings_golf"))) %>% 
   select(name, salary, fpts, proj_own, ceil, floor, player_id) %>% 

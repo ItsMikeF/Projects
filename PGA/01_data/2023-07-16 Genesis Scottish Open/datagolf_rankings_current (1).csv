@@ -1,0 +1,501 @@
+player_name,primary_tour,dg_rank,dg_change,owgr_rank,owgr_change,dg_index
+"Scheffler, Scottie",PGA TOUR,1,0,1,0,2.78
+"McIlroy, Rory",PGA TOUR,2,0,3,0,2.333
+"Rahm, Jon",PGA TOUR,3,0,2,0,2.285
+"Cantlay, Patrick",PGA TOUR,4,0,4,0,2.191
+"Schauffele, Xander",PGA TOUR,5,0,6,0,2.16
+"Fowler, Rickie",PGA TOUR,6,0,21,2,1.806
+"Hovland, Viktor",PGA TOUR,7,0,5,0,1.787
+"Hatton, Tyrrell",PGA TOUR,8,0,16,-1,1.786
+"Smith, Cameron",LIV Tour,9,2,7,0,1.753
+"Morikawa, Collin",PGA TOUR,10,-1,19,-1,1.713
+"Clark, Wyndham",PGA TOUR,11,-1,11,0,1.636
+"Koepka, Brooks",LIV Tour,12,0,12,0,1.525
+"McCarthy, Denny",PGA TOUR,13,2,32,2,1.484
+"Fleetwood, Tommy",PGA TOUR,14,-1,22,-1,1.452
+"Henley, Russell",PGA TOUR,15,-1,35,-6,1.356
+"Johnson, Dustin",LIV Tour,16,3,77,-5,1.353
+"Fitzpatrick, Matthew",PGA TOUR,17,-1,9,0,1.347
+"Finau, Tony",PGA TOUR,18,-1,14,0,1.345
+"Spieth, Jordan",PGA TOUR,19,-1,10,0,1.338
+"Bradley, Keegan",PGA TOUR,20,0,15,2,1.299
+"Rose, Justin",PGA TOUR,21,0,29,-1,1.286
+"Homa, Max",PGA TOUR,22,0,8,0,1.255
+"Im, Sungjae",PGA TOUR,23,0,23,-1,1.223
+"Matsuyama, Hideki",PGA TOUR,24,0,31,2,1.188
+"Conners, Corey",PGA TOUR,25,1,34,-3,1.119
+"Reed, Patrick",LIV Tour,26,9,51,-2,1.107
+"Gooch, Talor",LIV Tour,27,-2,93,-3,1.097
+"Day, Jason",PGA TOUR,28,0,26,1,1.078
+"Burns, Sam",PGA TOUR,29,0,17,-1,1.07
+"Scott, Adam",PGA TOUR,30,0,38,0,1.046
+"Lowry, Shane",PGA TOUR,31,0,30,0,1.023
+"Zalatoris, Will",PGA TOUR,32,0,13,0,1.008
+"Young, Cameron",PGA TOUR,33,6,18,1,1
+"Harman, Brian",PGA TOUR,34,0,28,-2,0.977
+"Niemann, Joaquin",LIV Tour,35,-2,40,-1,0.946
+"DeChambeau, Bryson",LIV Tour,36,1,100,-4,0.943
+"Schenk, Adam",PGA TOUR,37,13,45,6,0.934
+"Kim, Si Woo",PGA TOUR,38,-2,36,-1,0.933
+"Thomas, Justin",PGA TOUR,39,-1,20,0,0.909
+"Pereira, Mito",LIV Tour,40,-13,59,0,0.904
+"Lee, Min Woo",PGA TOUR,41,1,47,-1,0.867
+"Kim, Tom",PGA TOUR,42,1,25,0,0.857
+"Theegala, Sahith",PGA TOUR,43,1,33,-1,0.844
+"Cole, Eric",PGA TOUR,44,-4,74,0,0.836
+"Kirk, Chris",PGA TOUR,45,4,39,2,0.828
+"Rai, Aaron",PGA TOUR,46,-1,90,-2,0.823
+"Putnam, Andrew",PGA TOUR,47,-1,62,-2,0.803
+"Varner III, Harold",LIV Tour,48,6,83,-7,0.792
+"Jaeger, Stephan",PGA TOUR,49,9,101,1,0.788
+"Stricker, Steve",PGA TOUR Champions,50,1,9999,0,0.773
+"Woodland, Gary",PGA TOUR,51,1,72,-1,0.771
+"Smalley, Alex",PGA TOUR,52,17,63,22,0.739
+"Hadwin, Adam",PGA TOUR,53,-12,55,-1,0.734
+"Moore, Taylor",PGA TOUR,54,-7,48,-1,0.728
+"Aberg, Ludvig",Amateur Events,55,11,303,0,0.728
+"Meronk, Adrian",DP World Tour,56,-1,49,-1,0.724
+"Grillo, Emiliano",PGA TOUR,57,-4,41,1,0.711
+"Fox, Ryan",DP World Tour,58,-1,43,0,0.691
+"Hubbard, Mark",PGA TOUR,59,6,89,5,0.69
+"Rodgers, Patrick",PGA TOUR,60,-4,98,-3,0.673
+"Noren, Alex",PGA TOUR,61,-2,66,-3,0.668
+"English, Harris",PGA TOUR,62,-1,37,-1,0.643
+"Garcia, Sergio",LIV Tour,63,-3,230,-11,0.642
+"Poston, J.T.",PGA TOUR,64,16,57,5,0.629
+"Tringale, Cameron",LIV Tour,65,-1,147,-5,0.626
+"Straka, Sepp",PGA TOUR,66,31,27,10,0.624
+"Bjork, Alexander",DP World Tour,67,-4,97,4,0.623
+"Power, Seamus",PGA TOUR,68,8,50,0,0.622
+"Taylor, Nick",PGA TOUR,69,-21,46,-1,0.616
+"Todd, Brendon",PGA TOUR,70,21,61,17,0.607
+"Kokrak, Jason",LIV Tour,71,-9,180,-11,0.559
+"Burmester, Dean",LIV Tour,72,1,99,-1,0.545
+"Grace, Branden",LIV Tour,73,-6,391,-8,0.543
+"Munoz, Sebastian",LIV Tour,74,-6,122,-1,0.543
+"Oosthuizen, Louis",LIV Tour,75,17,366,-18,0.534
+"Spaun, J.J.",PGA TOUR,76,-2,86,-3,0.518
+"Pieters, Thomas",LIV Tour,77,7,71,-3,0.509
+"Casey, Paul",LIV Tour,78,-1,200,-8,0.497
+"Hossler, Beau",PGA TOUR,79,4,123,5,0.497
+"Eckroat, Austin",PGA TOUR,80,-5,76,1,0.492
+"Herbert, Lucas",PGA TOUR,81,-2,54,1,0.485
+"An, Byeong Hun",PGA TOUR,82,-11,131,-1,0.475
+"Davis, Cameron",PGA TOUR,83,-2,53,0,0.474
+"Mitchell, Keith",PGA TOUR,84,2,60,-2,0.442
+"Steele, Brendan",LIV Tour,85,-7,163,-2,0.441
+"Reavie, Chez",PGA TOUR,86,2,75,-2,0.419
+"Bezuidenhout, Christiaan",PGA TOUR,87,-5,87,-1,0.408
+"Kitayama, Kurt",PGA TOUR,88,5,24,0,0.382
+"Lee, Kyounghoon",PGA TOUR,89,-4,52,0,0.382
+"Hodges, Lee",PGA TOUR,90,4,114,-2,0.359
+"Wu, Brandon",PGA TOUR,91,4,84,0,0.358
+"Ghim, Doug",PGA TOUR,92,9,173,4,0.357
+"Lahiri, Anirban",LIV Tour,93,6,124,-2,0.356
+"Detry, Thomas",PGA TOUR,94,2,95,-3,0.348
+"Smith, Jordan",DP World Tour,95,-8,94,-1,0.347
+"Howell III, Charles",LIV Tour,96,-26,455,-18,0.344
+"Kuchar, Matt",PGA TOUR,97,-25,58,-1,0.323
+"Bramlett, Joseph",PGA TOUR,98,-8,161,-2,0.311
+"Lashley, Nate",PGA TOUR,99,13,172,7,0.307
+"Svensson, Adam",PGA TOUR,100,13,64,1,0.304
+"Na, Kevin",LIV Tour,101,9,209,-14,0.3
+"Griffin, Ben",PGA TOUR,102,-4,108,-4,0.298
+"Harrington, Padraig",PGA TOUR Champions,103,0,192,-2,0.284
+"Hardy, Nick",PGA TOUR,104,14,146,6,0.277
+"Uihlein, Peter",LIV Tour,105,6,9999,0,0.274
+"Leishman, Marc",LIV Tour,106,33,183,-9,0.271
+"Wu, Dylan",PGA TOUR,107,-5,236,-1,0.268
+"Dumont de Chassart, Adrien",Amateur Events,108,0,321,0,0.258
+"Streelman, Kevin",PGA TOUR,109,-3,142,5,0.25
+"Suh, Justin",PGA TOUR,110,-1,70,-1,0.246
+"Perez, Pat",LIV Tour,111,13,383,-19,0.233
+"Hojgaard, Rasmus",DP World Tour,112,25,85,34,0.229
+"Palmer, Ryan",PGA TOUR,113,-13,174,-10,0.224
+"Montgomery, Taylor",PGA TOUR,114,-25,67,-3,0.223
+"Hojgaard, Nicolai",DP World Tour,115,-11,128,-4,0.221
+"Stevens, Samuel",PGA TOUR,116,-11,118,-7,0.221
+"Sargent, Gordon",Amateur Events,117,-10,9999,0,0.211
+"Yu, Kevin",PGA TOUR,118,27,164,33,0.196
+"Ancer, Abraham",LIV Tour,119,9,65,-4,0.196
+"Stenson, Henrik",LIV Tour,120,12,259,-6,0.19
+"Riley, Davis",PGA TOUR,121,-6,82,-2,0.187
+"Tosti, Alejandro",Korn Ferry Tour,122,-5,181,1,0.179
+"Kim, Michael",PGA TOUR,123,-9,130,-1,0.169
+"Sigg, Greyson",PGA TOUR,124,24,195,25,0.16
+"Langasque, Romain",DP World Tour,125,-6,137,0,0.155
+"Buckley, Hayden",PGA TOUR,126,-4,81,0,0.143
+"Vegas, Jhonattan",PGA TOUR,127,-6,234,-7,0.142
+"Perez, Victor",DP World Tour,128,-3,68,-1,0.136
+"Norrman, Vincent",PGA TOUR,129,-2,286,8,0.125
+"Luiten, Joost",DP World Tour,130,-1,152,2,0.122
+"Ortiz, Carlos",LIV Tour,131,-11,467,-26,0.108
+"Ryder, Sam",PGA TOUR,132,-9,121,-3,0.105
+"Hoge, Tom",PGA TOUR,133,-3,42,-2,0.1
+"Kanaya, Takumi",Other Tours,134,-3,115,5,0.096
+"Pendrith, Taylor",PGA TOUR,135,-2,113,-3,0.093
+"Poulter, Ian",LIV Tour,136,10,302,-11,0.092
+"Paul, Yannik",DP World Tour,137,-21,102,-3,0.092
+"Hall, Harry",PGA TOUR,138,-3,126,0,0.081
+"Hughes, Mackenzie",PGA TOUR,139,-3,73,-3,0.075
+"NeSmith, Matthew",PGA TOUR,140,4,105,1,0.074
+"Thompson, Davis",PGA TOUR,141,6,96,1,0.074
+"Glover, Lucas",PGA TOUR,142,28,112,20,0.067
+"Bland, Richard",LIV Tour,143,11,178,-12,0.066
+"Macintyre, Robert",DP World Tour,144,9,104,3,0.066
+"Nakajima, Keita",Other Tours,145,-7,151,-2,0.061
+"List, Luke",PGA TOUR,146,-6,119,-5,0.054
+"Watson, Bubba",LIV Tour,147,-21,346,-4,0.044
+"Olesen, Thorbjorn",DP World Tour,148,-14,92,-1,0.042
+"McNealy, Maverick",PGA TOUR,149,-8,109,-1,0.04
+"Lindheim, Nicholas",Korn Ferry Tour,150,-7,418,-4,0.031
+"Kim, Seonghyeon",PGA TOUR,151,-9,140,1,0.003
+"Lower, Justin",PGA TOUR,152,-3,179,-4,0
+"Horschel, Billy",PGA TOUR,153,-3,44,0,-0.004
+"Kohles, Ben",Korn Ferry Tour,154,-3,186,-3,-0.012
+"Martin, Ben",PGA TOUR,155,0,202,-2,-0.055
+"Thompson, Michael",PGA TOUR,156,0,242,6,-0.058
+"Rozner, Antoine",DP World Tour,157,0,139,0,-0.065
+"Novak, Andrew",PGA TOUR,158,4,252,7,-0.066
+"Ramey, Chad",PGA TOUR,159,7,176,-5,-0.077
+"Otaegui, Adrian",DP World Tour,160,-8,91,-2,-0.079
+"Willett, Danny",PGA TOUR,161,0,120,-4,-0.09
+"Kieffer, Maximilian",DP World Tour,162,1,149,-1,-0.1
+"Bhatia, Akshay",PGA TOUR,163,12,197,9,-0.102
+"Baddeley, Aaron",PGA TOUR,164,20,280,19,-0.103
+"Higgo, Garrick",PGA TOUR,165,28,170,6,-0.106
+"Skinns, David",Korn Ferry Tour,166,-1,216,-5,-0.111
+"Campillo, Jorge",DP World Tour,167,1,132,-1,-0.122
+"Pan, C.T.",PGA TOUR,168,1,135,0,-0.128
+"Pavon, Matthieu",DP World Tour,169,17,168,2,-0.128
+"Wise, Aaron",PGA TOUR,170,1,69,-3,-0.131
+"Lipsky, David",PGA TOUR,171,-4,143,1,-0.14
+"Daffue, MJ",PGA TOUR,172,17,165,3,-0.151
+"Cink, Stewart",PGA TOUR,173,-1,294,-6,-0.151
+"Stallings, Scott",PGA TOUR,174,-1,80,-1,-0.156
+"Ramsay, Richie",DP World Tour,175,34,148,24,-0.158
+"Silverman, Ben",Korn Ferry Tour,176,4,188,-3,-0.172
+"Simpson, Webb",PGA TOUR,177,4,191,2,-0.172
+"Gotterup, Chris",Korn Ferry Tour,178,4,299,-2,-0.183
+"Lee, Danny",LIV Tour,179,-1,315,-4,-0.186
+"Lopez-Chacarra, Eugenio",LIV Tour,180,12,9999,0,-0.192
+"Shelton, Robby",PGA TOUR,181,4,127,-2,-0.194
+"Bridgeman, Jacob",Korn Ferry Tour,182,5,354,0,-0.198
+"Knapp, Jake",Korn Ferry Tour,183,5,268,2,-0.213
+"Johnson, Zach",PGA TOUR,184,19,222,1,-0.214
+"McCarty, Matt",Korn Ferry Tour,185,5,406,-4,-0.219
+"Hoffman, Charley",PGA TOUR,186,5,370,-7,-0.22
+"Siem, Marcel",DP World Tour,187,23,213,11,-0.231
+"Tarren, Callum",PGA TOUR,188,-5,150,-4,-0.231
+"Piercy, Scott",PGA TOUR,189,-25,273,-2,-0.234
+"Kizzire, Patton",PGA TOUR,190,-13,219,-5,-0.236
+"Young, Carson",PGA TOUR,191,-32,212,-2,-0.24
+"Hadley, Chesson",PGA TOUR,192,-32,248,-2,-0.247
+"Malnati, Peter",PGA TOUR,193,-17,185,-4,-0.248
+"Alker, Steven",PGA TOUR Champions,194,0,9999,0,-0.251
+"Ferguson, Ewen",DP World Tour,195,0,134,0,-0.259
+"Canter, Laurie",LIV Tour,196,18,313,-6,-0.261
+"Jones, Matt",LIV Tour,197,-1,225,-8,-0.273
+"Hill, Calum",DP World Tour,198,-19,272,-4,-0.275
+"Donald, Luke",PGA TOUR,199,-2,400,-1,-0.28
+"Gordon, Will",PGA TOUR,200,-42,133,0,-0.282
+"Hoshino, Rikuya",DP World Tour,201,-27,125,-2,-0.285
+"Wallace, Matt",PGA TOUR,202,-1,129,-2,-0.288
+"Moller, Niklas Norgaard",DP World Tour,203,2,304,10,-0.3
+"Blair, Zac",PGA TOUR,204,3,103,-3,-0.301
+"Stanger, Jimmy",Korn Ferry Tour,205,1,221,-3,-0.306
+"Southgate, Matthew",DP World Tour,206,30,283,29,-0.309
+"Vincent, Scott",LIV Tour,207,-9,159,-4,-0.31
+"Smotherman, Austin",PGA TOUR,208,7,267,8,-0.312
+"Thorbjornsen, Michael",Amateur Events,209,48,447,0,-0.316
+"Ford, David",Amateur Events,210,-2,9999,0,-0.319
+"Merritt, Troy",PGA TOUR,211,44,177,12,-0.322
+"Molinari, Francesco",PGA TOUR,212,-1,155,-2,-0.33
+"Hisatsune, Ryo",DP World Tour,213,33,162,11,-0.333
+"Walker, Jimmy",PGA TOUR,214,16,232,15,-0.337
+"Hoey, Rico",Korn Ferry Tour,215,-2,145,0,-0.34
+"Long, Adam",PGA TOUR,216,6,262,-2,-0.348
+"Mouw, William",Amateur Events,217,53,9999,0,-0.349
+"Highsmith, Joe",Korn Ferry Tour,218,0,474,-10,-0.351
+"Kim, Chan",Korn Ferry Tour,219,0,245,-3,-0.356
+"Horsfield, Sam",DP World Tour,220,0,241,-5,-0.358
+"Mullinax, Trey",PGA TOUR,221,3,106,-3,-0.361
+"Schneider, Marcel",DP World Tour,222,-18,206,-1,-0.366
+"Surratt, Caleb",Amateur Events,223,0,9999,0,-0.368
+"Bennett, Sam",Amateur Events,224,1,353,-2,-0.373
+"Green, Gavin",DP World Tour,225,-13,187,0,-0.38
+"Griffin, Lanto",PGA TOUR,226,11,228,3,-0.386
+"Tway, Kevin",PGA TOUR,227,-28,290,-4,-0.389
+"Hahn, James",PGA TOUR,228,23,320,9,-0.39
+"Jamieson, Scott",DP World Tour,229,-12,285,-4,-0.393
+"Whaley, Vince",PGA TOUR,230,-9,410,-10,-0.394
+"Gutschewski, Scott",Korn Ferry Tour,231,1,299,1,-0.394
+"Yuan, Yechun",PGA TOUR,232,-4,144,-4,-0.394
+"Guerrier, Julien",DP World Tour,233,5,201,7,-0.394
+"Dou, Zecheng",PGA TOUR,234,-32,160,-4,-0.396
+"Korhonen, Mikko",DP World Tour,235,-2,378,-3,-0.399
+"Fishburn, Patrick",Korn Ferry Tour,236,-2,404,-3,-0.415
+"Murray, Grayson",Korn Ferry Tour,237,58,174,51,-0.418
+"Law, David",DP World Tour,238,-22,276,0,-0.422
+"Kimsey, Nathan",DP World Tour,239,24,265,20,-0.424
+"Schwartzel, Charl",LIV Tour,240,-5,309,-12,-0.426
+"Laird, Martin",PGA TOUR,241,1,257,-3,-0.431
+"Duncan, Tyler",PGA TOUR,242,-1,196,7,-0.444
+"Westwood, Lee",LIV Tour,243,-12,395,-9,-0.449
+"Wiesberger, Bernd",LIV Tour,244,-5,295,-11,-0.45
+"Cockerill, Aaron",DP World Tour,245,-5,227,-1,-0.458
+"Puig Currius, David",LIV Tour,246,-20,9999,0,-0.473
+"Champ, Cameron",PGA TOUR,247,14,254,2,-0.475
+"Barnes, Erik",PGA TOUR,248,4,342,-2,-0.483
+"Larrazabal, Pablo",DP World Tour,249,-22,56,0,-0.488
+"James, Benjamin",Amateur Events,250,3,9999,0,-0.496
+"Campos, Rafael",Korn Ferry Tour,251,3,365,2,-0.507
+"Teater, Josh",Korn Ferry Tour,252,4,421,1,-0.509
+"Lawrence, Thriston",DP World Tour,253,5,78,-3,-0.511
+"Valimaki, Sami",DP World Tour,254,5,215,-3,-0.515
+"Dahmen, Joel",PGA TOUR,255,9,138,0,-0.52
+"Nunez, Augusto",PGA TOUR,256,-6,306,-2,-0.532
+"Goya, Estanislao",PGA TOUR,257,48,453,36,-0.534
+"McDowell, Graeme",LIV Tour,258,16,9999,0,-0.534
+"Ogletree, Andy",Other Tours,259,3,362,-5,-0.535
+"Molinari, Edoardo",DP World Tour,260,-13,307,-6,-0.538
+"Semikawa, Taiga",Other Tours,261,4,158,2,-0.538
+"Lamprecht, Christo",Amateur Events,262,4,9999,0,-0.539
+"Moore, Ryan",PGA TOUR,263,8,407,-12,-0.542
+"Gerard, Ryan",PGA TOUR,264,45,214,15,-0.543
+"Wolff, Matthew",LIV Tour,265,-65,341,-11,-0.555
+"Brun, Julien",DP World Tour,266,3,235,-3,-0.555
+"Mansell, Richard",DP World Tour,267,-22,198,-10,-0.559
+"Greyserman, Max",Korn Ferry Tour,268,4,9999,0,-0.559
+"Jordan, Matthew",DP World Tour,269,28,322,6,-0.559
+"Garnett, Brice",PGA TOUR,270,-27,386,-10,-0.56
+"Noh, Seung-Yul",PGA TOUR,271,-3,9999,0,-0.561
+"Byrd, Jonathan",PGA TOUR,272,-28,9999,0,-0.561
+"Samooja, Kalle",DP World Tour,273,48,250,32,-0.568
+"Mickelson, Phil",LIV Tour,274,-25,88,-1,-0.568
+"Forrest, Grant",DP World Tour,275,12,229,5,-0.569
+"Redman, Doc",PGA TOUR,276,-28,476,-7,-0.571
+"Chappell, Kevin",PGA TOUR,277,-10,9999,0,-0.572
+"Dickson, Taylor",Korn Ferry Tour,278,-2,9999,0,-0.574
+"Tuten, Shad",Korn Ferry Tour,279,-2,371,-3,-0.577
+"VanDerLaan, John",Korn Ferry Tour,280,-2,452,-5,-0.577
+"Waring, Paul",DP World Tour,281,3,204,-2,-0.581
+"Du Plessis, Hennie",DP World Tour,282,14,217,-1,-0.583
+"Streb, Robert",PGA TOUR,283,15,480,-3,-0.584
+"Sullivan, Andy",DP World Tour,284,24,314,10,-0.592
+"Zanotti, Fabrizio",DP World Tour,285,-6,284,-1,-0.611
+"Phillips, Trent",Korn Ferry Tour,286,-1,382,-2,-0.615
+"Meissner, Mac",Korn Ferry Tour,287,-1,398,-2,-0.617
+"Forsstrom, Simon",DP World Tour,288,12,223,9,-0.618
+"Stroud, Chris",PGA TOUR,289,-8,9999,0,-0.619
+"Seiffert, Chase",Korn Ferry Tour,290,0,347,6,-0.634
+"Higgs, Harry",PGA TOUR,291,10,279,1,-0.638
+"Syme, Connor",DP World Tour,292,-1,211,-2,-0.643
+"Endycott, Harrison",PGA TOUR,293,-11,269,-3,-0.645
+"Echavarria, Nicolas",PGA TOUR,294,5,318,-9,-0.652
+"Hopfinger, Brad",Korn Ferry Tour,295,-2,9999,0,-0.656
+"Castillo, Ricky",Amateur Events,296,-2,465,-4,-0.659
+"Kuest, Peter",Korn Ferry Tour,297,78,327,44,-0.673
+"Sloan, Roger",Korn Ferry Tour,298,6,9999,0,-0.682
+"Lingmerth, David",PGA TOUR,299,-26,141,2,-0.684
+"Helligkilde, Marcus",DP World Tour,300,15,199,5,-0.685
+"Taylor, Ben",PGA TOUR,301,-72,110,-1,-0.695
+"Pepperell, Eddie",DP World Tour,302,-19,240,1,-0.697
+"Schaper, Jayden",DP World Tour,303,-43,436,-11,-0.699
+"Elvira, Manuel",Challenge Tour,304,26,440,2,-0.7
+"Norlander, Henrik",PGA TOUR,305,-3,426,-15,-0.701
+"Jenkins, Carter",Korn Ferry Tour,306,4,9999,0,-0.703
+"Snedeker, Brandt",PGA TOUR,307,-1,9999,0,-0.707
+"Rutherford, Jamie",Challenge Tour,308,3,489,-2,-0.709
+"Knox, Russell",PGA TOUR,309,19,239,5,-0.711
+"Roy, Kevin",PGA TOUR,310,50,424,27,-0.713
+"Katsuragawa, Yuto",Korn Ferry Tour,311,65,182,12,-0.716
+"Percy, Cameron",PGA TOUR,312,-20,328,-6,-0.716
+"Aphibarnrat, Kiradech",DP World Tour,313,-33,389,-53,-0.723
+"Armour, Ryan",PGA TOUR,314,-25,387,-10,-0.723
+"Jimenez, Miguel A",PGA TOUR Champions,315,-2,9999,0,-0.724
+"Wu, Ashun",DP World Tour,316,-13,246,-9,-0.725
+"Soderberg, Sebastian",DP World Tour,317,16,166,-1,-0.729
+"Andersen, Mason",Korn Ferry Tour,318,-4,9999,0,-0.731
+"Walters, Justin",DP World Tour,319,6,373,6,-0.735
+"Widing, Tim",Korn Ferry Tour,320,-4,431,-12,-0.737
+"Nienaber, Wilco",DP World Tour,321,-4,392,-5,-0.738
+"Whitney, Tom",Korn Ferry Tour,322,-4,287,2,-0.738
+"Paul, Jeremy",Korn Ferry Tour,323,-4,492,4,-0.739
+"Hillier, Daniel",DP World Tour,324,-4,136,0,-0.741
+"Kodaira, Satoshi",PGA TOUR,325,11,337,-3,-0.747
+"Hickok, Kramer",PGA TOUR,326,-51,311,5,-0.748
+"Imahira, Shugo",Other Tours,327,-5,169,-6,-0.749
+"Mckibbin, Tom",DP World Tour,328,-5,171,-4,-0.752
+"Micheluzzi, David",Other Tours,329,44,358,23,-0.756
+"Menante, Dylan",Amateur Events,330,-6,9999,0,-0.756
+"Saddier, Adrien",DP World Tour,331,15,9999,0,-0.761
+"Shinkwin, Callum",DP World Tour,332,-3,111,6,-0.766
+"Oppenheim, Rob",Korn Ferry Tour,333,-2,9999,0,-0.773
+"Kraft, Kelly",PGA TOUR,334,-8,9999,0,-0.777
+"Cover, Patrick",Korn Ferry Tour,335,-1,9999,0,-0.779
+"Park, Sanghyun",Other Tours,336,-1,251,-1,-0.786
+"Brown, Daniel",DP World Tour,337,55,443,27,-0.79
+"Whitnell, Dale",DP World Tour,338,-26,193,3,-0.794
+"Bateman, Wilson",Korn Ferry Tour,339,-2,359,-4,-0.796
+"Kaymer, Martin",LIV Tour,340,-33,9999,0,-0.797
+"Huizing, Daan",DP World Tour,341,67,434,45,-0.805
+"Smyth, Travis",Other Tours,342,-3,305,-3,-0.805
+"Inamori, Yuki",Other Tours,343,-2,167,-5,-0.806
+"Chatfield, Davis",Korn Ferry Tour,344,-1,9999,0,-0.809
+"Gribble, Cody",PGA TOUR,345,45,393,16,-0.811
+"Kelly, Jerry",PGA TOUR Champions,346,-2,9999,0,-0.813
+"Capan III, Frankie",Korn Ferry Tour,347,-2,442,-8,-0.814
+"Janewattananond, Jazz",DP World Tour,348,-1,237,1,-0.817
+"Long, Hurly",DP World Tour,349,-22,244,-4,-0.817
+"Choi, Sam",Amateur Events,350,-1,9999,0,-0.82
+"Els, Ernie",PGA TOUR Champions,351,-1,9999,0,-0.823
+"Flavin, Patrick",Korn Ferry Tour,352,-1,9999,0,-0.826
+"Barjon, Paul",Korn Ferry Tour,353,-1,330,-4,-0.83
+"Fernandez-Valdes, Jorge",Korn Ferry Tour,354,-1,277,0,-0.838
+"LaCroix, Frederic",DP World Tour,355,24,364,-2,-0.838
+"Donaldson, Jamie",DP World Tour,356,-2,310,0,-0.84
+"O'Hair, Sean",PGA TOUR,357,-69,9999,0,-0.841
+"Manassero, Matteo",Challenge Tour,358,139,349,106,-0.842
+"Fisher, Ross",DP World Tour,359,73,363,30,-0.843
+"Bradbury, Dan",DP World Tour,360,-4,333,2,-0.843
+"Fichardt, Darren",DP World Tour,361,68,499,0,-0.844
+"Lee, Richard Taehoon",Other Tours,362,-5,430,-12,-0.846
+"Steelman, Ross",Amateur Events,363,-23,9999,0,-0.846
+"Arnaus, Adri",DP World Tour,364,-6,107,-2,-0.846
+"Clanton, Luke",Amateur Events,365,-6,9999,0,-0.849
+"Werenski, Richy",PGA TOUR,366,48,460,18,-0.854
+"Coussaud, Ugo",Challenge Tour,367,-3,336,1,-0.855
+"Creel, Joshua",Korn Ferry Tour,368,-7,9999,0,-0.856
+"Gomez, Fabian",Korn Ferry Tour,369,-7,9999,0,-0.857
+"Fisk, Steven",Korn Ferry Tour,370,-7,9999,0,-0.859
+"McGirt, William",PGA TOUR,371,23,9999,0,-0.863
+"Coody, Parker",Korn Ferry Tour,372,-7,465,-6,-0.866
+"Fitzpatrick, Alex",Challenge Tour,373,76,9999,0,-0.868
+"Suber, Jackson",Korn Ferry Tour,374,-8,388,-3,-0.868
+"Coody, Pierceson",Korn Ferry Tour,375,-8,156,1,-0.868
+"Kinhult, Marcus",DP World Tour,376,-8,331,-5,-0.871
+"Coetzee, George",DP World Tour,377,-8,287,5,-0.873
+"Diaz, Roberto",Korn Ferry Tour,378,-8,9999,0,-0.874
+"Dougherty, Kevin",Korn Ferry Tour,379,-8,329,-6,-0.877
+"Phillips, Chandler",Korn Ferry Tour,380,-8,414,-6,-0.877
+"Johannessen, Kristian Krogh",DP World Tour,381,-49,271,-2,-0.881
+"Easton, Bryce",DP World Tour,382,27,9999,0,-0.888
+"Van Driel, Darius",DP World Tour,383,-6,428,-11,-0.894
+"Haas, Bill",PGA TOUR,384,-6,9999,0,-0.898
+"Migliozzi, Guido",DP World Tour,385,-11,226,2,-0.899
+"Reifers, Kyle",Korn Ferry Tour,386,-6,9999,0,-0.9
+"Dunlap, Nick",Amateur Events,387,-6,9999,0,-0.901
+"Sordet, Clement",DP World Tour,388,-50,282,-3,-0.902
+"Walsh, Thomas",Korn Ferry Tour,389,-6,476,-4,-0.904
+"Solomon, Jacob",Korn Ferry Tour,390,-6,9999,0,-0.905
+"Ham, Jeongwoo",Other Tours,391,-5,9999,0,-0.908
+"Drewitt, Brett",Korn Ferry Tour,392,-7,373,-3,-0.908
+"Baldwin, Matthew",DP World Tour,393,-51,266,-1,-0.909
+"Virto, Borja",Challenge Tour,394,51,421,27,-0.918
+"Kim, Minkyu",Other Tours,395,0,256,-1,-0.925
+"Lin, Yuxin",Amateur Events,396,0,9999,0,-0.926
+"Rodriguez, Jose de Jesus",Korn Ferry Tour,397,2,441,-11,-0.926
+"Lorenzo-Vera, Michael",DP World Tour,398,2,411,1,-0.928
+"Nagano, Ryutaro",Other Tours,399,2,372,6,-0.938
+"Sherwood, Cole",Amateur Events,400,2,9999,0,-0.938
+"Crick, Brandon",Korn Ferry Tour,401,2,9999,0,-0.941
+"Winther, Jeff",DP World Tour,402,45,356,5,-0.942
+"Scrivener, Jason",DP World Tour,403,-14,270,-3,-0.943
+"Flores, Martin",Korn Ferry Tour,404,1,9999,0,-0.944
+"Peterson, Paul",Korn Ferry Tour,405,1,432,-5,-0.945
+"Crocker, Sean",DP World Tour,406,-51,231,-9,-0.946
+"McCormick, Ryan",Korn Ferry Tour,407,0,396,-5,-0.947
+"Haley II, Paul",PGA TOUR,408,-20,153,-2,-0.947
+"Kaewkanjana, Sadom",Other Tours,409,1,117,-4,-0.955
+"Summerhays, Preston",Amateur Events,410,2,9999,0,-0.958
+"De Jager, Louis",DP World Tour,411,-29,289,-11,-0.958
+"Paratore, Renato",DP World Tour,412,-1,464,-11,-0.958
+"Burgoon, Bronson",PGA TOUR,413,3,9999,0,-0.963
+"Howie, Craig",Challenge Tour,414,-17,9999,0,-0.965
+"Augenstein, John",Korn Ferry Tour,415,3,9999,0,-0.966
+"Johnson, Michael",Korn Ferry Tour,416,3,9999,0,-0.966
+"Compton, Erik",Korn Ferry Tour,417,3,9999,0,-0.968
+"Hammer, Cole",Korn Ferry Tour,418,3,470,-8,-0.97
+"Hitchner, Derek",Amateur Events,419,4,9999,0,-0.976
+"Langer, Bernhard",PGA TOUR Champions,420,4,9999,0,-0.978
+"Kristensen, Nicolai",Challenge Tour,421,68,471,25,-0.983
+"Cabrera Bello, Rafa",DP World Tour,422,-74,255,-3,-0.986
+"Grant, Brent",PGA TOUR,423,-36,381,-12,-0.989
+"Meissner, Mitchell",Korn Ferry Tour,424,1,9999,0,-0.989
+"Gabrelcik, Nick",Amateur Events,425,1,9999,0,-0.993
+"Cook, Austin",PGA TOUR,426,-13,451,-13,-0.995
+"Veerman, Johannes",DP World Tour,427,0,326,0,-0.999
+"Hwang, Junggon",Other Tours,428,0,275,-2,-1
+"Tabuena, Miguel",Other Tours,429,1,9999,0,-1.006
+"Stone, Brandon",Challenge Tour,430,45,459,9,-1.008
+"Del Solar, Cristobal",Korn Ferry Tour,431,0,348,-1,-1.009
+"Svensson, Jesper",Challenge Tour,432,31,490,4,-1.014
+"Gouveia, Ricardo",DP World Tour,433,-18,343,-10,-1.015
+"Cone, Trevor",PGA TOUR,434,10,450,-22,-1.016
+"Campbell, Brian",Korn Ferry Tour,435,-2,9999,0,-1.022
+"Tanihara, Hideto",Other Tours,436,-2,224,6,-1.023
+"Ledesma, Nelson",Korn Ferry Tour,437,-1,493,7,-1.035
+"Armitage, Marcus",DP World Tour,438,-21,335,-4,-1.037
+"Barber, Blayne",Korn Ferry Tour,439,-2,9999,0,-1.039
+"Kim, Bio",Other Tours,440,-2,194,-3,-1.039
+"Chesters, Ashley",Challenge Tour,441,55,9999,0,-1.048
+"Axelsen, John",DP World Tour,442,0,473,0,-1.05
+"Walker, Euan",Challenge Tour,443,0,9999,0,-1.055
+"McCarthy, Dan",Korn Ferry Tour,444,-3,9999,0,-1.056
+"Prinsloo, Jaco",Challenge Tour,445,-52,379,-5,-1.057
+"Van Tonder, Daniel",DP World Tour,446,53,298,10,-1.058
+"Kuhl, Tommy",Amateur Events,447,-5,9999,0,-1.059
+"Catlin, John",DP World Tour,448,-44,399,-11,-1.061
+"Ahlers, Jaco",Other Tours,449,-3,308,-3,-1.064
+"Dufner, Jason",PGA TOUR,450,0,9999,0,-1.065
+"Ko, Jeong Weon",DP World Tour,451,-53,449,-3,-1.067
+"Maichon, Phichaksn",Amateur Events,452,-1,9999,0,-1.068
+"Kawamura, Masahiro",DP World Tour,453,-13,324,-7,-1.069
+"Sato, Taihei",Other Tours,454,-4,463,8,-1.07
+"Lewton, Steve",Other Tours,455,-3,301,-6,-1.071
+"Blanchet, Chandler",Other Tours,456,-1,9999,0,-1.072
+"Blaum, Ryan",Korn Ferry Tour,457,-1,9999,0,-1.073
+"Westmoreland, Kyle",PGA TOUR,458,-36,9999,0,-1.074
+"Sharma, Shubhankar",DP World Tour,459,-2,264,-4,-1.076
+"Frittelli, Dylan",PGA TOUR,460,-21,261,-4,-1.077
+"Kisner, Kevin",PGA TOUR,461,-3,79,3,-1.078
+"Van Der Walt, Dawie",Korn Ferry Tour,462,-2,9999,0,-1.081
+"Kjeldsen, Soren",DP World Tour,463,0,448,0,-1.081
+"Sale, Julien-Alexandre",Challenge Tour,464,20,9999,0,-1.083
+"Ravetto, David",DP World Tour,465,0,9999,0,-1.085
+"Blick, Cody",Korn Ferry Tour,466,-4,433,-10,-1.085
+"Harrington, Scott",PGA TOUR,467,-6,9999,0,-1.085
+"McAllister, Logan",Korn Ferry Tour,468,-4,417,-4,-1.094
+"Greaser, Austin",Amateur Events,469,-4,9999,0,-1.095
+"Herman, Jim",PGA TOUR,470,13,9999,0,-1.096
+"Scalise, Lorenzo Filipo",Challenge Tour,471,17,444,-5,-1.097
+"Werbylo, Trevor",PGA TOUR,472,19,423,-13,-1.099
+"Lombard, Zander",DP World Tour,473,-38,210,-3,-1.103
+"Ventura, Kristoffer",Korn Ferry Tour,474,-6,9999,0,-1.108
+"Albertson, Anders",Korn Ferry Tour,475,-6,454,-15,-1.11
+"Luck, Curtis",Korn Ferry Tour,476,-6,9999,0,-1.111
+"Salinda, Isaiah",Korn Ferry Tour,477,-6,9999,0,-1.112
+"Blomme, Adam",Challenge Tour,478,0,9999,0,-1.114
+"Ishikawa, Ryo",Other Tours,479,-7,258,5,-1.115
+"Schmid, Matthias",PGA TOUR,480,-89,278,-5,-1.115
+"Canizares, Alejandro",DP World Tour,481,-7,9999,0,-1.119
+"Han, Seungsu",Other Tours,482,-6,462,-6,-1.123
+"Newcomb, Patrick",Korn Ferry Tour,483,-6,9999,0,-1.124
+"Kennedy, Brad",Other Tours,484,-6,207,-8,-1.125
+"Sciot-Siegrist, Robin",DP World Tour,485,0,479,0,-1.126
+"Featherstone, Colin",Korn Ferry Tour,486,-5,9999,0,-1.127
+"Stark, Brian",Amateur Events,487,-7,9999,0,-1.129
+"Swafford, Hudson",PGA TOUR,488,-9,274,-10,-1.13
+"Lewis, Tom",DP World Tour,489,-30,9999,0,-1.13
+"Lebioda, Hank",PGA TOUR,490,-8,9999,0,-1.132
+"Pulkkanen, Tapio",DP World Tour,491,-43,332,-7,-1.134
+"Schwab, Matthias",PGA TOUR,492,-65,367,-15,-1.14
+"Higa, Kazuki",DP World Tour,493,-27,115,0,-1.141
+"Levin, Spencer",Korn Ferry Tour,494,-8,338,3,-1.141
+"Lagergren, Joakim",DP World Tour,495,-10,322,-2,-1.142
+"Nagano, Taiga",Other Tours,496,-9,494,-3,-1.144
+"Kang, Sung",PGA TOUR,497,-4,9999,0,-1.144
+"Rey, Alejandro Del",DP World Tour,498,-55,319,-1,-1.145
+"Ford, Maxwell",Amateur Events,499,-9,9999,0,-1.146
+"Slattery, Lee",DP World Tour,500,0,9999,0,-1.147

@@ -1,0 +1,233 @@
+---
+title: "uv_hourly_test"
+output: html_document
+date: '2022-07-25'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+load packages
+```{r}
+suppressMessages({
+  library(tidyverse) 
+  library(gt) #	Easily Create Presentation-Ready Display Tables
+  library(reshape2) #flexibly Reshape Data
+  library(gganimate) #A Grammar of Animated Graphics
+  library(cubature) #Adaptive Multivariate Integration over Hypercubes
+})
+```
+
+load uv data
+```{r}
+uv <- read_csv("./data/uv_hourly.csv")
+uv
+```
+
+linear model of the uv data
+```{r}
+for (i in 1:7) {
+  assign(paste("lm",i, sep = ""), summary(lm(uv$uv ~ uv$hour + 
+                                               I(if_else(2>i,0,1) * uv$hour^2)+ 
+                                               I(if_else(3>i,0,1) * uv$hour^3)+ 
+                                               I(if_else(4>i,0,1) * uv$hour^4)+ 
+                                               I(if_else(5>i,0,1) * uv$hour^5)+ 
+                                               I(if_else(6>i,0,1) * uv$hour^6)+ 
+                                               I(if_else(7>i,0,1) * uv$hour^7)) ))
+  print(paste0("r2 of a polynomial of order ", i, ": ",round(get(paste("lm",i, sep = ""))$r.squared, digits = 5)))
+}
+```
+
+The r squared value is `r lm7$r.squared`.
+
+create a table of the coefficients
+```{r}
+df_poly <- data.frame()
+
+for (j in 1:7) {
+  df_poly[1,j] <- get(paste("lm",j, sep = ""))$coefficients[1,1]
+  df_poly[2,j] <- get(paste("lm",j, sep = ""))$coefficients[2,1]
+  if(j==1) next
+  
+  df_poly[3,j] <- get(paste("lm",j, sep = ""))$coefficients[3,1]
+  if(j==2) next
+  
+  df_poly[4,j] <- get(paste("lm",j, sep = ""))$coefficients[4,1]
+  if(j==3) next
+  
+  df_poly[5,j] <- get(paste("lm",j, sep = ""))$coefficients[5,1]
+  if(j==4) next
+  
+  df_poly[6,j] <- get(paste("lm",j, sep = ""))$coefficients[6,1]
+  if(j==5) next
+  
+  df_poly[7,j] <- get(paste("lm",j, sep = ""))$coefficients[7,1]
+  if(j==6) next
+  
+  df_poly[8,j] <- get(paste("lm",j, sep = ""))$coefficients[8,1]
+}
+
+df_poly
+```
+
+create functions for each polynomial
+```{r}
+poly1 <- function(x){
+  return(round(
+    df_poly$V1[1]*x^0 + df_poly$V1[2]*x^1
+  , digits = 2))
+}
+
+poly2 <- function(x){
+  return(round(
+    df_poly$V2[1]*x^0 + df_poly$V2[2]*x^1 + df_poly$V2[3]*x^2
+  , digits = 2))
+}
+
+poly3 <- function(x){
+  return(round(
+    df_poly$V3[1]*x^0 + df_poly$V3[2]*x^1 + df_poly$V3[3]*x^2 + df_poly$V3[4]*x^3
+  , digits = 2))
+}
+
+poly4 <- function(x){
+  return(round(
+    df_poly$V4[1]*x^0 + df_poly$V4[2]*x^1 + df_poly$V4[3]*x^2 + df_poly$V4[4]*x^3 + df_poly$V4[5]*x^4
+  , digits = 2))
+}
+
+poly5 <- function(x){
+  return(round(
+    df_poly$V5[1]*x^0 + df_poly$V5[2]*x^1 + df_poly$V5[3]*x^2 + df_poly$V5[4]*x^3 + df_poly$V5[5]*x^4 + df_poly$V5[6]*x^5
+  , digits = 2))
+}
+
+poly6 <- function(x){
+  return(round(
+    df_poly$V6[1]*x^0 + df_poly$V6[2]*x^1 + df_poly$V6[3]*x^2 + df_poly$V6[4]*x^3 + df_poly$V6[5]*x^4 + df_poly$V6[6]*x^5 + df_poly$V6[7]*x^6
+  , digits = 2))
+}
+
+poly7 <- function(x){
+  return(round(
+    df_poly$V7[1]*x^0 + df_poly$V7[2]*x^1 + df_poly$V7[3]*x^2 + df_poly$V7[4]*x^3 + df_poly$V7[5]*x^4 + df_poly$V7[6]*x^5 + df_poly$V7[7]*x^6 + df_poly$V7[8]*x^7
+  , digits = 2))
+}
+```
+
+now lets add the values from the functions
+```{r}
+uv <- uv %>% 
+  mutate(poly1 = poly1(hour),
+         poly2 = poly2(hour), 
+         poly3 = poly3(hour), 
+         poly4 = poly4(hour),
+         poly5 = poly5(hour), 
+         poly6 = poly6(hour),
+         poly7 = poly7(hour))
+```
+
+melt data and polynomial number for time stamp
+```{r}
+uv_melt <- uv %>% melt()
+uv_rep <- rep(uv$hour, 7)
+
+uv_rep_melt <- uv_melt[-c(1:(2*length(uv$hour))),] %>% 
+  cbind(rep(6:18))
+
+rownames(uv_rep_melt) <- c(1:dim(uv_rep_melt)[1])
+colnames(uv_rep_melt) <- c("order", "uv", "hour")
+
+uv_rep_melt$order <- as.character(uv_rep_melt$order)
+uv_rep_melt$order_num <- as.numeric(substr(uv_rep_melt$order,5,5))
+
+```
+create an animation
+```{r}
+p <- ggplot(uv_rep_melt, aes(x=hour, y=uv)) +
+  geom_point(color = "blue") +
+  geom_point(data = uv, aes(x=hour, y=uv)) + 
+  geom_smooth(data = uv, method = "loess", se = F, color ="red") +
+  labs(
+    x = "Time of Day (24 hr clock)", 
+    y = "UV Index", 
+    title = "UV Index vs Time of Day", 
+    subtitle = "Date: July 24, 2022, Location: NJ",
+    caption = "Data from WillyWeather"
+  )
+
+anim <- p + 
+  transition_states(order_num, 
+                    transition_length = 2,
+                    state_length = 1) +
+  ggtitle('Polynomial of order {closest_state}', 
+          subtitle = 'Frame {frame} of {nframes}')
+#anim
+```
+
+
+import 7th order coefficients into a formula to calculate the uv index
+```{r}
+poly_calc <- function(x){
+  df <- as_tibble(get(paste0("lm", i))$coefficients)
+  return(round(
+    (df$Estimate[8]*x^7) +
+    (df$Estimate[7]*x^6) +
+    (df$Estimate[6]*x^5) +
+    (df$Estimate[5]*x^4) +
+    (df$Estimate[4]*x^3) +
+    (df$Estimate[3]*x^2) +
+    (df$Estimate[2]*x^1) +
+    (df$Estimate[1]*x^0) 
+  , digits = 2))
+}
+
+uv <- uv %>% 
+  mutate(poly_calc = poly_calc(hour), 
+         uv_poly_err = uv - poly_calc, 
+         uv_loess_err = round(residuals(loess(uv~hour)), digits = 2))
+
+largest <- uv %>% 
+  arrange(-uv) %>% 
+  slice(1) %>% 
+  pull(hour)
+
+uv_gt <- gt(uv) %>% 
+  tab_header(
+    title = "Hourly UV Index", 
+    subtitle = "calcuated with 7th order polynomial expression"
+  ) %>% 
+  tab_source_note("Source: WillyWeather") %>% 
+  tab_footnote(
+    footnote = md("The UV is highest"), 
+    locations = cells_body(
+      columns = hour,
+      rows = hour == largest
+    )
+  )
+uv_gt
+
+```
+
+```{r}
+ggplot(uv, aes(x = hour, y = uv)) +
+  geom_point() +
+  labs(
+    x = "Time of Day (24 hr clock)", 
+    y = "UV Index", 
+    title = "UV Index vs Time of Day", 
+    subtitle = "Date: July 24, 2022",
+    caption = "Data from WillyWeather"
+  ) +
+  theme_minimal() +
+  geom_smooth(method = "loess", se = F, color ="red", show.legend = T) +
+  geom_function(fun = poly_calc, color = "blue") +
+  scale_x_continuous(breaks = subset(uv$hour, uv$hour %% 2 == 0))
+```
+```{r}
+uv_integral <- cubintegrate(poly_calc, 6,18)
+uv_integral_tan <- cubintegrate(poly_calc, 12,14)
+```
+The area under the curve is equal to `r uv_integral$integral`.
+UV time tanning is equal to `r uv_integral_tan`

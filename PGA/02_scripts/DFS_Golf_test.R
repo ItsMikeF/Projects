@@ -22,7 +22,6 @@ suppressMessages({
 
 # 1.0 Gather input values  ------------------------------------------------
 
-
 # Set number of entries to generate
 entries <- 20
 own_multiplier <- 100/entries
@@ -39,9 +38,7 @@ tournament <- str_sub(folder, slash+1, nchar(folder))
 # define the date
 date <- as.Date(str_sub(tournament, 1, slash))
 
-
 # 2.0 Import data ---------------------------------------------------------
-
 
 # Load and edit the DK Salaries csv
 golf_salaries <- read.csv(paste0(folder, "/DKSalaries.csv")) %>% 
@@ -52,11 +49,11 @@ rg <- read.csv(paste0(folder, "/", list.files(path = folder, pattern = "projecti
   select(name, salary, fpts, proj_own, ceil, floor, player_id) %>% 
   arrange(-salary)
 
-# Check if all values in the proj own
+# Check if all values in the RG proj own
 if (all(rg$proj_own == rg$proj_own[1])) {
   print("Script stopped bc all RG proj own values are equal")
 } else {
-  print("script continues.")
+  print("script continues bc all RG proj own values are unique.")
 }
 
 # Add Functions
@@ -70,11 +67,11 @@ dg_proj <- read.csv(paste0(folder, "/", list.files(path = folder, pattern = "dra
   select(dk_name, scoring_points, finish_points, total_points, value, projected_ownership) %>% 
   mutate(projected_ownership = round(projected_ownership, digits = 2))
 
-# Check if all own values are equal
+# Check if all DG own values are equal
 if (all(dg_proj$projected_ownership == dg_proj$projected_ownership[1])) {
-  print("Script stopped because DG projected ownership column is all the same.")
+  print("Script stopped bc DG projected ownership column is all the same.")
 } else {
-  print("Script continues")
+  print("Script continues bc all DG own values are unique. ")
 }
 
 # Import dg decomposition
@@ -99,8 +96,8 @@ cam <- read.csv(paste0(folder, "/", list.files(path = folder, pattern = "_model"
   unite("Golfer", first:last, sep = " ") %>% 
   mutate(Golfer = trimws(Golfer)) %>% 
   select(Golfer, make_cut, top_20, top_10, top_5, win) %>% 
-  mutate(across(2:6, convert_ML), 
-         across(2:6, round, 4), 
+  mutate(across(2:6, ~convert_ML(.)), 
+         across(2:6, ~round(., 4)), 
          Golfer = recode(Golfer, 
                          "Matthew Fitzpatrick" = "Matt Fitzpatrick",
                          "Kyounghoon Lee" = "Kyoung-Hoon Lee",
@@ -128,13 +125,12 @@ dg_skill <- read.csv(paste0(folder, "/", "dg_skill_ratings.csv")) %>%
 
 # these must be manually updated for every course
 driv_dis <- 0.7
-driv_acc <- 0.5
-app <- 0.7
+driv_acc <- 0.4
+app <- 0.6
 arg <- 0.4
-putt <- 0.4
+putt <- 0.5
 course <- data.frame(driv_dis, driv_acc, app, arg, putt) 
 course[2,] <- round(course/rowSums(course), digits = 2)
-
 
 # 4.0 Create golfer table -----------------------------------------------------
 
@@ -144,17 +140,24 @@ golfers <- golf_salaries %>%
   left_join(dg_skill, by = c("Name" = "Golfer")) %>% 
   left_join(decomp, by =c("Name" = "Player")) %>%
   left_join(cam, by=c("Name" = "Golfer")) %>% 
-  drop_na(fpts)
+  drop_na()
 
 golfers <- golfers %>% 
   mutate(odds_per_dollar = round(win / Salary * 10^6, digits = 2),
          residuals = round(residuals(loess(odds_per_dollar ~ Salary)), digits = 2))
 
-
 # 4.0.1 find indices of NA ------------------------------------------------
 
-
 which(apply(golfers, 1, function(x) any(is.na(x))))
+
+golfers_na <- golfers %>% 
+  select(Name, Salary, sg_putt_pred, sg_putt_rank) %>% 
+  slice(which(apply(golfers, 1, function(x) any(is.na(x)))))
+
+if (any(golfers_na$Salary > 7000)) {
+  stopifnot(all(golfers_na <= 7000))
+}
+
 
 # 4.1 Normalized golfer table -------------------------------------------------
 
@@ -183,9 +186,7 @@ golfers_norm <- golfers_norm %>%
          date = date, 
          tournament = tournament)
 
-
 # 4.2 Create final golfer tibble ----------------------------------------------
-
 
 # Create golfer tibble
 max_own = 40
@@ -193,10 +194,9 @@ max_own = 40
 golfers <- golfers %>% 
   mutate(proj_own_avg = round((0.5*projected_ownership) + (0.5*proj_own),digits = 2),
          fpts_avg = round(0.5*fpts + 0.5*total_points, digits = 2),
-         course_fit = round((golfers_norm$course_fit - mean(golfers_norm$course_fit)) / sd(golfers_norm$course_fit),digits = 2), 
+         course_fit = round((golfers_norm$course_fit - mean(golfers_norm$course_fit, na.rm = T)) / sd(golfers_norm$course_fit),digits = 2), 
          own_change = round(((0.1 * residuals) + (0.9*course_fit))*5, digits = 2), 
          manual_change = 0)
-
 
 # 5.0 Identify Values -----------------------------------------------------
 
@@ -207,9 +207,7 @@ golfers %>%
 
 # 5.1 Manual Changes ------------------------------------------------------
 
-
 #golfers$manual_change[which(golfers$Name == "Mark Hubbard")] = 5
-
 
 # 6.0 Adjusted own  -------------------------------------------------------
 
@@ -327,7 +325,6 @@ cor_plot <- function() {
 }
 
 # 9.0 Save golfers object as Rdata------------------------------------------------
-
 
 saveRDS(golfers, file = glue("{folder}/golfers.RData"))
 saveRDS(golfers, file = glue("./03_results/golfers.Rdata"))
