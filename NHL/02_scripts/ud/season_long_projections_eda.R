@@ -13,7 +13,7 @@ suppressMessages({
 # 1.0 Load pbp data -------------------------------------------------------
 
 #hockeyR
-pbp <- load_pbp(2021:2022)
+pbp <- load_pbp(2022:2023)
 names(pbp)
 
 xg_leaders <- pbp %>% 
@@ -25,14 +25,14 @@ xg_leaders <- pbp %>%
     xg = round(sum(xg, na.rm = T),1), 
     .groups = "drop"
   ) %>% 
-  arrange(-xg) #%>% slice_head(n=10) 
-
-xg_leaders$player <- str_replace(xg_leaders$player, "[.]"," ")
+  arrange(-xg) %>% 
+  mutate(rank = row_number(), 
+         player = str_replace(player, "[.]"," "))
 
 # 2.0 projections --------------------------------------------------------------
 
 #load the first projections
-projections_udd <- read.csv("./season_projections/2022_2023/projections_underdog.csv") %>% 
+projections_udd <- read.csv("./01_data/season_projections/2023_2024/rankings_july27.csv") %>% 
   mutate(name = paste(firstName, lastName)) %>% 
   select(name, adp, projectedPoints, positionRank, slotName, teamName)
 
@@ -42,7 +42,7 @@ projections_udd <- projections_udd %>%
 # 2.1 Projections change --------------------------------------------------
 
 #load the latest projections
-projections_udd_1 <- read.csv("./season_projections/2022_2023/projections_underdog_3.csv") %>% 
+projections_udd_1 <- read.csv("./01_data/season_projections/2023_2024/rankings_july28.csv") %>% 
   mutate(name = paste(firstName, lastName)) %>% 
   select(name, adp, projectedPoints, positionRank, slotName, teamName)
 

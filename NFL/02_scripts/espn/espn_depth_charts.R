@@ -176,6 +176,9 @@ ot <- nfl_depth %>%
 pff_ol <- read.csv("./Training_Data/position_groups/ols.csv") %>% 
   filter(year == max(year) & week == max(week))
 
+pff_ol <- load(file = "./01_data/training_data/position_groups/qbs.Rdata")
+
+
 #left join pff ol data to iol
 iol_grades <- iol %>% 
   left_join(pff_ol, by = c("player"))
