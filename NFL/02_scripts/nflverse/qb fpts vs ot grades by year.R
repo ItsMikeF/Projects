@@ -16,10 +16,7 @@ suppressMessages({
 
 
 # load position groups
-ol <- readRDS("./01_data/Training_Data/position_groups/ols.csv")
-ol <- read.csv("./01_data/Training_Data/position_groups/ols.csv")
-
-names(ol)
+ol <- readRDS("./01_data/training_data/position_groups/ol.Rdata")
 
 # filter for tps pass block by team and year
 ol_filtered <- ol %>% 
