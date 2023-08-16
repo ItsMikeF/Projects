@@ -173,7 +173,7 @@ ot <- nfl_depth %>%
   filter(pos == "LT" | pos == "RT")
 
 #load pff offensive line data
-pff_ol <- read.csv("./Training_Data/position_groups/ols.csv") %>% 
+pff_ol <- read_rds("./01_data/training_data/position_groups/ols.Rdata") %>% 
   filter(year == max(year) & week == max(week))
 
 pff_ol <- load(file = "./01_data/training_data/position_groups/qbs.Rdata")
