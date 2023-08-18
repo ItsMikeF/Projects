@@ -17,17 +17,18 @@ suppressMessages({
 })
 
 
+
 # 1.0 Load rankings -------------------------------------------------------
 
-
-ud_rankings <- function(x) {
+# rankings delta with logos and headshots
+ud_rankings <- function(x, roster_year) {
   
   # define some dates
-  first_date <- "may05"
-  current_month <- "jun"
+  first_date <- "apr30"
+  current_month <- tolower(as.character(month(Sys.Date(), label = T)[1]))
   
   # load rosters
-  rosters <- load_rosters(2022) %>% select(full_name, headshot_url)
+  rosters <- load_rosters(roster_year) %>% select(full_name, headshot_url)
   
   # Load the opening rankings
   rankings_udd_1 <- read.csv(glue("./01_data/projections/season/2023/rankings_{first_date}.csv")) %>% 
@@ -75,7 +76,6 @@ ud_rankings <- function(x) {
     #select(-c(8,9)) %>% 
     relocate(team, .after = name) %>% 
     relocate(headshot, .before = name) %>% 
-    drop_na() %>% 
     gt() %>% 
     gt_img_rows(columns = team, height = 50) %>% 
     gt_img_rows(columns = headshot, height = 50) %>% 
@@ -91,7 +91,7 @@ ud_rankings <- function(x) {
   gtsave(rankings_gt, filename = glue("./03_plots/best_ball_board/{second_date} UD NFL Board.html"))
   
 }
-ud_rankings(x)
+ud_rankings(x, 2022)
 
 
 # 2.0 draft picks -------------------------------------------------------------
@@ -132,7 +132,7 @@ top <- 10
 # First round
 first_round <- rankings %>% 
   slice_head(n=12) %>% 
-  select(-c(8,9)) %>% 
+  #select(-c(8,9)) %>% 
   relocate(team, .after = name) %>% 
   relocate(headshot, .before = name) %>% 
   drop_na() %>% 
@@ -221,15 +221,15 @@ gtsave_extra(fallers, filename = "./03_plots/best_ball_board/2023 fallers.png")
 
 # 5.0 Team Rankings -------------------------------------------------------
 
+# define some dates
+first_date <- "may05"
+current_month <- "aug"
+
 team <- rankings %>% 
   drop_na() %>% 
   filter(.[[3]] < 216) %>% 
   group_by(teamName) %>% 
-  summarise(adp_mean = round(mean(.[[3]], na.rm = T),digits = 1),
-            adp_delta = round(mean(.[[5]], na.rm = T),digits = 1), 
-            percent_change= round(mean(percent_change, na.rm = T),digits = 2)) %>% 
-  arrange(-percent_change) %>% 
-  left_join(teams_colors_logos %>% select(team_name, team_logo_espn),by=c('teamName'='team_name'))
+  summarise(adp_mean = round(mean(.[[3]], na.rm = T),digits = 1))
 
 team %>%
   select(teamName, team_logo_espn, adp_mean, adp_delta, percent_change) %>% 
@@ -240,4 +240,3 @@ team %>%
   gt_img_rows(columns=team_logo_espn, height = 50) %>% 
   gt_theme_dark() %>% 
   tab_footnote(footnote = "Data from Underdog NFL Rankings, players ADP > 215 filtered out")
-
