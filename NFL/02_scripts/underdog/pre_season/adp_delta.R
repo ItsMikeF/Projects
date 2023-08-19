@@ -34,7 +34,8 @@ ud_rankings <- function(x, roster_year) {
   rankings_udd_1 <- read.csv(glue("./01_data/projections/season/2023/rankings_{first_date}.csv")) %>% 
     mutate(name = paste(firstName, lastName),
            adp = as.numeric(adp)) %>% 
-    select(name, adp, projectedPoints, positionRank, slotName, teamName)
+    select(name, adp, projectedPoints, positionRank, slotName, teamName) %>% 
+    drop_na(adp)
   
   # Load the most current rankings by reading the last file in the directory
   rankings_udd_2 <- read.csv(paste0("./01_data/projections/season/2023/", 
@@ -44,7 +45,8 @@ ud_rankings <- function(x, roster_year) {
   ) %>% 
     mutate(name = paste(firstName, lastName), 
            adp = as.numeric(adp)) %>% 
-    select(name, adp, projectedPoints, positionRank, slotName, teamName)
+    select(name, adp, projectedPoints, positionRank, slotName, teamName) %>% 
+    drop_na(adp)
   
   # extract the date from the file name
   second_date <<- str_extract(list.files(path = "./01_data/projections/season/2023/")
@@ -65,15 +67,16 @@ ud_rankings <- function(x, roster_year) {
       teamName == "NY Jets" ~ "New York Jets", 
       T ~ teamName
     )) %>% 
-    left_join(teams_colors_logos %>% select(team_name, team_logo_espn), by=c('teamName'='team_name')) %>% 
+    left_join(teams_colors_logos %>% select(team_name, team_logo_espn) %>% distinct(), 
+              by=c('teamName'='team_name'),
+              relationship = "many-to-many") %>% 
     rename(team = team_logo_espn) %>% 
-    left_join(rosters, by=c("name"="full_name")) %>% 
-    rename(headshot = headshot_url) %>% 
-    distinct(name, .keep_all = T)
+    left_join(rosters, 
+              by=c("name"="full_name")) %>% 
+    rename(headshot = headshot_url)
   
   # create a GT table with the rankings
   rankings_gt <- rankings %>% 
-    #select(-c(8,9)) %>% 
     relocate(team, .after = name) %>% 
     relocate(headshot, .before = name) %>% 
     gt() %>% 

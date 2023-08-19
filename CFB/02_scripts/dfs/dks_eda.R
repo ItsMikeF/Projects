@@ -13,7 +13,8 @@ suppressMessages({
   library(gt) #easiyl create presentation ready display tables
 })
 
-week <- 18
+week <- 0
+year <- year(Sys.Date())
 
 # 1.0 Scrape DraftKings odds ----------------------------------------------
 
@@ -29,22 +30,56 @@ dk_scraper <- function(url) {
   lines <- html_text(html_elements(webpage, css2)) %>% as.numeric()
   totals<- html_text(html_elements(webpage, css3)) %>% as.numeric()
   
-  dk_odds <<- as.data.frame(cbind(teams[1:length(totals)], as.numeric(lines[1:length(totals)]), as.numeric(totals))) %>% 
+  dk_odds <<- as.data.frame(cbind(teams[1:length(totals)], 
+                                  as.numeric(lines[1:length(totals)]), 
+                                  as.numeric(totals))) %>% 
     rename("teams"="V1","lines"="V2","totals"="V3")
   
   time = Sys.time() %>% as.character() %>% str_replace_all(.,":","") %>% substr(1,15)
-  write.csv(dk_odds, file = glue("./contests/2022_w{week}/odds/{time}_cfb_dk_odds.csv"))
+  write.csv(dk_odds, file = glue("./01_data/contests/{year}_w{week}/odds/{time}_cfb_dk_odds.csv"))
 }
 
 dk_scraper("https://sportsbook.draftkings.com/leagues/football/ncaaf")
 
+dk_scraper <- function(url, week) { 
+  webpage <- read_html(url)
+  
+  css1 <- ".event-cell__name-text"
+  css2 <- ".no-label .sportsbook-outcome-cell__line"
+  css3 <- "span+ .sportsbook-outcome-cell__line"
+  
+  teams <- html_text(html_elements(webpage, css1))
+  
+  lines_raw <- html_text(html_elements(webpage, css2))
+  print(lines_raw)
+  lines <- as.numeric(lines_raw)
+  
+  totals_raw <- html_text(html_elements(webpage, css3))
+  print(totals_raw)
+  totals <- as.numeric(totals_raw)
+  
+  dk_odds <<- as.data.frame(cbind(teams[1:length(totals)], lines[1:length(totals)], totals[1:length(totals)])) %>% 
+    rename("teams"="V1","lines"="V2","totals"="V3")
+  
+  dir_path <- glue("./contests/2022_w{week}/odds/")
+  if (!dir.exists(dir_path)){
+    dir.create(dir_path, recursive = TRUE)
+  }
+  
+  time = Sys.time() %>% as.character() %>% str_replace_all(.,":","") %>% substr(1,15)
+  write.csv(dk_odds, file = glue("./01_data/contests/{year}_w{week}/odds/{time}_cfb_dk_odds.csv"))
+}
+
+# Usage:
+dk_scraper("https://sportsbook.draftkings.com/leagues/football/ncaaf", week=0)
+
 # 1.1 Odds change ---------------------------------------------------------
 
-list.files(path = glue("./contests/2022_w{week}/odds/"))
-a <- length(list.files(path = glue("./contests/2022_w{week}/odds/")))
+list.files(path = glue("./contests/{year}_w{week}/odds/"))
+a <- length(list.files(path = glue("./contests/{year}_w{week}/odds/")))
 
-odds_delta <- read.csv(paste0(glue("./contests/2022_w{week}/odds/"),list.files(path = glue("./contests/2022_w{week}/odds/"))[1])) %>% 
-  left_join(read.csv(paste0(glue("./contests/2022_w{week}/odds/"),list.files(path = glue("./contests/2022_w{week}/odds/"))[2])), by=c("teams")) %>% 
+odds_delta <- read.csv(paste0(glue("./contests/{year}_w{week}/odds/"),list.files(path = glue("./contests/2022_w{week}/odds/"))[1])) %>% 
+  left_join(read.csv(paste0(glue("./contests/{year}_w{week}/odds/"),list.files(path = glue("./contests/2022_w{week}/odds/"))[2])), by=c("teams")) %>% 
   mutate(diff = lines.y-lines.x)
 
 # 2.0 Scrape cfb injuries -------------------------------------------------
@@ -72,9 +107,9 @@ injury_report("https://www.covers.com/sport/football/ncaaf/injuries")
 # 3.0 Slate eda -----------------------------------------------------------
 
 slate <- function(week) {
-  dks <<- read.csv(glue("./contests/2022_w{week}/DKSalaries.csv")) %>% 
+  dks <<- read.csv(glue("./contests/{year}_w{week}/DKSalaries.csv")) %>% 
     left_join(read.csv("./data/cfb_schools.csv"), by=c("TeamAbbrev"="dk_abbrev")) %>% 
-    left_join(read_csv(paste0(glue("./contests/2022_w{week}/"), list.files(pattern = "projections_draftkings_cfb_", path = glue("./contests/2022_w{week}")))), by=c("Name"="name"))
+    left_join(read_csv(paste0(glue("./contests/{year}_w{week}/"), list.files(pattern = "projections_draftkings_cfb_", path = glue("./contests/2022_w{week}")))), by=c("Name"="name"))
   
   #determine what schools are on the slate and combine with cfb schools file
   slate_schools <- as_tibble(unique(dks$TeamAbbrev)) %>% 
@@ -112,7 +147,7 @@ slate(week)
 
 defense <- function(week) {
   #load pff def files
-  def <- read.csv(glue("./contests/2022_w{week}/pff/defense_summary.csv"))
+  def <- read.csv(glue("./contests/{year}_w{week}/pff/defense_summary.csv"))
   
   #sort pff def
   def <<- def %>% 
@@ -159,7 +194,7 @@ dks <- dks %>%
 
 # 4.1 cornerbacks ---------------------------------------------------------
 
-cornerbacks <- read.csv(glue("./contests/2022_w{week}/pff/defense_coverage_summary.csv")) %>% 
+cornerbacks <- read.csv(glue("./contests/{year}_w{week}/pff/defense_coverage_summary.csv")) %>% 
   arrange(-snap_counts_coverage) %>% 
   filter(position == "CB" | position == "S") %>% 
   filter(team_name == "GEORGIA") %>% 
@@ -182,9 +217,9 @@ offense <- function(week){
 # 5.0 Qbs  ----------------------------------------------------------------
 
 qbs <- dks %>% filter(Position=="QB") %>% 
-  left_join(read.csv(glue("./contests/2022_w{week}/pff/passing_summary.csv")), 
+  left_join(read.csv(glue("./contests/{year}_w{week}/pff/passing_summary.csv")), 
                           by=c("Name"="player")) %>% 
-  left_join(read.csv(glue("./contests/2022_w{week}/pff/passing_pressure.csv")) %>% select(player, pressure_grades_pass), 
+  left_join(read.csv(glue("./contests/{year}_w{week}/pff/passing_pressure.csv")) %>% select(player, pressure_grades_pass), 
             by=c("Name"="player"))
 
 qbs_select <- qbs %>% 
@@ -202,12 +237,12 @@ qbs_select <- qbs %>%
   arrange(-fpts) %>% 
   view(title = "QBs")
 
-write.csv(qbs_select, file = glue("./contests/2022_w{week}/pos/qbs.csv"))
+write.csv(qbs_select, file = glue("./contests/{year}_w{week}/pos/qbs.csv"))
 
 # 6.0 Rbs -----------------------------------------------------------------
 
 rbs <- dks %>% filter(Position=="RB") %>% 
-  left_join(read.csv(glue("./contests/2022_w{week}/pff/rushing_summary.csv")), 
+  left_join(read.csv(glue("./contests/{year}_w{week}/pff/rushing_summary.csv")), 
             by=c("Name"="player"))
 
 rbs_select <- rbs %>% 
@@ -231,12 +266,12 @@ rbs_select <- rbs %>%
   arrange(-proj_own) %>%
   view(title = "RBs")
 
-write.csv(rbs_select, file = glue("./contests/2022_w{week}/pos/rbs.csv"))
+write.csv(rbs_select, file = glue("./contests/{year}_w{week}/pos/rbs.csv"))
 
 # 7.0 Wrs -----------------------------------------------------------------
 
 wrs <- dks %>% filter(Position=="WR") %>% 
-  left_join(read.csv(glue("./contests/2022_w{week}/pff/receiving_summary.csv")), 
+  left_join(read.csv(glue("./contests/{year}_w{week}/pff/receiving_summary.csv")), 
             by=c("Name"="player"))
 
 wrs_select <- wrs %>% 
@@ -248,4 +283,4 @@ wrs_select <- wrs %>%
   arrange(-proj_own) %>%
   view(title = "WRs")
 
-write.csv(wrs_select, file = glue("./contests/2022_w{week}/pos/wrs.csv"))
+write.csv(wrs_select, file = glue("./contests/{year}_w{week}/pos/wrs.csv"))
