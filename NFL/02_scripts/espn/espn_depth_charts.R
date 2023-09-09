@@ -82,8 +82,12 @@ names(nfl_depth) <- c("pos", "first_string", "second_string","team")
 # Remove FBs and blanks
 nfl_depth <- nfl_depth %>% filter(!(pos %in% c("", "FB")))
 
+# test code to get wr3s
+test <- nfl_depth %>% filter(pos == "WR")
+test <- test[seq(3,96,3),]
+
 # create a second dataframe
-nfl_depth2 <- nfl_depth %>% select(pos, second_string, team)
+nfl_depth2 <- nfl_depth %>% select(pos, second_string, team) 
 
 # Extract pos values and assign depth chart numbers
 pos2 <- paste0(nfl_depth2$pos[1:11],2)

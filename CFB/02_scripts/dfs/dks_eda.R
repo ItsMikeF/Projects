@@ -13,7 +13,7 @@ suppressMessages({
   library(gt) #easiyl create presentation ready display tables
 })
 
-week <- 0
+week <- 1
 year <- year(Sys.Date())
 
 # 1.0 Scrape DraftKings odds ----------------------------------------------

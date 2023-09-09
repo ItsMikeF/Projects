@@ -87,6 +87,8 @@ epa_def <- function(week, wp_lower, wp_upper, half_seconds_remaining, print_plot
 }
 epa_def(week, 0.1, 0.9, 120, 'no')
 
+test <- pbp_def %>% select(1,4,8) %>% mutate(def_rank = (def_pass_epa_rank + def_rush_epa_rank)/2)
+
 # 2.0 offense epa table -------------------------------------------------------
 
 epa_off <- function(wp_lower, wp_upper, half_seconds_remaining, print_plot) {

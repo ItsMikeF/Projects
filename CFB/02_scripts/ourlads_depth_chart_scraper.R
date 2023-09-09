@@ -69,7 +69,7 @@ cfb_depth_charts <- function(url) {
   toc()
 }
 
-ourlads_urls <- read.csv("./data/ourlads_urls.csv")
+ourlads_urls <- read.csv("./01_data/ourlads_urls.csv")
 url <- ourlads_urls$url
 
 cfb_depth_charts(url)
@@ -119,13 +119,24 @@ depth_charts <- url %>%
 
 depth_charts <- setNames(depth_charts, ourlads_urls$team)
 
+save(depth_charts, file = "./01_data/cfb_depth_charts.RData")
+
+
 # 2.0 testing area for data cleaning --------------------------------------
 
 #work on cleaning up these depth charts
-test <- as.data.frame(depth_charts$`central-florida`)
+test <- as.data.frame(depth_charts$`clemson`)
 
-test %>% 
-  str_replace("FR","")
+clemson <- test %>% 
+  separate(player1, into = c("last_name", "first_name"), sep = ", ") %>% 
+  separate(first_name, into = c("first_name", "classmen1"), sep = " ", extra = "merge") %>% 
+  mutate(player1 = paste(first_name, last_name)) %>% 
+  select(-c(2,3)) %>% 
+  separate(player2, into = c("last_name", "first_name"), sep = ", ") %>% 
+  separate(first_name, into = c("first_name", "classmen2"), sep = " ", extra = "merge") %>% 
+  mutate(player2 = paste(first_name, last_name)) %>% 
+  select(-c(3,4)) %>% 
+  select(1,4,2,5,3)
 
 #define the types of classman
 classmen <- c("FR", "RS FR", "FR/TR", "RS FR/TR", 
@@ -134,13 +145,6 @@ classmen <- c("FR", "RS FR", "FR/TR", "RS FR/TR",
               "SR", "RS SR", "SR/TR", "[RS SR/TR]",
               "GR/TR")
 
-for (j in 1:17) {
-  for (i in 1:11) {
-    test[i,2] <- test[i,2] %>% 
-      str_remove(classmen[j]) %>% 
-      trimws()
-  }
-}
 
 ###scrape one team for testing 
 {

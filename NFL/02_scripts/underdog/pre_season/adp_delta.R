@@ -95,7 +95,7 @@ ud_rankings <- function(x, roster_year) {
   
 }
 ud_rankings(x, 2022)
-
+#write.csv(rankings, file = "ud_rankings_aug28.csv")
 
 # 2.0 draft picks -------------------------------------------------------------
 
@@ -103,7 +103,7 @@ ud_rankings(x, 2022)
 draft_positions <- function(i) {
   
   #define constants
-  league_size <- 12
+  league_size <- 14
   rounds <- 18
   picks <<- vector()
   
@@ -123,7 +123,7 @@ draft_positions <- function(i) {
   #filters out picks beyond the draft size
   picks <<- picks[picks %in% 1:(league_size*rounds)]
 }
-draft_positions(3)
+draft_positions(13)
 
 rankings[picks,] %>% select(-c(8:10))
 
@@ -155,7 +155,7 @@ gtsave_extra(first_round, filename = "./03_plots/best_ball_board/first_round.png
   
 # Top 10 Risers
 risers <- rankings %>% 
-  select(-c(8,9)) %>% 
+  #select(-c(8,9)) %>% 
   relocate(team, .after = name) %>% 
   relocate(headshot, .before = name) %>% 
   drop_na() %>% 
@@ -178,7 +178,7 @@ gtsave_extra(risers, filename = "./03_plots/best_ball_board/2023 risers.png")
 
 # top 10 late round risers
 late_risers <- rankings %>% 
-  select(-c(8,9)) %>% 
+  #select(-c(8,9)) %>% 
   filter(.[[3]] > 200) %>% 
   relocate(team, .after = name) %>% 
   relocate(headshot, .before = name) %>% 
@@ -202,7 +202,7 @@ gtsave_extra(late_risers, filename = "./03_plots/best_ball_board/2023 late riser
 
 # Top 10 Fallers
 fallers <- rankings %>% 
-  select(-c(8,9)) %>% 
+  #select(-c(8,9)) %>% 
   relocate(team, .after = name) %>% 
   relocate(headshot, .before = name) %>% 
   drop_na() %>% 
