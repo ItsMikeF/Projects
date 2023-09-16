@@ -10,8 +10,8 @@ suppressMessages({
 
 # 0.0 Define Inputs -------------------------------------------------------
 
-week = 17
-pbp <- load_pbp(2022)
+week = 1
+pbp <- load_pbp(2023)
 wp_lower = 0.1
 wp_upper = 0.9
 half_seconds_remaining = 120
@@ -56,7 +56,8 @@ epa_def <- function(week, wp_lower, wp_upper, half_seconds_remaining, print_plot
     mutate(total_plays = n_plays.x + n_plays.y,
            #defteam = gsub('JAX','JAC', defteam), 
            defteam = gsub('LA','LAR', defteam), 
-           defteam = gsub('LARC','LAC', defteam))
+           defteam = gsub('LARC','LAC', defteam), 
+           avg_rank = (def_rush_epa_rank + def_pass_epa_rank) /2)
   
   #plot the data
   if (print_plot == 'yes') {
@@ -87,7 +88,7 @@ epa_def <- function(week, wp_lower, wp_upper, half_seconds_remaining, print_plot
 }
 epa_def(week, 0.1, 0.9, 120, 'no')
 
-test <- pbp_def %>% select(1,4,8) %>% mutate(def_rank = (def_pass_epa_rank + def_rush_epa_rank)/2)
+def_rankings <- pbp_def %>% select(1,4,8) %>% mutate(def_rank = (def_pass_epa_rank + def_rush_epa_rank)/2)
 
 # 2.0 offense epa table -------------------------------------------------------
 
@@ -118,7 +119,8 @@ epa_off <- function(wp_lower, wp_upper, half_seconds_remaining, print_plot) {
   
   pbp_off <<- pbp_off_pass %>% 
     left_join(pbp_off_rush, by = c('posteam')) %>% 
-    mutate(total_plays = n_plays.x + n_plays.y)
+    mutate(total_plays = n_plays.x + n_plays.y, 
+           avg_rank = (off_rush_epa_rank + off_pass_epa_rank) /2)
   
   if (print_plot == 'yes') {
     pbp_off <- pbp_off %>% 

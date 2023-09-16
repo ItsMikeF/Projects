@@ -28,5 +28,5 @@ for (i in 1:length(content)) {
 }
 
 #view all keys
-view(sports_keys, title = "Sports Keys")
+View(sports_keys, title = "Sports Keys")
 

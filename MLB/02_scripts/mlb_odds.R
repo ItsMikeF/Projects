@@ -1,4 +1,4 @@
-# Get nhl odds via lso api
+# Get mlb odds via lso api
 
 # Load packages
 suppressMessages({
@@ -79,7 +79,7 @@ df %>%
 
 
 # Load bookmaers for column names
-bookmakers <- read.csv("./data/bookmakers.csv", header = F)
+bookmakers <- read.csv("./01_data/bookmakers.csv", header = F)
 
 # Create empty list
 df_list2 <- list()
