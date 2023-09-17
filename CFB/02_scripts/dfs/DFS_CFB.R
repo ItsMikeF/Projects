@@ -1,3 +1,5 @@
+# dfs for cfb
+
 library(tidyverse)
 library(ggrepel)
 
@@ -15,7 +17,7 @@ cfb_schools <- read.csv("CFB_Schools.csv")
 cfb_odds <- read.csv("cfb-odds-rotowire.csv")
 
 cfb_odds <- cfb_odds %>% 
-  left_join(cfb_schools, by = c('ï..' = 'Rotowire'))
+  left_join(cfb_schools, by = c('?..' = 'Rotowire'))
 
 ###Add Opponent to Salaries###
 

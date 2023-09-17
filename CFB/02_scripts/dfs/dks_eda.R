@@ -107,14 +107,14 @@ injury_report("https://www.covers.com/sport/football/ncaaf/injuries")
 # 3.0 Slate eda -----------------------------------------------------------
 
 slate <- function(week) {
-  dks <<- read.csv(glue("./contests/{year}_w{week}/DKSalaries.csv")) %>% 
-    left_join(read.csv("./data/cfb_schools.csv"), by=c("TeamAbbrev"="dk_abbrev")) %>% 
-    left_join(read_csv(paste0(glue("./contests/{year}_w{week}/"), list.files(pattern = "projections_draftkings_cfb_", path = glue("./contests/2022_w{week}")))), by=c("Name"="name"))
+  dks <<- read.csv(glue("./01_data/contests/{year}_w{week}/DKSalaries.csv")) %>% 
+    left_join(read.csv("./01_data//cfb_schools.csv"), by=c("TeamAbbrev"="dk_abbrev")) %>% 
+    left_join(read_csv(paste0(glue("./01_data/contests/{year}_w{week}/"), list.files(pattern = "projections_draftkings_cfb_", path = glue("./contests/2022_w{week}")))), by=c("Name"="name"))
   
   #determine what schools are on the slate and combine with cfb schools file
   slate_schools <- as_tibble(unique(dks$TeamAbbrev)) %>% 
     rename("dk_abbrev"="value") %>% 
-    left_join(read.csv("./data/cfb_schools.csv"), by=c("dk_abbrev")) %>% 
+    left_join(read.csv("./01_data//cfb_schools.csv"), by=c("dk_abbrev")) %>% 
     select(dk_abbrev, draftkings)
   
   #remove games from next week
@@ -135,7 +135,7 @@ slate <- function(week) {
   dks$opponent <- if_else(dks$Home == dks$TeamAbbrev, dks$Away, dks$Home)
   
   dks <<- dks %>% 
-    left_join(read.csv("./data/cfb_schools.csv"), by=c("opponent"="dk_abbrev"))
+    left_join(read.csv("./01_data//cfb_schools.csv"), by=c("opponent"="dk_abbrev"))
   
   #write how many games on the slate
   print(glue("{length(unique(dks$TeamAbbrev))/2} game slate"))
@@ -147,7 +147,7 @@ slate(week)
 
 defense <- function(week) {
   #load pff def files
-  def <- read.csv(glue("./contests/{year}_w{week}/pff/defense_summary.csv"))
+  def <- read.csv(glue("./01_data/contests/{year}_w{week}/defense_summary.csv"))
   
   #sort pff def
   def <<- def %>% 
@@ -194,7 +194,7 @@ dks <- dks %>%
 
 # 4.1 cornerbacks ---------------------------------------------------------
 
-cornerbacks <- read.csv(glue("./contests/{year}_w{week}/pff/defense_coverage_summary.csv")) %>% 
+cornerbacks <- read.csv(glue("./01_data/contests/{year}_w{week}/pff/defense_coverage_summary.csv")) %>% 
   arrange(-snap_counts_coverage) %>% 
   filter(position == "CB" | position == "S") %>% 
   filter(team_name == "GEORGIA") %>% 

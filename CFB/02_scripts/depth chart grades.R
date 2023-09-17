@@ -8,8 +8,8 @@ library(glue)
 load("./01_data/cfb_depth_charts.RData")
 
 # define teams
-away_team <- "texas"
-home_team <- "alabama"
+away_team <- "tennessee"
+home_team <- "florida"
 
 # away starters
 away <- as_tibble(depth_charts[[away_team]]) %>% 
@@ -37,29 +37,32 @@ home <- as_tibble(depth_charts[[home_team]]) %>%
   select(1,4,2,5,3) %>% 
   select(1:3) # only grab first strings
 
+# define game week
+week = 2
+
 # load pff data
-blocking <- read.csv("./01_data/contests/2023_w1/offense_blocking.csv") %>% 
+blocking <- read.csv(glue("./01_data/contests/2023_w{week}/offense_blocking.csv")) %>% 
   select(player, grades_pass_block, grades_run_block, snap_counts_offense)
 
-def <- read.csv("./01_data/contests/2023_w1/offense_blocking.csv")
+def <- read.csv(glue("./01_data/contests/2023_w{week}/offense_blocking.csv"))
 
-qb <- read.csv("./01_data/contests/2023_w1/passing_summary.csv") %>% 
+qb <- read.csv(glue("./01_data/contests/2023_w{week}/passing_summary.csv")) %>% 
   select(player, grades_pass)
 
-rb <- read.csv("./01_data/contests/2023_w1/rushing_summary.csv") %>% 
+rb <- read.csv(glue("./01_data/contests/2023_w{week}/rushing_summary.csv")) %>% 
   select(player, grades_run)
 
-wr <- read.csv("./01_data/contests/2023_w1/receiving_summary.csv") %>% 
+wr <- read.csv(glue("./01_data/contests/2023_w{week}/receiving_summary.csv")) %>% 
   select(player, grades_pass_route)
 
 # join pff data
-away %>% 
+away <- away %>% 
   left_join(qb, by=c("player1"="player")) %>% 
   left_join(rb, by=c("player1"="player")) %>%
   left_join(wr, by=c("player1"="player")) %>%
   left_join(blocking, by=c("player1"="player"))
 
-home %>% 
+home <- home %>% 
   left_join(qb, by=c("player1"="player")) %>% 
   left_join(rb, by=c("player1"="player")) %>%
   left_join(wr, by=c("player1"="player")) %>%

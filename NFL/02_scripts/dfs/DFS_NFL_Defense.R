@@ -10,7 +10,7 @@ suppressMessages({
 
 # 0.0 Define Inputs -------------------------------------------------------
 
-week = 1
+week = 2
 pbp <- load_pbp(2023)
 wp_lower = 0.1
 wp_upper = 0.9
@@ -88,7 +88,10 @@ epa_def <- function(week, wp_lower, wp_upper, half_seconds_remaining, print_plot
 }
 epa_def(week, 0.1, 0.9, 120, 'no')
 
-def_rankings <- pbp_def %>% select(1,4,8) %>% mutate(def_rank = (def_pass_epa_rank + def_rush_epa_rank)/2)
+def_rankings <- pbp_def %>% 
+  select(1,4,8) %>% 
+  mutate(def_rank = (def_pass_epa_rank + def_rush_epa_rank)/2) %>% 
+  arrange(def_rank)
 
 # 2.0 offense epa table -------------------------------------------------------
 
