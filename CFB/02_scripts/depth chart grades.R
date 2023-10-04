@@ -8,8 +8,8 @@ library(glue)
 load("./01_data/cfb_depth_charts.RData")
 
 # define teams
-away_team <- "tennessee"
-home_team <- "florida"
+away_team <- "kansas"
+home_team <- "texas"
 
 # away starters
 away <- as_tibble(depth_charts[[away_team]]) %>% 
@@ -38,7 +38,7 @@ home <- as_tibble(depth_charts[[home_team]]) %>%
   select(1:3) # only grab first strings
 
 # define game week
-week = 2
+week = 5
 
 # load pff data
 blocking <- read.csv(glue("./01_data/contests/2023_w{week}/offense_blocking.csv")) %>% 

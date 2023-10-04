@@ -17,7 +17,7 @@ suppressMessages({
 })
 
 # Load nflfastr pbp data
-pbp <- load_pbp(2022)
+pbp <- load_pbp(2023)
 
 #create vector of modern team abbreviations
 teams <- pull(teams_colors_logos %>% select(team_abbr)) 
@@ -48,7 +48,7 @@ combine_csv <- function(end_week) {
 
 # 1.1 Define Game week ----------------------------------------------------
 
-week = 15
+week = 4
 #week <- as.numeric(max(pbp$week))
 
 # 2.0 PFF Def Table -------------------------------------------------------
@@ -361,7 +361,7 @@ slate_qbs$fpts[which(slate_qbs$name == player$passer[1])] <- pred_y
 
 }
 
-view(slate_qbs)
+view(slate_qbs %>% arrange(-fpts))
 
 game_week = week
 
@@ -373,11 +373,3 @@ slate_qbs %>%
               summarise(yards=sum(passing_yards,na.rm = T)), 
             by=c('name'='passer')) %>% 
   knitr::kable()
-  
-
-ggplot(slate_qbs %>% filter(fpts > 1), aes(x = reorder(player, -fpts), y = fpts)) +
-  geom_point() +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust = 1)
-  )
-  nflplotR::geom_nfl_headshots(aes(player_gsis = passer_id), width = 0.075, vjust = 0.45)

@@ -170,4 +170,5 @@ totals(x)
 points <- slate_spreads %>% select(2,3,6) %>% 
   left_join(slate_totals %>% select(2,3), by=c("team_abbr")) %>% 
   relocate(location, .after = team_abbr) %>% 
-  mutate(proj_points = round(avg_total/2 - (avg_spread/2), digits=1))
+  mutate(proj_points = round(avg_total/2 - (avg_spread/2), digits=1)) %>% 
+  arrange(-proj_points)

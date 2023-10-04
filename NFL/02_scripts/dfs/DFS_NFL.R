@@ -14,8 +14,8 @@ suppressMessages({
 team_names = c('ARZ'='ARI', 'BLT'='BAL', 'CLV'='CLE', 'HST'='HOU', 'JAX'='JAC', 'LA'='LAR')
 name_changes=c('DJ Moore'='D.J. Moore')
 
-week = 19
-folder = glue("./contests/2022_w{week}")
+week = 4
+folder = glue("./01_data/contests/2023_w{week}")
 
 salaries <- read.csv(glue("{folder}/DKSalaries.csv")) %>% 
   mutate(Name=replace(Name, Name=='DJ Moore','D.J. Moore'), 
@@ -35,7 +35,7 @@ defense <- function(variables) {
            pass_adv = off_pass_epa_rank-def_pass_epa_rank,
            delta = (off_pass_epa_rank-def_pass_epa_rank) + (off_rush_epa_rank-def_rush_epa_rank)) %>% 
     select(team, opp, name, fpts, ceil, floor, proj_own, salary, rg_value, def_pass_epa_rank, off_pass_epa_rank, pass_adv, def_rush_epa_rank, off_rush_epa_rank, rush_adv, delta) %>% 
-    arrange(-salary) %>% 
+    arrange(-delta) %>% 
     view(title = "DST")
 }
 defense()
@@ -86,7 +86,7 @@ te <- rg %>% filter(pos=="TE") %>%
 
 #load the wr matchup table
 chart_wr_cb_matchup <- read.csv(glue("{folder}/pff/wr_cb_matchup_chart.csv")) %>% 
-  filter(defPlayer == 'All Defenders')
+  filter(defPlayer == 'All Defenders') 
 
 chart_wr_cb_matchup <- chart_wr_cb_matchup %>% 
   replace(., chart_wr_cb_matchup =='ARZ','ARI') %>% 
@@ -95,6 +95,7 @@ chart_wr_cb_matchup <- chart_wr_cb_matchup %>%
   replace(., chart_wr_cb_matchup =='HST','HOU') %>% 
   replace(., chart_wr_cb_matchup =='JAX','JAC') %>% 
   replace(., chart_wr_cb_matchup =='LA','LAR') %>% 
+  replace(., chart_wr_cb_matchup =='DJ Moore','D.J. Moore') %>% 
   mutate(advantage = round(chart_wr_cb_matchup$advantage, digits = 1), 
          expectedSnaps = round(chart_wr_cb_matchup$expectedSnaps, digits = 1))
 
@@ -105,13 +106,17 @@ wr <- function(variables) {
 }
 
 wr <- salaries %>%
-  left_join(receiving_summary, by = c('Name' = 'player')) %>% 
+  left_join(receiving_summary %>% 
+              replace(., receiving_summary =='DJ Moore','D.J. Moore'), 
+            by = c('Name' = 'player')) %>% 
   left_join(rg, by=c("Name" = "name")) %>% 
   filter(pos == "WR" & proj_own >= 0) %>% 
   left_join(chart_wr_cb_matchup, by = c('Name' = 'offPlayer')) %>% 
   left_join(pbp_def, by = c('opp' = 'defteam')) %>% 
   left_join(defense_coverage_scheme, by = c('opp' = 'team_name')) %>% 
-  left_join(receiving_scheme, by = c('Name' = 'player')) %>% 
+  left_join(receiving_scheme %>% 
+              replace(., receiving_scheme =='DJ Moore','D.J. Moore'),
+            by = c('Name' = 'player')) %>% 
   left_join(def_table, by = c('opp' = 'team_name')) %>% 
   left_join(slot, by=c('opp'='team_name'))
 
@@ -137,6 +142,7 @@ wr$sum_sd <-
   (0.20 * wr$man_grade_yprr_man_cov_sd)
 
 wr %>%
+  filter(proj_own != 0) %>% 
   select(Name,
          TeamAbbrev,
          Salary,
@@ -171,7 +177,7 @@ wr %>%
          touchdowns,
          yards_after_catch_per_reception, 
          name_salary_own) %>%
-  arrange(-fpts) %>%
+  arrange(-sum_sd) %>%
   view(title = "WRs")
 
 #Salary Table
@@ -245,6 +251,7 @@ rb$sum_sd <- round(
     (0.40 * rb$touches_game_sd), digits = 3)
 
 rb %>% 
+  filter(proj_own != 0) %>% 
   select(Name,
          TeamAbbrev,
          Salary,
@@ -341,6 +348,7 @@ qb$sum_sd <- round(
   (0.00 * (qb$pbe_sd - qb$prsh_sd)), digits = 3)
 
 qb %>%
+  filter(proj_own != 0) %>% 
   select(Name,
          TeamAbbrev,
          Salary,
@@ -361,6 +369,7 @@ qb %>%
          prsh, 
          pressure_grades_pass, 
          avg_time_to_throw,
+         avg_depth_of_target, 
          pressure_vs_prsh, 
          blitz_dropbacks_percent,
          blitz_grades_pass,

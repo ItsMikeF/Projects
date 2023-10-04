@@ -61,16 +61,21 @@ ws_odds <- function(variables) {
 ws_odds()
 
 # Run function and save the ggplot
-ws_odds %>% 
-  ggplot(aes(x=team_abbr, y=implied_odds)) +
+plot <- ws_odds %>% 
+  ggplot(aes(y= reorder(team_abbr, implied_odds), x=implied_odds)) +
   geom_col(aes(color=team_abbr, fill=team_abbr)) +
-  geom_mlb_logos(aes(team_abbr=team_abbr), width = 0.05, alpha=0.9) +
+  geom_mlb_logos(aes(team_abbr=team_abbr), width = 0.03, alpha=0.8) +
   scale_color_mlb(type="secondary") +
   scale_fill_mlb(alpha = 0.4) +
   labs(title = paste(Sys.Date(), "World Series Odds"), 
        caption = "Odds via Live Sports Odds API | Twitter: @Its_MikeF") +
-  ggsave(filename = paste0("./03_plots/ws_odds/",Sys.Date()," World Series Odds.png"), 
-         width = 20, 
-         height = 11, 
-         dpi = 300, 
-         units = "in")
+  theme(
+    axis.title.y = element_blank(),
+    plot.title = element_text(size = 28),
+    axis.text = element_text(size = 20)
+  )
+
+ggsave(filename = paste0("./03_plots/ws_odds/",Sys.Date()," World Series Odds.png"), 
+       width = 26.7, 
+       height = 15, 
+       dpi = 300)

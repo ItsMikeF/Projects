@@ -13,7 +13,7 @@ suppressMessages({
   library(gt) #easiyl create presentation ready display tables
 })
 
-week <- 1
+week <- 5
 year <- year(Sys.Date())
 
 # 1.0 Scrape DraftKings odds ----------------------------------------------
@@ -213,6 +213,7 @@ offense <- function(week){
       run = round(weighted.mean(grades_run, snap_counts_run, na.rm = T), digits = 2)
     )
 }
+offense()
 
 # 5.0 Qbs  ----------------------------------------------------------------
 

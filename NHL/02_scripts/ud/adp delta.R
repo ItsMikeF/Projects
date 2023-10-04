@@ -57,6 +57,8 @@ ud_rankings <- function(x) {
 }
 ud_rankings(x)
 
+write.csv(rankings %>% drop_na(oct04), file = "rankings.csv")
+
 
 # 2.0 draft picks -------------------------------------------------------------
 

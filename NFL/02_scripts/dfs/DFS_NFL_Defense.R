@@ -6,11 +6,13 @@ suppressMessages({
   library(tidyverse) #ggplot2 dplyr tibble tidyr purrr forecats 
   library(ggrepel) #automatically position non-overlapping text labels
   library(glue) #interpreted literal strings
+  library(gt)
+  library(gtExtras)
 })
 
 # 0.0 Define Inputs -------------------------------------------------------
 
-week = 2
+week = 4
 pbp <- load_pbp(2023)
 wp_lower = 0.1
 wp_upper = 0.9
@@ -91,7 +93,8 @@ epa_def(week, 0.1, 0.9, 120, 'no')
 def_rankings <- pbp_def %>% 
   select(1,4,8) %>% 
   mutate(def_rank = (def_pass_epa_rank + def_rush_epa_rank)/2) %>% 
-  arrange(def_rank)
+  arrange(def_rank) %>% 
+  view(title = "def_rankings")
 
 # 2.0 offense epa table -------------------------------------------------------
 
@@ -153,10 +156,78 @@ epa_off <- function(wp_lower, wp_upper, half_seconds_remaining, print_plot) {
 }
 epa_off(0.1, 0.9, 120, 'no')
 
+off_rankings <- pbp_off %>% 
+  select(1,4,8) %>% 
+  mutate(off_rank = (off_pass_epa_rank + off_rush_epa_rank)/2) %>% 
+  arrange(off_rank) 
+
+
+# 2.1 Merge Offense and Defense rankings ----------------------------------
+
+team_rankings <- function() {
+  team_rankings <- def_rankings %>% 
+    left_join(off_rankings, by=c("defteam"="posteam")) %>% 
+    rename(team = defteam) %>% 
+    left_join(teams_colors_logos %>% select(team_abbr, team_logo_espn), 
+              by = c("team"="team_abbr")) %>% 
+    mutate(team_rank = round((def_rank+off_rank)/2, digits =1)) %>% 
+    arrange(team_rank) %>% 
+    relocate(team_rank, .after = team)
+  
+  # create a GT table with the rankings
+  tab1 <- team_rankings %>%
+    slice(1:16) %>% 
+    rename(logo = team_logo_espn) %>% 
+    relocate(logo, .after = team) %>% 
+    gt() %>% 
+    gt_img_rows(columns = logo, height = 50) %>% 
+    data_color(columns = def_rank, colors = scales::col_numeric(
+      palette = c("green", "red"), 
+      domain = c(1, 32)
+    )) %>% 
+    data_color(columns = off_rank, colors = scales::col_numeric(
+      palette = c("green", "red"), 
+      domain = c(1, 32)
+    )) %>% 
+    gt_theme_dark() %>% 
+    tab_header(
+      title = glue("2023 Week {week}: NFL Team Rankings")
+    ) 
+  
+  # create a GT table with the rankings
+  tab2 <- team_rankings %>%
+    slice(17:32) %>% 
+    rename(logo = team_logo_espn) %>% 
+    relocate(logo, .after = team) %>% 
+    gt() %>% 
+    gt_img_rows(columns = logo, height = 50) %>% 
+    data_color(columns = def_rank, colors = scales::col_numeric(
+      palette = c("green", "red"), 
+      domain = c(1, 32)
+    )) %>% 
+    data_color(columns = off_rank, colors = scales::col_numeric(
+      palette = c("green", "red"), 
+      domain = c(1, 32)
+    )) %>% 
+    gt_theme_dark() %>% 
+    tab_header(
+      title = glue("2023 Week {week}: NFL Team Rankings")
+    ) 
+  
+  listed_tables <- list(tab1, tab2)
+  
+  #split the table into two tables side by side with 16 rows each
+  gt_two_column_layout(listed_tables,
+                       output = "viewer")
+  
+  gtsave(team_rankings_gt, 
+         filename = glue("./03_plots/team_rankings/2023 Week {week}: NFL Team Rankings.html"))
+}
+
 # 3.0 defense pff table -------------------------------------------------------
 
 def_table <- function(week) {
-  def <- read.csv(glue("./contests/2022_w{week}/pff/defense_summary.csv"))
+  def <- read.csv(glue("./01_data/contests/2023_w{week}/pff/defense_summary.csv"))
   
   def_table <- def %>%
     group_by(team_name) %>%
@@ -195,13 +266,11 @@ def_table(week)
 # 3.1 defense coverage scheme -------------------------------------------------
 
 defense_coverage_scheme <- function(week) {
-  defense_coverage_scheme <- read.csv(glue("./contests/2022_w{week}/pff/defense_coverage_scheme.csv")) %>% 
+  defense_coverage_scheme <- read.csv(glue("./01_data/contests/2023_w{week}/pff/defense_coverage_scheme.csv")) %>% 
     mutate(team_name = gsub('ARZ','ARI', team_name), 
            team_name = gsub('BLT','BAL', team_name), 
            team_name = gsub('CLV','CLE', team_name), 
-           team_name = gsub('HST','HOU', team_name), 
-           team_name = gsub('JAX','JAC', team_name), 
-           team_name = gsub('LA','LAR', team_name)) 
+           team_name = gsub('HST','HOU', team_name)) 
   
   defense_coverage_scheme <<- defense_coverage_scheme %>% 
     select(player,
@@ -231,12 +300,12 @@ defense_coverage_scheme(week)
 # 3.2 Slot and Wide Coverage ----------------------------------------------
 
 slot <- function(week){
-  slot <-  read.csv(glue("./contests/2022_w{week}/pff/defense_summary.csv")) %>% 
+  slot <-  read.csv(glue("./01_data/contests/2023_w{week}/pff/defense_summary.csv")) %>% 
     group_by(team_name) %>% 
     summarise(slot = round(weighted.mean(grades_coverage_defense, snap_counts_slot, na.rm = T), digits = 2)) %>% 
     mutate(slot_rank = dense_rank(desc(slot)))
   
-  wide <- read.csv(glue("./contests/2022_w{week}/pff/defense_summary.csv")) %>% 
+  wide <- read.csv(glue("./01_data/contests/2023_w{week}/pff/defense_summary.csv")) %>% 
     group_by(team_name) %>% 
     summarise(wide = round(weighted.mean(grades_coverage_defense, snap_counts_corner, na.rm = T), digits = 2)) %>% 
     mutate(wide_rank = dense_rank(desc(wide)))
@@ -249,8 +318,8 @@ slot(week)
 
 #blitz rate from sportsref
 sportsref <- function(week){
-  #https://www.pro-football-reference.com/years/2022/opp.htm
-  sportsref_download <- read.csv(glue("./contests/2022_w{week}/sportsref_download.csv"))
+  #https://www.pro-football-reference.com/years/2023/opp.htm
+  sportsref_download <- read.csv(glue("./01_data/contests/2023_w{week}/sportsref_download.csv"))
   
   sportsref_download$Bltz. <- round(as.numeric(sub("%","",sportsref_download$Bltz.))/100, digits = 3)
   sportsref_download$bltz_rank <- round(rank(-sportsref_download$Bltz.), digits = 0)
@@ -266,13 +335,13 @@ sportsref <- function(week){
 
 #blitz rates from pff data
 blitz <- function(week) {
-  defense_summary <- read.csv(glue("./contests/2022_w{week}/pff/defense_summary.csv"))
-  pass_rush_summary <- read.csv(glue("./contests/2022_w{week}/pff/pass_rush_summary.csv")) 
-  run_defense_summary <- read.csv(glue("./contests/2022_w{week}/pff/run_defense_summary.csv")) 
-  defense_coverage_summary <- read.csv(glue("./contests/2022_w{week}/pff/defense_coverage_summary.csv"))
-  defense_coverage_scheme <- read.csv(glue("./contests/2022_w{week}/pff/defense_coverage_scheme.csv"))
-  slot_coverage <- read.csv(glue("./contests/2022_w{week}/pff/slot_coverage.csv"))
-  pass_rush_productivity <- read.csv(glue("./contests/2022_w{week}/pff/pass_rush_productivity.csv"))
+  defense_summary <- read.csv(glue("./01_data/contests/2023_w{week}/pff/defense_summary.csv"))
+  pass_rush_summary <- read.csv(glue("./01_data/contests/2023_w{week}/pff/pass_rush_summary.csv")) 
+  run_defense_summary <- read.csv(glue("./01_data/contests/2023_w{week}/pff/run_defense_summary.csv")) 
+  defense_coverage_summary <- read.csv(glue("./01_data/contests/2023_w{week}/pff/defense_coverage_summary.csv"))
+  defense_coverage_scheme <- read.csv(glue("./01_data/contests/2023_w{week}/pff/defense_coverage_scheme.csv"))
+  slot_coverage <- read.csv(glue("./01_data/contests/2023_w{week}/pff/slot_coverage.csv"))
+  pass_rush_productivity <- read.csv(glue("./01_data/contests/2023_w{week}/pff/pass_rush_productivity.csv"))
   
   def_list <- list()
   

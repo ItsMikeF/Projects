@@ -96,4 +96,4 @@ for (j in folder_index_start:folder_index_end) {
 defense <- map(def, bind_rows)
 def <- bind_rows(defense)
 
-saveRDS(def, file = "./01_data/training_data/position_groups/def.RData")
+save(def, file = "./01_data/training_data/position_groups/def.RData")
