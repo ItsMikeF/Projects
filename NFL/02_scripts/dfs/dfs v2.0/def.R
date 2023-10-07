@@ -1,0 +1,52 @@
+#lets analyze the nfl dfs slate
+
+#load packages
+suppressMessages({
+  library(nflfastR) #nflfastr nflseedr nflplotr
+  library(tidyverse) #ggplot2 dplyr tibble tidyr purrr forecats 
+  library(ggrepel) #automatically position non-overlapping text labels
+  library(glue) #interpreted literal strings
+  library(gt)
+})
+
+# 1.0 inputs and slate data ------------------------------------------------
+
+team_names = c('ARZ'='ARI', 'BLT'='BAL', 'CLV'='CLE', 'HST'='HOU', 'JAX'='JAC', 'LA'='LAR')
+name_changes=c('DJ Moore'='D.J. Moore')
+
+week = 5
+folder = glue("./01_data/contests/2023_w{week}")
+
+salaries <- read.csv(glue("{folder}/DKSalaries.csv")) %>% 
+  mutate(Name=replace(Name, Name=='DJ Moore','D.J. Moore'), 
+         week = max(pbp$week)+1)
+
+#rg <- read.csv(paste0(folder, "/", list.files(path = folder, pattern = "projections_draftkings_nfl"))) %>% mutate(name=replace(name, name=='DJ Moore','D.J. Moore'))
+
+# 2.0 Defenses ------------------------------------------------------------
+
+def <- salaries %>% 
+  filter(Roster.Position == "DST") %>% 
+  select(Name, Salary) %>% 
+  left_join(pbp_def %>% select(defteam, def_pass_epa_rank, def_rush_epa_rank), by=c("team"="defteam")) %>% 
+  left_join(pbp_off %>% select(posteam, off_pass_epa_rank, off_rush_epa_rank), by=c("opp"="posteam")) %>% 
+  mutate(rush_adv = off_rush_epa_rank-def_rush_epa_rank,
+         pass_adv = off_pass_epa_rank-def_pass_epa_rank,
+         delta = (off_pass_epa_rank-def_pass_epa_rank) + (off_rush_epa_rank-def_rush_epa_rank)) %>% 
+  select(team, opp, name, fpts, ceil, floor, proj_own, salary, rg_value, def_pass_epa_rank, off_pass_epa_rank, pass_adv, def_rush_epa_rank, off_rush_epa_rank, rush_adv, delta) %>% 
+  arrange(-delta) %>% 
+  view(title = "DST")
+
+defense <- function(variables) {
+  def <<- rg %>% 
+    filter(pos == "DST") %>% 
+    left_join(pbp_def %>% select(defteam, def_pass_epa_rank, def_rush_epa_rank), by=c("team"="defteam")) %>% 
+    left_join(pbp_off %>% select(posteam, off_pass_epa_rank, off_rush_epa_rank), by=c("opp"="posteam")) %>% 
+    mutate(rush_adv = off_rush_epa_rank-def_rush_epa_rank,
+           pass_adv = off_pass_epa_rank-def_pass_epa_rank,
+           delta = (off_pass_epa_rank-def_pass_epa_rank) + (off_rush_epa_rank-def_rush_epa_rank)) %>% 
+    select(team, opp, name, fpts, ceil, floor, proj_own, salary, rg_value, def_pass_epa_rank, off_pass_epa_rank, pass_adv, def_rush_epa_rank, off_rush_epa_rank, rush_adv, delta) %>% 
+    arrange(-delta) %>% 
+    view(title = "DST")
+}
+defense()

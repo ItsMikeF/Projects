@@ -13,8 +13,11 @@ suppressMessages({
   library(gt) #easiyl create presentation ready display tables
 })
 
-week <- 5
+week <- 6
 year <- year(Sys.Date())
+
+test <- load_cfb_schedules()
+
 
 # 1.0 Scrape DraftKings odds ----------------------------------------------
 
