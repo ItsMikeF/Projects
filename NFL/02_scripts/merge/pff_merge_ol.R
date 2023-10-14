@@ -78,5 +78,12 @@ for (j in folder_index_start:folder_index_end) {
 ol <- map(ols, bind_rows)
 ol <- bind_rows(ol)
 
-# save RDS data 
-saveRDS(ol, file = "./01_data/training_data/position_groups/ol.RData")
+# save data 
+save(ol, file = "./01_data/training_data/position_groups/ol.RData")
+load("./01_data/training_data/position_groups/ol.RData")
+
+team_ol <- ol %>% 
+  group_by(team_name, year, week) %>% 
+  summarise(grades_pass_block = weighted.mean(grades_pass_block, snap_counts_pass_block)) %>% 
+  ungroup() %>% 
+  mutate(off_join = paste0(year, week, team_name))

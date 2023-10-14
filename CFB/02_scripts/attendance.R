@@ -87,7 +87,7 @@ print(paste("Root Mean Squared Error: ", round(lm1_rmse, 2)))
 # 4.0 liner regression with polynomial features ---------------------------
 
 
-lm2_model <- lm(attendance ~ poly(home_pregame_elo, 2) + poly(total_elo, 2) + venue_id, data = model_data)
+lm2_model <- lm(attendance ~ poly(home_pregame_elo, 2) + poly(total_elo, 2) + venue_id, data = train_data)
 
 lm2_predictions <- predict(lm2_model, newdata = test_data)
 
@@ -107,7 +107,7 @@ print(paste("Root Mean Squared Error: ", round(lm2_rmse, 2)))
 
 library(randomForest)
 
-rf_model <- randomForest(attendance ~ home_pregame_elo + total_elo + venue_id, data = model_data)
+rf_model <- randomForest(attendance ~ home_pregame_elo + total_elo + venue_id, data = train_data)
 
 rf_predictions <- predict(rf_model, newdata = test_data)
 

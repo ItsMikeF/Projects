@@ -8,7 +8,7 @@ library(purrr)
 # 1.0 Define the files to be copied and moved -----------------------------
 
 # Create a vector of all of the files
-files <- list.files(path = "./contests/2022_w1/pff")
+files <- list.files(path = "./01_data/contests/2023_w2/pff")
 
 # Define the strings to remove
 remove_strings <- c("dk-ownership.csv", "te_matchup_chart.csv", "wr_cb_matchup_chart.csv")
@@ -27,13 +27,13 @@ files <- unlist(map(files, ~substr(.x, 1, nchar(.x)-4)))
 
 # 2.0 Copy and paste the files to the directory ---------------------------
 
-
-for (i in 1:17) {
+# week is current game week
+for (i in 1:5) {
   
   for (j in 1:25) {
     #copy the files
-    file.copy(glue("./contests/2022_w{i}/pff/{files[j]}.csv"), 
-              glue("./Training_Data/2022/{files[j]} ({i}).csv"))
+    file.copy(glue("./01_data/contests/2023_w{i}/pff/{files[j]}.csv"), 
+              glue("./01_data/training_data/2023/{files[j]} ({i}).csv"))
   }
   
 }
