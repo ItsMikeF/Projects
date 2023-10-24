@@ -28,7 +28,7 @@ ols_list <- list()
 
 # Define folder indices
 folder_index_start <- which(list.dirs() == "./01_data/training_data/2014")
-folder_index_end <- folder_index_start + (year(Sys.Date())- 1 - 2014)
+folder_index_end <- folder_index_start + (year(Sys.Date()) - 2014)
 # minus 1 in offseason, remove for in season
 
 # loop for all years into list

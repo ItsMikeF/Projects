@@ -28,7 +28,7 @@ files <- unlist(map(files, ~substr(.x, 1, nchar(.x)-4)))
 # 2.0 Copy and paste the files to the directory ---------------------------
 
 # week is current game week
-for (i in 1:5) {
+for (i in 2:7) {
   
   for (j in 1:25) {
     #copy the files

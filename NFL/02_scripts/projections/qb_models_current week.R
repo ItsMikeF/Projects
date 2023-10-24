@@ -2,7 +2,7 @@
 
 # load data
 
-table <- read.csv(glue("./01_data/training_data/2023/defense_summary (5).csv")) %>%
+table <- read.csv(glue("./01_data/training_data/2023/defense_summary (7).csv")) %>%
   group_by(team_name) %>%
   summarise(def = round(weighted.mean(grades_defense, snap_counts_defense), digits = 1),
             rdef = round(weighted.mean(grades_run_defense, snap_counts_run_defense), digits = 1),
@@ -11,7 +11,7 @@ table <- read.csv(glue("./01_data/training_data/2023/defense_summary (5).csv")) 
             cov = round(weighted.mean(grades_coverage_defense, snap_counts_coverage), digits =1))
 
 def_table <- table %>% 
-  mutate(week = 5,
+  mutate(week = 7,
          year = 2023,
          team_name = gsub('ARZ','ARI', team_name), 
          team_name = gsub('BLT','BAL', team_name), 
@@ -27,7 +27,7 @@ new_data <- def_table %>%
   select(def, prsh, cov)
 
 # load pass block
-offense_blocking <- read.csv("./01_data/training_data/2023/offense_blocking (5).csv")
+offense_blocking <- read.csv("./01_data/training_data/2023/offense_blocking (7).csv")
 
 team_ol <- offense_blocking %>% 
   group_by(team_name) %>% 

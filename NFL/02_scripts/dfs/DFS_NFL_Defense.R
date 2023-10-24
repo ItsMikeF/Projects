@@ -12,27 +12,20 @@ suppressMessages({
 
 # 0.0 Define Inputs -------------------------------------------------------
 
-week = 5
 pbp <- load_pbp(2023)
-wp_lower = 0.1
-wp_upper = 0.9
-half_seconds_remaining = 120
+week = 7 
 
 # 1.0 defense epa table -------------------------------------------------------
 
-epa_def <- function(week, wp_lower, wp_upper, half_seconds_remaining, print_plot) {
-  #define the values
-  week = week
-  wp_lower = wp_lower
-  wp_upper = wp_upper
-  half_seconds_remaining = half_seconds_remaining
+epa_def <- function() {
   
   #def pass epa
   pbp_def_pass <- pbp %>% 
     filter(pass == 1 &
              wp > 0.1 &
              wp < 0.9 &
-             half_seconds_remaining > 120) %>% 
+             half_seconds_remaining > 120 & 
+             week < 7) %>% 
     group_by(defteam) %>% 
     summarize(def_pass_epa = round(mean(epa), digits = 3),
               n_plays = n()) %>% 
@@ -45,7 +38,8 @@ epa_def <- function(week, wp_lower, wp_upper, half_seconds_remaining, print_plot
     filter(rush == 1 &
              wp > 0.1 &
              wp < 0.9 &
-             half_seconds_remaining > 120) %>% 
+             half_seconds_remaining > 120 & 
+             week < 7) %>% 
     group_by(defteam) %>% 
     summarize(def_rush_epa = round(mean(epa), digits = 3),
               n_plays = n()) %>% 
@@ -56,11 +50,14 @@ epa_def <- function(week, wp_lower, wp_upper, half_seconds_remaining, print_plot
   pbp_def <<- pbp_def_pass %>% 
     left_join(pbp_def_rush, by = c('defteam')) %>% 
     mutate(total_plays = n_plays.x + n_plays.y,
-           #defteam = gsub('JAX','JAC', defteam), 
            defteam = gsub('LA','LAR', defteam), 
            defteam = gsub('LARC','LAC', defteam), 
            avg_rank = (def_rush_epa_rank + def_pass_epa_rank) /2)
   
+}
+epa_def()
+
+epa_def_print <- function(print_plot) {
   #plot the data
   if (print_plot == 'yes') {
     pbp_def <- pbp_def %>% 
@@ -86,19 +83,16 @@ epa_def <- function(week, wp_lower, wp_upper, half_seconds_remaining, print_plot
   } else {
     print("Nothing to see here.")
   }
-  
 }
-epa_def(week, 0.1, 0.9, 120, 'no')
 
 def_rankings <- pbp_def %>% 
   select(1,4,8) %>% 
   mutate(def_rank = (def_pass_epa_rank + def_rush_epa_rank)/2) %>% 
-  arrange(def_rank) %>% 
-  view(title = "def_rankings")
+  arrange(def_rank) 
 
 # 2.0 offense epa table -------------------------------------------------------
 
-epa_off <- function(wp_lower, wp_upper, half_seconds_remaining, print_plot) {
+epa_off <- function(print_plot) {
   pbp_off_pass <- pbp %>% 
     filter(pass == 1 &
              wp > .10 &
@@ -126,35 +120,12 @@ epa_off <- function(wp_lower, wp_upper, half_seconds_remaining, print_plot) {
   pbp_off <<- pbp_off_pass %>% 
     left_join(pbp_off_rush, by = c('posteam')) %>% 
     mutate(total_plays = n_plays.x + n_plays.y, 
+           posteam = gsub('LA','LAR', posteam), 
+           posteam = gsub('LARC','LAC', posteam),
            avg_rank = (off_rush_epa_rank + off_pass_epa_rank) /2)
   
-  if (print_plot == 'yes') {
-    pbp_off <- pbp_off %>% 
-      left_join(teams_colors_logos, by = c('posteam' = 'team_abbr'))
-    
-    pbp_off %>%
-      ggplot(aes(x = off_pass_epa, y = off_rush_epa)) +
-      geom_hline(yintercept = mean(pbp_off$off_rush_epa), color = "red", linetype = "dashed", alpha=0.5) +
-      geom_vline(xintercept =  mean(pbp_off$off_pass_epa), color = "red", linetype = "dashed", alpha=0.5) +
-      geom_point(color = pbp_off$team_color, cex = pbp_off$total_plays / (0.1*max(pbp_off$total_plays)), alpha = .6) +
-      #geom_image(aes(image = team_logo_espn), size = pbp_off$total_plays / (0.1*max(pbp_off$total_plays)), asp = 16 / 9) +
-      geom_text_repel(aes(label=posteam)) +
-      scale_y_discrete(limits = rev) +
-      labs(x = "Pass EPA",
-           y = "Rush EPA",
-           title = paste("OFF EPA, NFL Weeks 1-",(max(pbp$week))),
-           caption = "0.2 < wp < 0.8, half_secs > 120
-       Twitter: Its_MikeF | Data: @nflfastR") +
-      theme_bw() +
-      theme(plot.title = element_text(size = 14, hjust = 0.5, face = "bold")) +
-      scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
-      scale_x_continuous(breaks = scales::pretty_breaks(n = 10))
-  } else {
-    print("Move along.")
-  }
-  
 }
-epa_off(0.1, 0.9, 120, 'no')
+epa_off()
 
 off_rankings <- pbp_off %>% 
   select(1,4,8) %>% 
@@ -270,7 +241,9 @@ defense_coverage_scheme <- function(week) {
     mutate(team_name = gsub('ARZ','ARI', team_name), 
            team_name = gsub('BLT','BAL', team_name), 
            team_name = gsub('CLV','CLE', team_name), 
-           team_name = gsub('HST','HOU', team_name)) 
+           team_name = gsub('HST','HOU', team_name), 
+           team_name = gsub('LA','LAR', team_name), 
+           team_name = gsub('LARC','LAC', team_name), ) 
   
   defense_coverage_scheme <<- defense_coverage_scheme %>% 
     select(player,
@@ -314,26 +287,8 @@ slot <- function(week){
 }
 slot(week)
 
-# 4.0 pfr defense blitz  ----------------------------------------------------------
+# 4.0 pff defense blitz  ----------------------------------------------------------
 
-#blitz rate from sportsref
-sportsref <- function(week){
-  #https://www.pro-football-reference.com/years/2023/opp.htm
-  sportsref_download <- read.csv(glue("./01_data/contests/2023_w{week}/sportsref_download.csv"))
-  
-  sportsref_download$Bltz. <- round(as.numeric(sub("%","",sportsref_download$Bltz.))/100, digits = 3)
-  sportsref_download$bltz_rank <- round(rank(-sportsref_download$Bltz.), digits = 0)
-  
-  team_blitz <- sportsref_download %>% 
-    select(Tm,
-           Bltz.,
-           bltz_rank) %>% 
-    left_join(read.csv("nfl_team_table.csv"), by = c('Tm' = 'Tm')) %>%
-    arrange(bltz_rank) %>% 
-    mutate(TeamAbbrev = gsub("JAC","JAX", TeamAbbrev))
-}
-
-#blitz rates from pff data
 blitz <- function(week) {
   defense_summary <- read.csv(glue("./01_data/contests/2023_w{week}/pff/defense_summary.csv"))
   pass_rush_summary <- read.csv(glue("./01_data/contests/2023_w{week}/pff/pass_rush_summary.csv")) 
@@ -385,7 +340,7 @@ blitz <- function(week) {
            team_name = gsub('LA','LAR', team_name), 
            team_name = gsub('LARC','LAC', team_name))
   
-  def_blitz_pos <<- def_blitz_pos %>% 
+  def_blitz_pos <- def_blitz_pos %>% 
     left_join(team_blitz, by=c('team_name')) 
   
 }

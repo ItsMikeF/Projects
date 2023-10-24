@@ -11,8 +11,6 @@ load("./01_data/training_data/position_groups/team_def.RData")
 
 # load pbp
 pbp <- load_pbp(2014:2023)
-save(pbp, file = "pbp.RData")
-load("pbp.RData")
 
 # calc fpts by week
 player <- pbp %>% 
@@ -54,6 +52,12 @@ player <- player %>%
 
 # join offensive live
 load("./01_data/training_data/position_groups/ol.RData")
+
+team_ol <- ol %>% 
+  group_by(team_name, year, week) %>% 
+  summarise(grades_pass_block = weighted.mean(grades_pass_block, snap_counts_pass_block)) %>% 
+  ungroup() %>% 
+  mutate(off_join = paste0(year, week, team_name))
 
 player <- player %>% 
   left_join(team_ol %>% select(off_join, grades_pass_block), by=c("off_join"))
@@ -109,17 +113,17 @@ rf_mae <- mean(abs(rf_results$Actual - rf_results$Predicted))
 
 rf_rmse <- sqrt(mean((rf_results$Actual - rf_results$Predicted)^2))
 
-save(rf_model, file = glue("./04_models/qbs/model_mahomes.RData"))
-load("./04_models/qbs/model_mahomes.RData")
-
 # Display results
 print(paste("Mean Absolute Error: ", round(rf_mae, 2)))
 print(paste("Root Mean Squared Error: ", round(rf_rmse, 2)))
 
+save(rf_model, file = glue("./04_models/qbs/model_mahomes.RData"))
+load("./04_models/qbs/model_mahomes.RData")
+
 # determine opponent
 schedule <- load_schedules(2023) %>% 
   filter(away_team == first(player$posteam) | home_team == first(player$posteam)) %>% 
-  filter(week == 5) %>% 
+  filter(week == 7) %>% 
   mutate(opponent  = if_else(away_team == first(player$posteam), home_team, away_team))
 
 schedule$opponent

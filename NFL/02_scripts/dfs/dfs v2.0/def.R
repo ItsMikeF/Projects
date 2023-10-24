@@ -14,39 +14,26 @@ suppressMessages({
 team_names = c('ARZ'='ARI', 'BLT'='BAL', 'CLV'='CLE', 'HST'='HOU', 'JAX'='JAC', 'LA'='LAR')
 name_changes=c('DJ Moore'='D.J. Moore')
 
-week = 5
+week = 7
 folder = glue("./01_data/contests/2023_w{week}")
 
 salaries <- read.csv(glue("{folder}/DKSalaries.csv")) %>% 
-  mutate(Name=replace(Name, Name=='DJ Moore','D.J. Moore'), 
-         week = max(pbp$week)+1)
-
-#rg <- read.csv(paste0(folder, "/", list.files(path = folder, pattern = "projections_draftkings_nfl"))) %>% mutate(name=replace(name, name=='DJ Moore','D.J. Moore'))
+  select(1,3,6:8) %>% 
+  rename_with(~c("pos", "name", "salary", "game_info", "team")) %>% 
+  separate(game_info, sep = "@", into = c("alpha", "bravo")) %>% 
+  separate(bravo, sep = " ", into = c("charlie", "delta"), extra = "drop") %>% 
+  mutate(opp = if_else(team == alpha, charlie, alpha)) %>% 
+  select(pos, name, salary, team, opp) 
 
 # 2.0 Defenses ------------------------------------------------------------
 
-def <- salaries %>% 
-  filter(Roster.Position == "DST") %>% 
-  select(Name, Salary) %>% 
+def <- salaries %>% filter(pos=="DST") %>% 
+  select(name, team, salary, opp) %>% 
   left_join(pbp_def %>% select(defteam, def_pass_epa_rank, def_rush_epa_rank), by=c("team"="defteam")) %>% 
   left_join(pbp_off %>% select(posteam, off_pass_epa_rank, off_rush_epa_rank), by=c("opp"="posteam")) %>% 
   mutate(rush_adv = off_rush_epa_rank-def_rush_epa_rank,
          pass_adv = off_pass_epa_rank-def_pass_epa_rank,
          delta = (off_pass_epa_rank-def_pass_epa_rank) + (off_rush_epa_rank-def_rush_epa_rank)) %>% 
-  select(team, opp, name, fpts, ceil, floor, proj_own, salary, rg_value, def_pass_epa_rank, off_pass_epa_rank, pass_adv, def_rush_epa_rank, off_rush_epa_rank, rush_adv, delta) %>% 
+  select(team, opp, name, salary, def_pass_epa_rank, off_pass_epa_rank, pass_adv, def_rush_epa_rank, off_rush_epa_rank, rush_adv, delta) %>% 
   arrange(-delta) %>% 
   view(title = "DST")
-
-defense <- function(variables) {
-  def <<- rg %>% 
-    filter(pos == "DST") %>% 
-    left_join(pbp_def %>% select(defteam, def_pass_epa_rank, def_rush_epa_rank), by=c("team"="defteam")) %>% 
-    left_join(pbp_off %>% select(posteam, off_pass_epa_rank, off_rush_epa_rank), by=c("opp"="posteam")) %>% 
-    mutate(rush_adv = off_rush_epa_rank-def_rush_epa_rank,
-           pass_adv = off_pass_epa_rank-def_pass_epa_rank,
-           delta = (off_pass_epa_rank-def_pass_epa_rank) + (off_rush_epa_rank-def_rush_epa_rank)) %>% 
-    select(team, opp, name, fpts, ceil, floor, proj_own, salary, rg_value, def_pass_epa_rank, off_pass_epa_rank, pass_adv, def_rush_epa_rank, off_rush_epa_rank, rush_adv, delta) %>% 
-    arrange(-delta) %>% 
-    view(title = "DST")
-}
-defense()

@@ -1,0 +1,562 @@
+Position,,Name,,,Salary,,TeamAbbrev
+TE,,Tyler Mabry,,,2500,,SEA
+QB,,Mike White,,,4000,,NYJ
+WR,,Kristian Wilkerson,,,3000,,NE
+WR,,Josh Ali,,,3000,,ATL
+TE,,Tyler Conklin,,,3200,,NYJ
+QB,,Carson Wentz,,,5200,,WAS
+TE,,Hunter Henry,,,3400,,NE
+WR,,Brandon Powell,,,3000,,LAR
+WR,,Cody Thompson,,,3000,,SEA
+WR,,Raleigh Webb,,,3000,,NE
+TE,,Armani Rogers,,,2500,,WAS
+WR,,DeAndre Hopkins,,,7400,,ARI
+RB,,Josh Jacobs,,,7500,,LV
+WR,,Antoine Wesley,,,3000,,ARI
+RB,,J.J. Taylor,,,4000,,NE
+QB,,Jared Goff,,,5500,,DET
+WR,,Chris Lacy,,,3000,,LV
+WR,,Jauan Jennings,,,3300,,SF
+RB,,Kene Nwangwu,,,4000,,MIN
+WR,,DJ Chark Jr.,,,4600,,DET
+WR,,Alex Erickson,,,3000,,WAS
+TE,,Giovanni Ricci,,,2500,,CAR
+WR,,Kirk Merritt,,,3000,,NO
+QB,,Jimmy Garoppolo,,,5600,,SF
+RB,,Jakob Johnson,,,4000,,LV
+TE,,Dalton Schultz,,,3700,,DAL
+TE,,Sammis Reyes,,,2500,,CHI
+TE,,Jelani Woods,,,2500,,IND
+WR,,Kalif Raymond,,,4300,,DET
+WR,,Racey McMath,,,3000,,TEN
+WR,,DJ Turner,,,3000,,LV
+RB,,Brandon Bolden,,,4700,,LV
+TE,,Irv Smith Jr.,,,3500,,MIN
+WR,,Byron Pringle,,,3000,,CHI
+RB,,Jamaal Williams,,,6000,,DET
+QB,,Nick Mullens,,,5000,,MIN
+TE,,MyCole Pruitt,,,2500,,ATL
+TE,,Seth Green,,,2500,,DAL
+WR,,Irvin Charles,,,3000,,NYJ
+TE,,Ross Dwelley,,,2500,,SF
+WR,,K.J. Osborn,,,4200,,MIN
+WR,,Michael Thomas,,,5700,,NO
+WR,,Cooper Kupp,,,9600,,LAR
+RB,,Chase Edmonds,,,5100,,MIA
+QB,,Geno Smith,,,5800,,SEA
+WR,,Penny Hart,,,3000,,SEA
+WR,,Braxton Berrios,,,3700,,NYJ
+WR,,Ben Skowronek,,,4100,,LAR
+TE,,Noah Togiai,,,2500,,PHI
+QB,,Logan Woodside,,,4000,,TEN
+WR,,Marken Michel,,,3000,,WAS
+WR,,Ray-Ray McCloud III,,,3200,,SF
+RB,,Anthony McFarland Jr.,,,4000,,PIT
+RB,,Cordarrelle Patterson,,,5300,,ATL
+RB,,Michael Carter,,,5900,,NYJ
+WR,,Bryan Edwards,,,3000,,ATL
+TE,,Will Dissly,,,3200,,SEA
+WR,,Deebo Samuel,,,7500,,SF
+WR,,Nelson Agholor,,,3800,,NE
+RB,,David Montgomery,,,6300,,CHI
+TE,,Lawrence Cager,,,2500,,NYG
+RB,,Tony Pollard,,,6100,,DAL
+RB,,Saquon Barkley,,,8100,,NYG
+QB,,Drew Lock,,,5000,,SEA
+RB,,Najee Harris,,,5700,,PIT
+RB,,Justin Jackson,,,4000,,DET
+QB,,Tim Boyle,,,4800,,DET
+WR,,Nick Westbrook-Ikhine,,,4000,,TEN
+QB,,Kenny Pickett,,,5100,,PIT
+WR,,Lynn Bowden Jr.,,,3000,,NE
+WR,,Mike Strachan,,,3000,,IND
+QB,,Jarrett Stidham,,,4600,,LV
+TE,,Mo Alie-Cox,,,2800,,IND
+WR,,A.J. Brown,,,7700,,PHI
+WR,,Lil'Jordan Humphrey,,,3000,,NE
+TE,,T.J. Hockenson,,,4900,,DET
+RB,,Tyrion Davis-Price,,,4000,,SF
+TE,,Dallas Goedert,,,5000,,PHI
+RB,,Alec Ingold,,,4000,,MIA
+TE,,Chase Allen,,,2500,,CHI
+RB,,Mark Ingram II,,,4800,,NO
+WR,,Equanimeous St. Brown,,,3900,,CHI
+RB,,Nyheim Hines,,,5200,,IND
+QB,,Matthew Stafford,,,6000,,LAR
+WR,,Dan Chisena,,,3000,,MIN
+TE,,Tyree Jackson,,,2500,,PHI
+RB,,Ronnie Rivers,,,4000,,LAR
+WR,,Davante Adams,,,8600,,LV
+QB,,Davis Webb,,,4000,,NYG
+QB,,Bryce Perkins,,,4000,,LAR
+QB,,Kirk Cousins,,,6100,,MIN
+TE,,Trey McBride,,,2500,,ARI
+RB,,DeeJay Dallas,,,4600,,SEA
+WR,,Matthew Slater,,,3000,,NE
+QB,,Tyrod Taylor,,,4900,,NYG
+WR,,J.J. Arcega-Whiteside,,,3000,,SEA
+QB,,Skylar Thompson,,,4000,,MIA
+QB,,Sam Darnold,,,5000,,CAR
+RB,,Brian Robinson Jr.,,,5600,,WAS
+WR,,KaVontae Turpin,,,3000,,DAL
+RB,,Eno Benjamin,,,6000,,ARI
+QB,,Zach Wilson,,,5100,,NYJ
+TE,,J.P. Holtz,,,2500,,NO
+QB,,Nathan Peterman,,,4000,,CHI
+WR,,Dezmon Patmon,,,3000,,IND
+TE,,Beau Brinkley,,,2500,,ATL
+WR,,Sterling Shepard,,,3000,,NYG
+WR,,Olamide Zaccheaus,,,4000,,ATL
+WR,,Diontae Johnson,,,5600,,PIT
+QB,,Bailey Zappe,,,5300,,NE
+TE,,Ryan Griffin,,,2500,,CHI
+TE,,Jordan Matthews,,,2500,,SF
+QB,,Mac Jones,,,5300,,NE
+WR,,Auden Tate,,,3000,,PHI
+WR,,Kadarius Toney,,,4300,,NYG
+QB,,Jake Fromm,,,4000,,WAS
+WR,,Easop Winston,,,3000,,SEA
+WR,,Andre Baccellia,,,3000,,ARI
+TE,,Jonnu Smith,,,3100,,NE
+RB,,Christian McCaffrey,,,8700,,SF
+WR,,Hunter Renfrow,,,4900,,LV
+WR,,Willie Snead IV,,,3000,,SF
+WR,,Laviska Shenault Jr.,,,3000,,CAR
+TE,,Tyler Kroft,,,2500,,SF
+WR,,Terrace Marshall Jr.,,,3500,,CAR
+QB,,Cooper Rush,,,5000,,DAL
+WR,,Vyncint Smith,,,3000,,IND
+RB,,Dontrell Hilliard,,,4600,,TEN
+WR,,Damiere Byrd,,,3300,,ATL
+WR,,Mack Hollins,,,4500,,LV
+WR,,Darius Slayton,,,4600,,NYG
+TE,,Maxx Williams,,,2500,,ARI
+QB,,Tua Tagovailoa,,,6200,,MIA
+RB,,Ameer Abdullah,,,4000,,LV
+QB,,Sam Ehlinger,,,4000,,IND
+TE,,Stephen Sullivan,,,2500,,CAR
+RB,,Jordan Howard,,,4000,,NO
+WR,,Phillip Dorsett II,,,3200,,HOU
+WR,,Ty Montgomery,,,3000,,NE
+QB,,Andy Dalton,,,5500,,NO
+RB,,Alvin Kamara,,,7100,,NO
+QB,,Ryan Tannehill,,,5300,,TEN
+TE,,Johnny Mundt,,,2500,,MIN
+WR,,Jeff Smith,,,3000,,NYJ
+QB,,Chase Garbers,,,4000,,LV
+RB,,Greg Bell,,,4000,,DET
+TE,,C.J. Uzomah,,,2500,,NYJ
+WR,,Marcus Johnson,,,3300,,NYG
+WR,,Keelan Cole,,,3000,,LV
+WR,,Davion Davis,,,3000,,HOU
+QB,,Brian Hoyer,,,4000,,NE
+TE,,Chig Okonkwo,,,2500,,TEN
+QB,,Jameis Winston,,,5300,,NO
+WR,,Brandon Aiyuk,,,6100,,SF
+WR,,C.J. Board,,,3000,,TEN
+TE,,Tanner Hudson,,,2500,,NYG
+WR,,Diontae Spencer,,,3000,,NYJ
+WR,,Robert Foster,,,3000,,NYG
+TE,,Juwan Johnson,,,3200,,NO
+WR,,Tutu Atwell,,,3000,,LAR
+WR,,Danny Gray,,,3000,,SF
+QB,,Jeff Driskel,,,4000,,HOU
+RB,,Jonathan Williams,,,4000,,WAS
+RB,,Austin Walter,,,4000,,LV
+WR,,Lance McCutcheon,,,3000,,LAR
+TE,,Colin Thompson,,,2500,,CAR
+TE,,Adam Shaheen,,,2500,,MIA
+WR,,Britain Covey,,,3000,,PHI
+TE,,Nick Muse,,,2500,,MIN
+RB,,Jashaun Corbin,,,4000,,NYG
+WR,,Elijah Moore,,,4700,,NYJ
+RB,,Jordan Mason,,,4000,,SF
+RB,,Kevin Harris,,,4000,,NE
+WR,,Dee Eskridge,,,3300,,SEA
+RB,,Kyren Williams,,,4000,,LAR
+WR,,Brandon Smith,,,3000,,DAL
+WR,,Dennis Houston,,,3000,,DAL
+TE,,Pat Freiermuth,,,3900,,PIT
+RB,,Darwin Thompson,,,4000,,SEA
+QB,,Baker Mayfield,,,5200,,CAR
+RB,,Dalvin Cook,,,7600,,MIN
+WR,,Rondale Moore,,,5100,,ARI
+QB,,Ian Book,,,4000,,PHI
+WR,,Alec Pierce,,,4600,,IND
+RB,,Caleb Huntley,,,5000,,ATL
+TE,,Jesper Horsted,,,2500,,LV
+WR,,Chris Olave,,,6000,,NO
+WR,,Keke Coutee,,,3000,,IND
+DST,,Saints,,,2700,,NO
+DST,,Seahawks,,,3200,,SEA
+WR,,Drew Estrada,,,3000,,HOU
+WR,,Frank Darby,,,3000,,ATL
+WR,,Michael Gallup,,,5000,,DAL
+WR,,Robbie Anderson,,,4000,,ARI
+WR,,Tay Martin,,,3000,,SF
+WR,,Jameson Williams,,,5200,,DET
+TE,,Cole Turner,,,2500,,WAS
+WR,,Cody White,,,3000,,PIT
+QB,,Desmond Ridder,,,4700,,ATL
+WR,,Shi Smith,,,3400,,CAR
+RB,,Keaontay Ingram,,,5000,,ARI
+DST,,Giants,,,2800,,NYG
+WR,,Jalen Camp,,,3000,,HOU
+TE,,Jake Ferguson,,,2700,,DAL
+WR,,Austin Trammell,,,3000,,LAR
+WR,,Chase Claypool,,,4800,,PIT
+QB,,Justin Fields,,,5200,,CHI
+RB,,Darrynton Evans,,,4000,,CHI
+DST,,Raiders,,,3400,,LV
+DST,,Jets,,,2900,,NYJ
+DST,,Commanders,,,2600,,WAS
+WR,,Braylon Sanders,,,3000,,MIA
+WR,,Simi Fehoko,,,3000,,DAL
+RB,,Salvon Ahmed,,,4000,,MIA
+QB,,Dak Prescott,,,6600,,DAL
+RB,,Dameon Pierce,,,6300,,HOU
+TE,,Thomas Odukoya,,,2500,,TEN
+QB,,Jalen Hurts,,,8300,,PHI
+WR,,Cedrick Wilson Jr.,,,3300,,MIA
+WR,,Gunner Olszewski,,,3000,,PIT
+RB,,B.J. Baylor,,,4000,,ATL
+TE,,Nikola Kalinic,,,2500,,IND
+WR,,Reggie Roberson Jr.,,,3000,,CHI
+DST,,Cowboys,,,4000,,DAL
+RB,,Ty Chandler,,,4000,,MIN
+QB,,Sam Howell,,,4900,,WAS
+DST,,Panthers,,,2800,,CAR
+WR,,Bisi Johnson,,,3000,,MIN
+TE,,Tanner Conner,,,2500,,MIA
+RB,,Miles Sanders,,,6600,,PHI
+TE,,Jake Tonges,,,2500,,CHI
+RB,,Hassan Haskins,,,4000,,TEN
+TE,,Geoff Swaim,,,2600,,TEN
+RB,,Darrell Henderson Jr.,,,5500,,LAR
+TE,,Cethan Carter,,,2500,,MIA
+WR,,Allen Robinson II,,,5200,,LAR
+TE,,Jeremy Ruckert,,,2500,,NYJ
+RB,,Tyler Allgeier,,,5400,,ATL
+DST,,Rams,,,2700,,LAR
+DST,,Eagles,,,3900,,PHI
+TE,,Daniel Bellinger,,,3300,,NYG
+WR,,Amon-Ra St. Brown,,,6900,,DET
+WR,,Dyami Brown,,,3300,,WAS
+TE,,Ian Thomas,,,2600,,CAR
+RB,,Jason Cabinda,,,4000,,DET
+TE,,Mike Gesicki,,,3800,,MIA
+RB,,Jason Huntley,,,4000,,PIT
+QB,,P.J. Walker,,,5200,,CAR
+TE,,Brevin Jordan,,,2600,,HOU
+WR,,Drake London,,,5100,,ATL
+QB,,Brock Purdy,,,4800,,SF
+RB,,J.D. McKissic,,,4500,,WAS
+TE,,Jordan Akins,,,2600,,HOU
+WR,,Tom Kennedy,,,3000,,DET
+RB,,Craig Reynolds,,,4500,,DET
+WR,,Ashton Dulin,,,3000,,IND
+WR,,A.J. Green,,,3400,,ARI
+DST,,Cardinals,,,2500,,ARI
+TE,,Kyle Pitts,,,4000,,ATL
+TE,,Darren Waller,,,5400,,LV
+WR,,River Cracraft,,,3000,,MIA
+RB,,Rico Dowdle,,,4000,,DAL
+WR,,CeeDee Lamb,,,7000,,DAL
+RB,,Rhamondre Stevenson,,,6400,,NE
+TE,,Kylen Granson,,,2700,,IND
+TE,,Stephen Anderson,,,2500,,ARI
+WR,,Kyle Philips,,,3600,,TEN
+TE,,Charlie Woerner,,,2500,,SF
+WR,,George Pickens,,,4700,,PIT
+WR,,Quintez Cephus,,,3000,,DET
+QB,,Trace McSorley,,,4000,,ARI
+RB,,Jaylen Warren,,,4600,,PIT
+TE,,Roger Carter Jr.,,,2500,,LAR
+QB,,Chris Streveler,,,4000,,NYJ
+WR,,Quez Watkins,,,3300,,PHI
+WR,,Kyric McGowan,,,3000,,WAS
+RB,,Sincere McCormick,,,4000,,LV
+RB,,C.J. Ham,,,4000,,MIN
+TE,,Lucas Krull,,,2500,,NO
+WR,,Van Jefferson,,,3000,,LAR
+DST,,Falcons,,,3800,,ATL
+DST,,Lions,,,2300,,DET
+DST,,Dolphins,,,3500,,MIA
+DST,,Steelers,,,2400,,PIT
+TE,,Trevon Wesco,,,2500,,CHI
+WR,,Andre Roberts,,,3000,,CAR
+RB,,Jermar Jefferson,,,4000,,DET
+TE,,Teagan Quitoriano,,,2500,,HOU
+QB,,Kurt Benkert,,,4000,,SF
+WR,,DeMichael Harris,,,3000,,IND
+RB,,Deon Jackson,,,4900,,IND
+RB,,Jeff Wilson Jr.,,,5100,,SF
+RB,,Sandro Platzgummer,,,4000,,NYG
+RB,,Jeremy McNichols,,,4000,,PIT
+RB,,Tevin Coleman,,,4000,,SF
+RB,,Spencer Brown,,,4000,,CAR
+TE,,Bernhard Seikovits,,,2500,,ARI
+WR,,Tyquan Thornton,,,3800,,NE
+WR,,Justin Jefferson,,,9100,,MIN
+TE,,Connor Heyward,,,2500,,PIT
+RB,,Zamir White,,,4000,,LV
+RB,,James Conner,,,6100,,ARI
+QB,,Matt Corral,,,4000,,CAR
+RB,,Ty'Son Williams,,,4000,,ARI
+WR,,DeVonta Smith,,,6300,,PHI
+WR,,Tarik Black,,,3000,,NYJ
+RB,,Antonio Gibson,,,5400,,WAS
+QB,,Taysom Hill,,,5000,,NO
+TE,,Brock Wright,,,2500,,DET
+RB,,Jaret Patterson,,,4000,,WAS
+RB,,Dwayne Washington,,,4000,,NO
+RB,,Benny Snell Jr.,,,4000,,PIT
+WR,,Chris Moore,,,3400,,HOU
+WR,,Tyler Lockett,,,6500,,SEA
+TE,,Sean McKeon,,,2500,,DAL
+WR,,Deonte Harty,,,3000,,NO
+TE,,Cole Fotheringham,,,2500,,LV
+RB,,Troy Hairston,,,4000,,HOU
+WR,,DJ Moore,,,5300,,CAR
+TE,,Jacob Harris,,,2500,,LAR
+DST,,Texans,,,2600,,HOU
+WR,,Velus Jones Jr.,,,3000,,CHI
+DST,,Titans,,,3600,,TEN
+RB,,Kyle Juszczyk,,,4200,,SF
+DST,,Vikings,,,3300,,MIN
+QB,,Trevor Siemian,,,4800,,CHI
+RB,,Cam Akers,,,5000,,LAR
+QB,,Kyle Allen,,,4800,,HOU
+QB,,Colt McCoy,,,5000,,ARI
+WR,,Johnny Johnson III,,,3000,,HOU
+RB,,Derek Watt,,,4000,,PIT
+WR,,Mason Kinsey,,,3000,,TEN
+WR,,Derek Wright,,,3000,,CAR
+WR,,Blake Proehl,,,3000,,MIN
+TE,,Parker Hesse,,,2500,,ATL
+TE,,Tyler Higbee,,,4200,,LAR
+TE,,Matt Sokol,,,2500,,NE
+RB,,Darius Anderson,,,4000,,HOU
+WR,,Dax Milne,,,3000,,WAS
+TE,,James Mitchell,,,2500,,DET
+WR,,Josh Johnson,,,3000,,DET
+QB,,Mitch Trubisky,,,5100,,PIT
+RB,,Julius Chestnut,,,4000,,TEN
+DST,,Bears,,,2400,,CHI
+TE,,Patrick Scales,,,2500,,CHI
+TE,,Hunter Long,,,2500,,MIA
+DST,,Patriots,,,3000,,NE
+WR,,Cade Johnson,,,3000,,SEA
+DST,,49ers,,,3100,,SF
+WR,,DeVante Parker,,,4400,,NE
+QB,,Mason Rudolph,,,4000,,PIT
+RB,,Brittain Brown,,,4000,,LV
+WR,,Denzel Mims,,,3000,,NYJ
+WR,,Jared Bernhardt,,,3000,,ATL
+RB,,Travis Homer,,,4400,,SEA
+RB,,Tony Jones Jr.,,,4000,,SEA
+WR,,Treylon Burks,,,4500,,TEN
+TE,,Cole Kmet,,,2900,,CHI
+WR,,Brandon Zylstra,,,3000,,DET
+WR,,Jalen Tolbert,,,3400,,DAL
+WR,,Stanley Berryhill,,,3000,,DET
+TE,,Shane Zylstra,,,2500,,DET
+TE,,Peyton Hendershot,,,2600,,DAL
+QB,,Jacob Eason,,,5000,,CAR
+WR,,Kevin White,,,3000,,NO
+RB,,Corey Clement,,,4000,,ARI
+TE,,John FitzPatrick,,,2500,,ATL
+QB,,Matt Ryan,,,5400,,IND
+QB,,Daniel Jones,,,5700,,NYG
+DST,,Colts,,,3700,,IND
+WR,,J.J. Koski,,,3000,,LAR
+WR,,Marquise Brown,,,6400,,ARI
+TE,,Drew Ogletree,,,2500,,IND
+TE,,Anthony Firkser,,,2500,,ATL
+WR,,Ra'Shaun Henry,,,3000,,ATL
+WR,,Cam Sims,,,3000,,WAS
+WR,,Jalen Reagor,,,3200,,MIN
+WR,,Wan'Dale Robinson,,,4700,,NYG
+QB,,Garrett Gilbert,,,4000,,NE
+RB,,Kenneth Walker III,,,6500,,SEA
+RB,,Chuba Hubbard,,,5400,,CAR
+WR,,Anthony Miller,,,3000,,PIT
+TE,,Tommy Tremble,,,2600,,CAR
+RB,,Raheem Blackshear,,,4400,,CAR
+TE,,Nick Vannett,,,2500,,NO
+WR,,Nsimba Webster,,,3000,,CHI
+RB,,Phillip Lindsay,,,4000,,IND
+WR,,Jaylen Waddle,,,6700,,MIA
+WR,,Trent Sherfield,,,3000,,MIA
+TE,,Grant Calcaterra,,,2500,,PHI
+RB,,Qadree Ollison,,,4000,,DAL
+WR,,Tre Nixon,,,3000,,NE
+WR,,Laquon Treadwell,,,3000,,ARI
+TE,,Kendall Blanton,,,2500,,LAR
+TE,,Zach Ertz,,,5100,,ARI
+WR,,Freddie Swain,,,3000,,MIA
+RB,,Alexander Mattison,,,5600,,MIN
+RB,,D'Onta Foreman,,,5300,,CAR
+QB,,David Blough,,,4000,,MIN
+WR,,Brandin Cooks,,,5900,,HOU
+WR,,Nico Collins,,,4200,,HOU
+TE,,Tucker Fisk,,,2500,,ATL
+RB,,Jonathan Ward,,,4000,,ARI
+WR,,Noah Brown,,,4300,,DAL
+WR,,Tyreek Hill,,,8500,,MIA
+TE,,Austin Hooper,,,2800,,TEN
+WR,,Marquise Goodwin,,,4400,,SEA
+WR,,Jahan Dotson,,,4200,,WAS
+TE,,Scotty Washington,,,2500,,NE
+WR,,Kenny Golladay,,,4100,,NYG
+RB,,Alex Armah,,,4000,,WAS
+RB,,Rashaad Penny,,,4000,,SEA
+QB,,Joe Flacco,,,4800,,NYJ
+TE,,Ian Bunting,,,2500,,DAL
+TE,,George Kittle,,,5700,,SF
+TE,,Foster Moreau,,,3100,,LV
+WR,,Jalen Nailor,,,3000,,MIN
+WR,,Corey Davis,,,4500,,NYJ
+WR,,Thomas Hennigan,,,3000,,MIN
+QB,,Davis Mills,,,5200,,HOU
+WR,,Steven Sims Jr.,,,3000,,PIT
+WR,,Preston Williams,,,3000,,CAR
+WR,,Dante Pettis,,,3900,,CHI
+WR,,N'Keal Harry,,,3000,,CHI
+RB,,Raheem Mostert,,,5900,,MIA
+TE,,Dylan Soehner,,,2500,,NO
+QB,,Marcus Mariota,,,5400,,ATL
+QB,,Derek Carr,,,5900,,LV
+QB,,Trey Lance,,,4000,,SF
+WR,,Bo Melton,,,3000,,SEA
+WR,,Parris Campbell,,,4500,,IND
+RB,,Trenton Cannon,,,4000,,TEN
+WR,,Trishton Jackson,,,3000,,MIN
+TE,,Andrew DePaola,,,2500,,MIN
+RB,,Dare Ogunbowale,,,4300,,HOU
+RB,,Khalil Herbert,,,5700,,CHI
+WR,,Robert Woods,,,5400,,TEN
+WR,,Darnell Mooney,,,4800,,CHI
+RB,,Gary Brightwell,,,4000,,NYG
+WR,,Isaiah Coulter,,,3000,,CHI
+RB,,Godwin Igwebuike,,,4000,,SEA
+WR,,Cameron Batson,,,3000,,ATL
+WR,,Maurice Alexander,,,3000,,DET
+WR,,Ethan Fernea,,,3000,,IND
+RB,,Ty Johnson,,,4800,,NYJ
+WR,,KhaDarel Hodge,,,3100,,ATL
+RB,,Cullen Gillaspia,,,4000,,SEA
+TE,,Jalen Wydermyer,,,2500,,IND
+TE,,Colby Parkinson,,,2500,,SEA
+WR,,Calvin Austin III,,,3000,,PIT
+QB,,Nick Foles,,,5000,,IND
+WR,,Marquez Callaway,,,3700,,NO
+RB,,Pierre Strong Jr.,,,4000,,NE
+WR,,Rashid Shaheed,,,3600,,NO
+RB,,D'vonte Price,,,4000,,IND
+RB,,Zonovan Knight,,,4000,,NYJ
+TE,,Garrett Griffin,,,2500,,DET
+TE,,Feleipe Franks,,,2500,,ATL
+WR,,Jarvis Landry,,,4300,,NO
+TE,,Zach Wood,,,2500,,NO
+QB,,John Wolford,,,4800,,LAR
+WR,,Garrett Wilson,,,4200,,NYJ
+WR,,Tre'Quan Smith,,,4400,,NO
+WR,,Terry McLaurin,,,6000,,WAS
+QB,,Sean Mannion,,,4000,,SEA
+RB,,Ezekiel Elliott,,,6200,,DAL
+RB,,Adam Prentice,,,4000,,NO
+TE,,Troy Fumagalli,,,2500,,SF
+RB,,Matt Breida,,,4900,,NYG
+WR,,Kalil Pimpleton,,,3000,,NYG
+QB,,Malik Willis,,,5000,,TEN
+RB,,Derrick Henry,,,8400,,TEN
+TE,,Eli Wolf,,,2500,,WAS
+WR,,DK Metcalf,,,6600,,SEA
+RB,,Boston Scott,,,4200,,PHI
+WR,,Josh Reynolds,,,5000,,DET
+RB,,Avery Williams,,,4600,,ATL
+WR,,Tyler Johnson,,,3000,,HOU
+RB,,Jonathan Taylor,,,8000,,IND
+RB,,Trestan Ebner,,,4800,,CHI
+TE,,John Bates,,,2800,,WAS
+RB,,Gerrid Doaks,,,4000,,HOU
+WR,,Devon Allen,,,3000,,PHI
+RB,,Keith Smith,,,4000,,ATL
+TE,,Ben Ellefson,,,2500,,MIN
+QB,,Jake Luton,,,4000,,NO
+WR,,David Sills V,,,3600,,NYG
+RB,,Myles Gaskin,,,4200,,MIA
+RB,,James Robinson,,,5700,,NYJ
+WR,,Isaiah Zuber,,,3000,,LV
+WR,,Deon Cain,,,3000,,PHI
+QB,,Reid Sinnett,,,4000,,MIA
+WR,,Greg Dortch,,,4100,,ARI
+RB,,John Lovett,,,4000,,MIA
+QB,,Gardner Minshew II,,,5000,,PHI
+RB,,Trey Sermon,,,4000,,PHI
+QB,,Kyler Murray,,,7500,,ARI
+TE,,Jack Stoll,,,2500,,PHI
+WR,,Collin Johnson,,,3000,,NYG
+WR,,Curtis Samuel,,,5300,,WAS
+WR,,Makai Polk,,,3000,,NYG
+WR,,John Metchie III,,,3000,,HOU
+RB,,Breece Hall,,,6200,,NYJ
+RB,,Darrel Williams,,,4000,,ARI
+WR,,Jakobi Meyers,,,5600,,NE
+RB,,La'Mical Perine,,,4000,,MIA
+TE,,Brycen Hopkins,,,2500,,LAR
+WR,,Dareke Young,,,3000,,SEA
+WR,,Javon Wims,,,3000,,ARI
+TE,,Chris Myarick,,,2800,,NYG
+RB,,Marlon Mack,,,4000,,SF
+TE,,Curtis Hodges,,,2500,,WAS
+WR,,Calvin Ridley,,,3000,,ATL
+TE,,Adam Trautman,,,2500,,NO
+WR,,Adam Thielen,,,6200,,MIN
+RB,,Elijah Mitchell,,,4000,,SF
+WR,,Richie James Jr.,,,3700,,NYG
+WR,,Zach Pascal,,,3100,,PHI
+TE,,O.J. Howard,,,2600,,HOU
+RB,,Rex Burkhead,,,4400,,HOU
+WR,,Cody Hollister,,,3000,,TEN
+RB,,Bryant Koback,,,4000,,MIN
+WR,,James Washington,,,3000,,DAL
+WR,,Michael Pittman Jr.,,,7200,,IND
+WR,,Dontario Drummond,,,3000,,DAL
+RB,,D'Andre Swift,,,6800,,DET
+QB,,Taylor Heinicke,,,5200,,WAS
+TE,,Kevin Rader,,,2500,,TEN
+WR,,Rashard Higgins,,,3000,,CAR
+WR,,Kendrick Bourne,,,3300,,NE
+RB,,Damien Harris,,,5800,,NE
+WR,,Josh Malone,,,3000,,PIT
+WR,,Malik Turner,,,3000,,SF
+TE,,Zach Gentry,,,2500,,PIT
+WR,,Rodney Adams,,,3000,,NYJ
+RB,,Nick Bawden,,,4000,,NYJ
+TE,,Kenny Yeboah,,,2500,,NYJ
+QB,,Will Grier,,,4000,,DAL
+TE,,Jared Pinkney,,,2500,,LAR
+RB,,Tory Carter,,,4000,,TEN
+TE,,Noah Fant,,,2800,,SEA
+RB,,Kennedy Brooks,,,4000,,PHI
+RB,,Malcolm Brown,,,4600,,LAR
+RB,,Khari Blasingame,,,4000,,CHI
+WR,,C.J. Saunders,,,3000,,CAR
+WR,,Dez Fitzpatrick,,,3000,,TEN
+RB,,Damien Williams,,,4000,,ATL
+QB,,Teddy Bridgewater,,,5300,,MIA
+TE,,Durham Smythe,,,2500,,MIA
+RB,,Malik Davis,,,4700,,DAL
+TE,,Jacob Hollister,,,2500,,MIN
+RB,,Royce Freeman,,,4000,,HOU
+TE,,Logan Thomas,,,3000,,WAS
+RB,,Kenneth Gainwell,,,4700,,PHI
+TE,,Rodney Williams II,,,2500,,PIT
+WR,,Erik Ezukanma,,,3000,,MIA
+QB,,Nate Sudfeld,,,4000,,DET
+TE,,Mason Schreck,,,2500,,HOU
+RB,,Jake Funk,,,4000,,NO
+WR,,Miles Boykin,,,3000,,PIT
+TE,,Tyler Ott,,,2500,,SEA

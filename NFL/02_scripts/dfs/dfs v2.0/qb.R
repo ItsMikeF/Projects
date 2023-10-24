@@ -1,4 +1,6 @@
 
+week = 7
+folder = glue("./01_data/contests/2023_w{week}")
 
 pblk <- read.csv(glue("{folder}/pff/line_pass_blocking_efficiency.csv"))
 pblk <- pblk %>% 
@@ -17,18 +19,16 @@ passing_pressure_blitz <- read.csv(glue("{folder}/pff/passing_pressure.csv"))
 
 qb_ids <- pbp %>% select(passer_id, passer) %>% drop_na() %>% unique()
 
-qb <- function(variables) {
-  
-}
 
 #QB
-qb <- salaries %>%
-  left_join(passing_summary, by = c('Name' = 'player')) %>% 
-  left_join(rg, by=c("Name" = "name")) %>% 
-  filter(pos == "QB" & proj_own >= 0) %>% 
-  left_join(pblk, by = c('TeamAbbrev' = 'team_name')) %>% 
-  left_join(passing_concept, by = c('Name' = 'player')) %>% 
-  left_join(reciever_salary, by = c('TeamAbbrev' = 'TeamAbbrev'))
+qb <- salaries %>% filter(pos=="QB") %>%
+  filter(salary > 5000) %>% 
+  left_join(passing_summary, by = c('name' = 'player')) %>% 
+  #left_join(rg, by=c("name" = "name")) %>% 
+  #filter(pos == "QB" & proj_own >= 0) %>% 
+  left_join(pblk, by = c('team' = 'team_name')) %>% 
+  left_join(passing_concept, by = c('name' = 'player')) %>% 
+  left_join(reciever_salary, by = c('team' = 'team'))
 
 player <- passing_pressure_blitz$player
 blitz_dropbacks_percent <- passing_pressure_blitz$blitz_dropbacks_percent / 100
@@ -38,15 +38,15 @@ pressure_grades_pass <- passing_pressure_blitz$pressure_grades_pass
 qb_blitz <- tibble(player, blitz_dropbacks_percent, blitz_grades_pass, pressure_grades_pass)
 
 qb <- qb %>% 
-  left_join(qb_blitz, by = c('Name' = 'player')) %>% 
+  left_join(qb_blitz, by = c('name' = 'player')) %>% 
   left_join(pbp_def, by = c('opp' = 'defteam')) %>% 
   left_join(def_table, by = c('opp' = 'team_name')) %>% 
   left_join(team_blitz, by = c('opp' = 'team_name')) 
 
 qb <- qb %>% 
-  mutate(#points_per_dollar = round(fantasyPoints / (Salary/100), digits = 3), 
-    name_salary = paste(Name, Salary), 
-    name_salary_own = paste(Name, Salary, proj_own), 
+  mutate(#points_per_dollar = round(fantasyPoints / (salary/100), digits = 3), 
+    name_salary = paste(name, salary), 
+    #name_salary_own = paste(name, salary, proj_own), 
     btt_twp_ratio = round(btt_rate / twp_rate, digits = 1), 
     btt_twp_ratio_sd = round((btt_twp_ratio - mean(btt_twp_ratio, na.rm=T)) / sd(btt_twp_ratio, na.rm = T), digits = 2), 
     dropbacks_game = round(dropbacks.x / player_game_count, digits = 1), 
@@ -59,23 +59,20 @@ qb$blitz_grades_pass_sq_blitz_rate_sd <- round((qb$blitz_grades_pass_sq_blitz_ra
 
 qb$grades_pass_sd <- round((qb$grades_pass - weighted.mean(qb$grades_pass, qb$dropbacks.x, na.rm=T)) / sd(qb$grades_pass, na.rm = T), digits = 2)
 
-test <- as.data.frame(names(qb))
-
 qb$sum_sd <- round(
-  (0.30 * qb$grades_pass_sd) +
+    (0.30 * qb$grades_pass_sd) +
     (0.30 * qb$def_pass_epa_sd) +
     (0.10 * (qb$total_rec_salary_sd - qb$cov_sd)) +
     (0.10 * qb$blitz_grades_pass_sq_blitz_rate_sd)+
     (0.00 * qb$pressure_vs_prsh_sd) +
-    (0.00 * (qb$pbe_sd - qb$prsh_sd)), digits = 3)
+    (0.00 * (qb$pbe_sd - qb$prsh_sd)), 
+  digits = 3)
 
 qb %>%
-  filter(proj_own != 0) %>% 
-  select(Name,
-         TeamAbbrev,
-         Salary,
-         proj_own,
-         fpts,
+  #filter(proj_own != 0) %>% 
+  select(name,
+         team,
+         salary,
          grades_pass,
          dropbacks_game,
          sum_sd,
@@ -96,8 +93,6 @@ qb %>%
          blitz_dropbacks_percent,
          blitz_grades_pass,
          blitz_rank,
-         blitz_grades_pass_sq_blitz_rate,
-         total_rec_salary,
-         name_salary_own) %>%
+         blitz_grades_pass_sq_blitz_rate) %>%
   arrange(-sum_sd) %>% 
   view(title = "QBs")
