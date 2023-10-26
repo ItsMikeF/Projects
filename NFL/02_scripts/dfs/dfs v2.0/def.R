@@ -14,7 +14,7 @@ suppressMessages({
 team_names = c('ARZ'='ARI', 'BLT'='BAL', 'CLV'='CLE', 'HST'='HOU', 'JAX'='JAC', 'LA'='LAR')
 name_changes=c('DJ Moore'='D.J. Moore')
 
-week = 7
+week = 8
 folder = glue("./01_data/contests/2023_w{week}")
 
 salaries <- read.csv(glue("{folder}/DKSalaries.csv")) %>% 

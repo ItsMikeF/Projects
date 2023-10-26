@@ -13,7 +13,7 @@ suppressMessages({
 # 0.0 Define Inputs -------------------------------------------------------
 
 pbp <- load_pbp(2023)
-week = 7 
+game_week = 8
 
 # 1.0 defense epa table -------------------------------------------------------
 
@@ -25,7 +25,7 @@ epa_def <- function() {
              wp > 0.1 &
              wp < 0.9 &
              half_seconds_remaining > 120 & 
-             week < 7) %>% 
+             week < game_week) %>% 
     group_by(defteam) %>% 
     summarize(def_pass_epa = round(mean(epa), digits = 3),
               n_plays = n()) %>% 
@@ -39,7 +39,7 @@ epa_def <- function() {
              wp > 0.1 &
              wp < 0.9 &
              half_seconds_remaining > 120 & 
-             week < 7) %>% 
+             week < game_week) %>% 
     group_by(defteam) %>% 
     summarize(def_rush_epa = round(mean(epa), digits = 3),
               n_plays = n()) %>% 

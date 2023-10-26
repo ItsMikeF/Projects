@@ -1,5 +1,5 @@
 
-week = 7
+week = 8
 folder = glue("./01_data/contests/2023_w{week}")
 
 pblk <- read.csv(glue("{folder}/pff/line_pass_blocking_efficiency.csv"))

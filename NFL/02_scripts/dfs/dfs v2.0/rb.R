@@ -1,6 +1,6 @@
 # rbs
 
-week = 7
+week = 8
 folder = glue("./01_data/contests/2023_w{week}")
 
 # nfl dfs salaries
@@ -43,7 +43,11 @@ rb <- salaries %>%
          off_def = (def_rush_epa_rank+rdef_rank)/2 - off_rush_epa_rank, 
          bco_delta = offYardsBco - defYardsBco, 
          attempts_game = round(attempts / player_game_count, digits = 1),
-         yards_per_game = round(attempts_game * ypa, digits = 1))
+         gap_attempts_game = round(gap_attempts / player_game_count, digits = 1), 
+         zone_attempts_game = round(zone_attempts / player_game_count, digits = 1), 
+         yards_per_game = round(attempts_game * ypa, digits = 1), 
+         first_downs_att = round(first_downs / attempts, digits = 1), 
+         targets_game = round(targets / player_game_count, digits = 1))
 
 rb$sum_sd <- round(
     (0.05 * rb$runBlockAdv_sd) +
@@ -61,7 +65,12 @@ rb %>%
          salary,
          sum_sd,
          touches_game,
+         targets_game,
          attempts_game,
+         gap_attempts_game,
+         zone_attempts_game,
+         first_downs, 
+         first_downs_att,
          ypa, 
          yards_per_game,
          offYardsBco,

@@ -1,6 +1,6 @@
 # tight ends
 
-week = 7
+week = 8
 folder = glue("./01_data/contests/2023_w{week}")
 
 salaries <- read.csv(glue("{folder}/DKSalaries.csv")) %>% 
@@ -48,4 +48,5 @@ te <- salaries %>% filter(pos=="TE") %>%
          zone_rank, 
          def_zone_grade_rank, 
          zone_yprr, 
-         zone_routes) %>% view (title = "TEs")
+         zone_routes) %>% 
+  view (title = "TEs")
