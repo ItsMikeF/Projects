@@ -1,7 +1,7 @@
 # tight ends
 
 week = 8
-folder = glue("./01_data/contests/2023_w{week}")
+folder = glue("./01_data/contests/2023_w{sprintf(\"%02d\", week)}")
 
 salaries <- read.csv(glue("{folder}/DKSalaries.csv")) %>% 
   select(1,3,6:8) %>% 

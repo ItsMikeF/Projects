@@ -198,7 +198,7 @@ team_rankings <- function() {
 # 3.0 defense pff table -------------------------------------------------------
 
 def_table <- function(week) {
-  def <- read.csv(glue("./01_data/contests/2023_w{week}/pff/defense_summary.csv"))
+  def <- read.csv(glue("./01_data/contests/2023_w{sprintf(\"%02d\", week)}/pff/defense_summary.csv"))
   
   def_table <- def %>%
     group_by(team_name) %>%
@@ -237,7 +237,7 @@ def_table(week)
 # 3.1 defense coverage scheme -------------------------------------------------
 
 defense_coverage_scheme <- function(week) {
-  defense_coverage_scheme <- read.csv(glue("./01_data/contests/2023_w{week}/pff/defense_coverage_scheme.csv")) %>% 
+  defense_coverage_scheme <- read.csv(glue("./01_data/contests/2023_w{sprintf(\"%02d\", week)}/pff/defense_coverage_scheme.csv")) %>% 
     mutate(team_name = gsub('ARZ','ARI', team_name), 
            team_name = gsub('BLT','BAL', team_name), 
            team_name = gsub('CLV','CLE', team_name), 
@@ -273,12 +273,12 @@ defense_coverage_scheme(week)
 # 3.2 Slot and Wide Coverage ----------------------------------------------
 
 slot <- function(week){
-  slot <-  read.csv(glue("./01_data/contests/2023_w{week}/pff/defense_summary.csv")) %>% 
+  slot <-  read.csv(glue("./01_data/contests/2023_w{sprintf(\"%02d\", week)}/pff/defense_summary.csv")) %>% 
     group_by(team_name) %>% 
     summarise(slot = round(weighted.mean(grades_coverage_defense, snap_counts_slot, na.rm = T), digits = 2)) %>% 
     mutate(slot_rank = dense_rank(desc(slot)))
   
-  wide <- read.csv(glue("./01_data/contests/2023_w{week}/pff/defense_summary.csv")) %>% 
+  wide <- read.csv(glue("./01_data/contests/2023_w{sprintf(\"%02d\", week)}/pff/defense_summary.csv")) %>% 
     group_by(team_name) %>% 
     summarise(wide = round(weighted.mean(grades_coverage_defense, snap_counts_corner, na.rm = T), digits = 2)) %>% 
     mutate(wide_rank = dense_rank(desc(wide)))
@@ -290,13 +290,13 @@ slot(week)
 # 4.0 pff defense blitz  ----------------------------------------------------------
 
 blitz <- function(week) {
-  defense_summary <- read.csv(glue("./01_data/contests/2023_w{week}/pff/defense_summary.csv"))
-  pass_rush_summary <- read.csv(glue("./01_data/contests/2023_w{week}/pff/pass_rush_summary.csv")) 
-  run_defense_summary <- read.csv(glue("./01_data/contests/2023_w{week}/pff/run_defense_summary.csv")) 
-  defense_coverage_summary <- read.csv(glue("./01_data/contests/2023_w{week}/pff/defense_coverage_summary.csv"))
-  defense_coverage_scheme <- read.csv(glue("./01_data/contests/2023_w{week}/pff/defense_coverage_scheme.csv"))
-  slot_coverage <- read.csv(glue("./01_data/contests/2023_w{week}/pff/slot_coverage.csv"))
-  pass_rush_productivity <- read.csv(glue("./01_data/contests/2023_w{week}/pff/pass_rush_productivity.csv"))
+  defense_summary <- read.csv(glue("./01_data/contests/2023_w{sprintf(\"%02d\", week)}/pff/defense_summary.csv"))
+  pass_rush_summary <- read.csv(glue("./01_data/contests/2023_w{sprintf(\"%02d\", week)}/pff/pass_rush_summary.csv")) 
+  run_defense_summary <- read.csv(glue("./01_data/contests/2023_w{sprintf(\"%02d\", week)}/pff/run_defense_summary.csv")) 
+  defense_coverage_summary <- read.csv(glue("./01_data/contests/2023_w{sprintf(\"%02d\", week)}/pff/defense_coverage_summary.csv"))
+  defense_coverage_scheme <- read.csv(glue("./01_data/contests/2023_w{sprintf(\"%02d\", week)}/pff/defense_coverage_scheme.csv"))
+  slot_coverage <- read.csv(glue("./01_data/contests/2023_w{sprintf(\"%02d\", week)}/pff/slot_coverage.csv"))
+  pass_rush_productivity <- read.csv(glue("./01_data/contests/2023_w{sprintf(\"%02d\", week)}/pff/pass_rush_productivity.csv"))
   
   def_list <- list()
   

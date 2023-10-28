@@ -9,9 +9,10 @@ suppressMessages({
   library(gt)
 })
 
-
+# load pbp
 pbp <- load_pbp(2022:2023)
 
+# calc rb fpts by game week
 rb_fpts_pbp <- function(){
   # Get rushing stats
   rb_pbp <- pbp %>% 
@@ -66,3 +67,7 @@ rb_fpts_pbp <- function(){
   rm(rb_pbp, wr_pbp)
 }
 rb_fpts_pbp()
+
+# change so join is possible
+rbs_fpts <- rbs_fpts %>% 
+  mutate(join = paste(season, week, posteam, rusher, sep = "_"))
