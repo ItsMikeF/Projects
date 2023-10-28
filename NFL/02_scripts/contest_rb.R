@@ -342,9 +342,10 @@ contests_rb <- lapply(contest_files, function(x){
              runBlockAdv,
              opp,
              off_def,
-             total_plays,
+             n_plays.y.y,
              off_rush_epa,
              off_rush_epa_rank,
+             n_plays.y.x,
              def_rush_epa,
              def_rush_epa_rank,
              def, 
@@ -376,7 +377,7 @@ rm(pbp_def, pbp_off)
 # 4.0 create dataframe ----------------------------------------------------
 
 # bind to single dataframe and process data
-test <- bind_rows(contests_rb) %>% 
+contests_rb <- bind_rows(contests_rb) %>% 
   drop_na() %>% 
   
   # changing name to pbp format
@@ -400,8 +401,8 @@ test <- bind_rows(contests_rb) %>%
   relocate(c(spread, total_line), .after = "team") %>% 
   
   # add sd columns
-  mutate(def_rush_epa_sd = round((def_rush_epa - weighted.mean(def_rush_epa, n_plays, na.rm=T)) / sd(def_rush_epa, na.rm = T), digits = 2),
-         off_rush_epa_sd = round((off_rush_epa - weighted.mean(off_rush_epa, n_plays, na.rm=T)) / sd(off_rush_epa, na.rm = T), digits = 2),
+  mutate(def_rush_epa_sd = round((def_rush_epa - weighted.mean(def_rush_epa, n_plays.y.x, na.rm=T)) / sd(def_rush_epa, na.rm = T), digits = 2),
+         off_rush_epa_sd = round((off_rush_epa - weighted.mean(off_rush_epa, n_plays.y.y, na.rm=T)) / sd(off_rush_epa, na.rm = T), digits = 2),
          def_sd = round((def - mean(def)) / sd(def, na.rm = T), digits = 2), 
          rdef_sd = round((rdef - mean(rdef)) / sd(rdef, na.rm = T), digits = 2),
          tack_sd = round((tack - mean(tack)) / sd(tack, na.rm = T), digits = 2),
@@ -414,8 +415,8 @@ test <- bind_rows(contests_rb) %>%
          sum_sd = round(
            (0.05 * runBlockAdv_sd) +
              (0.20 * off_rush_epa_sd) -
-             (0.20 * def_rush_epa_sd) - 
-             (0.20 * rdef_sd) + 
+             (0.15 * def_rush_epa_sd) - 
+             (0.15 * rdef_sd) + 
              (0.05 * (yco_attempt_sd - tack_sd)) +
              (0.40 * touches_game_sd), 
            digits = 3))
@@ -423,7 +424,7 @@ test <- bind_rows(contests_rb) %>%
 # 5.0 eda -----------------------------------------------------------------
 
 # find individual correlations
-cor(contests_rb$rdef_rank, 
+cor(contests_rb$sum_sd, 
     contests_rb$fpts)
 
 # select only numeric columns
@@ -435,11 +436,14 @@ cor(numeric_contest_rb)[,"fpts"]
 
 # 6.0 split train test ----------------------------------------------------
 
-model_data <- numeric_contest_rb %>% filter(salary > 4000)
+model_data <- numeric_contest_rb %>% 
+  filter(salary > 4000)
+
+set.seed(1)
 
 # split data
 split_index <- createDataPartition(model_data$fpts, 
-                                   p = 0.8, 
+                                   p = 0.75, 
                                    list = F, 
                                    times = 1)
 
@@ -447,9 +451,96 @@ train_data <- model_data[split_index, ]
 test_data <- model_data[-split_index, ]
 
 
+# 6.1 train models - GPT------------------------------------------------------
+
+# list of models to train
+models <- c("lm", "rf", "glm", "gbm", "svmRadial", "nnet", "knn", "rpart")
+
+# set up control parameters
+ctrl <- trainControl(method = "cv", 
+                     number = 10, 
+                     savePredictions = "all")
+
+# Train each model and store the results.
+results <- list()
+
+for (model in models) {
+  
+  print(paste(model, "start"))
+  
+  set.seed(1)
+  
+  fit <- train(fpts ~ salary + sum_sd + spread + total_line, 
+               data = train_data, 
+               method = model, 
+               trControl = ctrl)
+  
+  results[[model]] <- fit
+  
+  print(paste(model, "end"))
+  
+}
+
+#Evaluate Models on Test Data:
+predictions <- lapply(results, function(fit) predict(fit, test_data))
+
+# get performance metrics
+performance <- lapply(predictions, function(pred) postResample(pred, test_data$fpts))
+
+# visualize and compare
+performance_df <- as.data.frame(do.call(rbind, performance))
+performance_df
+
+
+# 6.2 all variables -------------------------------------------------------
+
+# list of models to train
+models <- c("lm", "rf", "glm", "gbm", "svmRadial", "nnet", "knn", "rpart")
+
+# set up control parameters
+ctrl <- trainControl(method = "cv", 
+                     number = 10, 
+                     savePredictions = "all")
+
+# Train each model and store the results.
+rb_pts_models <- list()
+
+for (model in models) {
+  
+  print(paste(model, "start"))
+  
+  set.seed(1)
+  
+  fit <- train(fpts ~ salary + spread + total_line + touches_game + runBlockAdv + def_rush_epa + off_rush_epa + rdef + yco_attempt + tack, 
+               data = train_data, 
+               method = model, 
+               trControl = ctrl)
+  
+  rb_pts_models[[model]] <- fit
+  
+  print(paste(model, "end"))
+  
+}
+
+#Evaluate Models on Test Data:
+predictions <- lapply(rb_pts_models, function(fit) predict(fit, test_data))
+
+# get performance metrics
+performance <- lapply(predictions, function(pred) postResample(pred, test_data$fpts))
+
+# visualize and compare
+performance_df <- as.data.frame(do.call(rbind, performance))
+performance_df
+
+
+# 6.3 model selection -----------------------------------------------------
+
+save(rb_pts_models, file = "./04_models/rb_pts_models.RData")
+
 # 7.0 baseline salary model ------------------------------------------------
 
-baseline_model <- lm(fpts ~ salary, data = train_data)
+baseline_model <- lm(fpts ~ salary + spread + total_line, 
+                     data = train_data)
 
 baseline_proj <- predict(baseline_model, newdata = test_data)
 
@@ -465,8 +556,7 @@ print(paste("Root Mean Squared Error: ", round(baseline_rmse, 2)))
 
 # 8.0 linear model --------------------------------------------------------
 
-
-lm1_model <- lm(fpts ~ spread + total_line + touches_game + ypa + runBlockAdv + def_rush_epa_rank, 
+lm1_model <- lm(fpts ~ salary + spread + total_line + touches_game + runBlockAdv + def_rush_epa + off_rush_epa + rdef + yco_attempt + tack, 
                data = train_data)
 
 lm1_proj <- predict(lm1_model, newdata = test_data)
@@ -482,11 +572,9 @@ lm1_rmse <- sqrt(mean((lm1_results$Actual - lm1_results$Projections)^2))
 print(paste("Mean Absolute Error: ", round(lm1_mae, 2)))
 print(paste("Root Mean Squared Error: ", round(lm1_rmse, 2)))
 
-
 # 8.1 linear model 2 ------------------------------------------------------
 
-
-lm2_model <- lm(fpts ~ salary + sum_sd + spread + total_line, 
+lm2_model <- lm(fpts ~ salary + spread + total_line + sum_sd , 
                 data = train_data)
 
 lm2_proj <- predict(lm2_model, newdata = test_data)
@@ -502,11 +590,12 @@ lm2_rmse <- sqrt(mean((lm2_results$Actual - lm2_results$Projections)^2))
 print(paste("Mean Absolute Error: ", round(lm2_mae, 2)))
 print(paste("Root Mean Squared Error: ", round(lm2_rmse, 2)))
 
-
 # 9.0 random forest model -------------------------------------------------
 
+rf_model <- randomForest(fpts ~ salary + sum_sd + spread + total_line,
+                         data = train_data)
 
-rf_model <- randomForest(fpts ~ spread + total_line +touches_game + runBlockAdv + def_rush_epa_rank  + yco_attempt, 
+rf_model <- randomForest(fpts ~ salary,
                          data = train_data)
 
 rf_proj <- predict(rf_model, 
