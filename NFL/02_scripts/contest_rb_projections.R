@@ -7,6 +7,7 @@ suppressMessages({
   library(glue) # interpreted literal strings
   library(caret) # data partition
   library(randomForest) # rf model
+  library(kernlab)
 })
 
 #
@@ -324,4 +325,6 @@ bravo <- alpha %>%
   mutate(model_projections = round(model_projections, digits = 2)) %>% 
   select(name, model_projections, SS.Proj)
 
-bravo %>% arrange(-SS.Proj)
+bravo %>% arrange(-SS.Proj) %>% head(10)
+
+bravo %>% arrange(-model_projections) %>% head(10)
