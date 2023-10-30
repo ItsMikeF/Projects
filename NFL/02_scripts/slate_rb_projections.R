@@ -37,6 +37,11 @@ odds <- function(year){
 }
 odds(2023)
 
+# 2.2 injury report---------------------------------------------------------
+
+inj <- load_injuries(2023) %>% 
+  mutate(inj_join = paste(season, week, team, full_name, sep = "_"))
+
 # 3.0 load and join all contests ------------------------------------------
 
 contest_rb <- lapply(contest, function(x){
@@ -179,6 +184,8 @@ contest_rb <- lapply(contest, function(x){
   print(paste(x, ": Run running back"))
   running_back <- function(){
     
+    inj <- load_injuries(2023) %>% 
+      mutate(inj_join = paste(season, week, team, full_name, sep = "_"))
     
     salaries <- read.csv(glue("{folder}/DKSalaries.csv")) %>% 
       select(1,3,6:8) %>% 
@@ -237,7 +244,7 @@ contest_rb <- lapply(contest, function(x){
         (0.20 * rb$rdef_sd) + 
         (0.05 * (rb$yco_attempt_sd - rb$tack_sd)) +
         (0.40 * rb$touches_game_sd), 
-      digits = 3)
+      digits = 3) 
     
     rb <- rb %>% 
       #filter(proj_own != 0) %>% 
@@ -300,13 +307,30 @@ contest_rb <- bind_rows(contest_rb) %>%
   left_join(odds %>% select(game_id, total_line, away_spread, home_spread), 
             by = c("schedule_join" = "game_id")) %>% 
   mutate(spread = if_else(home == 1, home_spread, away_spread)) %>% 
-  relocate(c(spread, total_line), .after = "team")
+  relocate(c(spread, total_line), .after = "team") %>% 
+  
+  mutate(inj_join = paste(contest_year, contest_week, team, name, sep = "_")) %>% 
+  
+  left_join(inj %>% select(inj_join, report_status, practice_status), by=c("inj_join")) %>% 
+  
+  # add inj status as factors
+  mutate(column = as.factor(report_status)) %>%
+  mutate(id = row_number()) %>%  # create a temporary id column for reshaping
+  pivot_wider(names_from = report_status, 
+              values_from = report_status,
+              names_prefix = "status_", 
+              values_fill = 0,
+              values_fn = function(x) 1) %>%
+  select(-id) 
+
+
+c("status_NA", "status_Questionable", "status_Doubtful", "status_Out")
 
 # load model
 load("./04_models/rb_pts_models.RData")
 
 # projections
-model_projections <- predict(rb_pts_models$svmRadial, 
+model_projections <- predict(rb_pts_models$lm, 
                              newdata = contest_rb)
 
 # join projections to data

@@ -3,14 +3,6 @@
 week = 8
 folder = glue("./01_data/contests/2023_w{sprintf(\"%02d\", week)}")
 
-salaries <- read.csv(glue("{folder}/DKSalaries.csv")) %>% 
-  select(1,3,6:8) %>% 
-  rename_with(~c("pos", "name", "salary", "game_info", "team")) %>% 
-  separate(game_info, sep = "@", into = c("alpha", "bravo")) %>% 
-  separate(bravo, sep = " ", into = c("charlie", "delta"), extra = "drop") %>% 
-  mutate(opp = if_else(team == alpha, charlie, alpha)) %>% 
-  select(pos, name, salary, team, opp)
-
 # load pff data
 chart_te_matchup <- read.csv(glue("{folder}/pff/te_matchup_chart.csv"))
 receiving_summary <- read.csv(glue("{folder}/pff/receiving_summary.csv"))
@@ -33,6 +25,7 @@ te <- salaries %>% filter(pos=="TE") %>%
          opp,
          name,
          salary, 
+         ownership, 
          offYprr,
          grades_offense,
          adv, 

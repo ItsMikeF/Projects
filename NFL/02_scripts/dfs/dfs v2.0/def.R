@@ -18,13 +18,28 @@ week = 8
 sprintf("%02d", week)
 folder = glue("./01_data/contests/2023_w{sprintf(\"%02d\", week)}")
 
-salaries <- read.csv(glue("{folder}/DKSalaries.csv")) %>% 
-  select(1,3,6:8) %>% 
-  rename_with(~c("pos", "name", "salary", "game_info", "team")) %>% 
-  separate(game_info, sep = "@", into = c("alpha", "bravo")) %>% 
-  separate(bravo, sep = " ", into = c("charlie", "delta"), extra = "drop") %>% 
-  mutate(opp = if_else(team == alpha, charlie, alpha)) %>% 
-  select(pos, name, salary, team, opp) 
+# load saber
+saber <- read.csv(glue("{folder}/NFL_2023-10-29_DK_Main.csv"))
+
+# load pff own
+pff_own <- read.csv(glue("{folder}/dk-ownership.csv"))
+
+# load etr
+etr <- read.csv(glue("{folder}/Weekly DraftKings Projections.csv"))
+
+# load salary
+dk_salaries <- function(){
+  salaries <<- read.csv(glue("{folder}/DKSalaries.csv")) %>% 
+    select(1,3,6:8) %>% 
+    rename_with(~c("pos", "name", "salary", "game_info", "team")) %>% 
+    separate(game_info, sep = "@", into = c("alpha", "bravo")) %>% 
+    separate(bravo, sep = " ", into = c("charlie", "delta"), extra = "drop") %>% 
+    mutate(opp = if_else(team == alpha, charlie, alpha)) %>% 
+    select(pos, name, salary, team, opp) %>% 
+    mutate(name = str_replace(name, "Gardner Minshew II","Gardner Minshew")) %>% 
+    left_join(pff_own %>% select(player, ownership), by = c("name" = "player"))
+}
+dk_salaries()
 
 # 2.0 Defenses ------------------------------------------------------------
 

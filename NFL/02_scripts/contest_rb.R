@@ -10,6 +10,7 @@ suppressMessages({
   library(glue) # interpreted literal strings
   library(caret) # data partition
   library(randomForest) # rf model
+  library(xgboost) # xgb model
 })
 
 # 1.0 ---------------------------------------------------------------------
@@ -117,6 +118,11 @@ odds <- function(year){
     select(-spread_line)
 }
 odds(2022:2023)
+
+# 2.2 load injuries -------------------------------------------------------
+
+inj <- load_injuries(2022:2023) %>% 
+  mutate(inj_join = paste(season, week, team, full_name, sep = "_"))
 
 # 3.0 load and join all contests ------------------------------------------
 
@@ -412,6 +418,8 @@ contests_rb <- bind_rows(contests_rb) %>%
          yco_attempt_sd = round((yco_attempt - mean(yco_attempt, na.rm=T)) / sd(yco_attempt, na.rm = T), digits = 2), 
          touches_game_sd = round((touches_game - mean(touches_game, na.rm=T)) / sd(touches_game, na.rm = T), digits = 2), 
          
+         inj_join = paste(contest_year, contest_week, team, name, sep = "_"),
+         
          sum_sd = round(
            (0.05 * runBlockAdv_sd) +
              (0.20 * off_rush_epa_sd) -
@@ -419,12 +427,25 @@ contests_rb <- bind_rows(contests_rb) %>%
              (0.15 * rdef_sd) + 
              (0.05 * (yco_attempt_sd - tack_sd)) +
              (0.40 * touches_game_sd), 
-           digits = 3))
+           digits = 3)) %>% 
+  
+  left_join(inj %>% select(inj_join, report_status, practice_status), by=c("inj_join")) %>% 
+  
+  # add inj status as factors
+  mutate(column = as.factor(report_status)) %>%
+  mutate(id = row_number()) %>%  # create a temporary id column for reshaping
+  pivot_wider(names_from = report_status, 
+              values_from = report_status,
+              names_prefix = "status_", 
+              values_fill = 0,
+              values_fn = function(x) 1) %>%
+  select(-id) 
+
 
 # 5.0 eda -----------------------------------------------------------------
 
 # find individual correlations
-cor(contests_rb$sum_sd, 
+cor(contests_rb$touches_game, 
     contests_rb$fpts)
 
 # select only numeric columns
@@ -433,13 +454,12 @@ numeric_contest_rb <- contests_rb[, sapply(contests_rb, is.numeric)]
 # find cor of all variables
 cor(numeric_contest_rb)[,"fpts"]
 
-
 # 6.0 split train test ----------------------------------------------------
 
 model_data <- numeric_contest_rb %>% 
-  filter(salary > 4000)
+  filter(touches_game > 10)
 
-set.seed(1)
+set.seed(123)
 
 # split data
 split_index <- createDataPartition(model_data$fpts, 
@@ -454,7 +474,12 @@ test_data <- model_data[-split_index, ]
 # 6.1 train models - GPT------------------------------------------------------
 
 # list of models to train
-models <- c("lm", "rf", "glm", "gbm", "svmRadial", "nnet", "knn", "rpart")
+models <- c("lm", "glm", # linear models 
+            "gbm", # gradient boosting
+            "svmRadial", # kernel trick
+            "knn") # k nearest neighbors
+
+models_not_ready <- c("rf", "nnet", "rpart")
 
 # set up control parameters
 ctrl <- trainControl(method = "cv", 
@@ -470,7 +495,8 @@ for (model in models) {
   
   set.seed(1)
   
-  fit <- train(fpts ~ salary + sum_sd + spread + total_line, 
+  fit <- train(fpts ~ salary + sum_sd + spread + total_line + 
+                 status_NA + status_Questionable + status_Out, 
                data = train_data, 
                method = model, 
                trControl = ctrl)
@@ -495,7 +521,12 @@ performance_df
 # 6.2 all variables -------------------------------------------------------
 
 # list of models to train
-models <- c("lm", "rf", "glm", "gbm", "svmRadial", "nnet", "knn", "rpart")
+models <- c("lm", "glm", # linear models 
+            "gbm", # gradient boosting
+            "svmRadial", # kernel trick
+            "knn") # k nearest neighbors
+
+models_not_ready <- c("rf", "nnet", "rpart")
 
 # set up control parameters
 ctrl <- trainControl(method = "cv", 
@@ -503,24 +534,26 @@ ctrl <- trainControl(method = "cv",
                      savePredictions = "all")
 
 # Train each model and store the results.
-rb_pts_models <- list()
-
-for (model in models) {
+rb_pts_models <- lapply(models, function(model){
   
   print(paste(model, "start"))
   
   set.seed(1)
   
-  fit <- train(fpts ~ salary + spread + total_line + touches_game + runBlockAdv + def_rush_epa + off_rush_epa + rdef + yco_attempt + tack, 
+  fit <- train(fpts ~ salary + spread + total_line + 
+                 attempts_game + targets_game + yco_attempt + 
+                 runBlockAdv + off_rush_epa +
+                 def_rush_epa +  rdef +  tack +
+                 status_NA + status_Questionable + status_Out, 
                data = train_data, 
                method = model, 
                trControl = ctrl)
   
-  rb_pts_models[[model]] <- fit
-  
-  print(paste(model, "end"))
-  
-}
+})
+# removed temporarily
+#status_Doubtful
+
+names(rb_pts_models) <- models
 
 #Evaluate Models on Test Data:
 predictions <- lapply(rb_pts_models, function(fit) predict(fit, test_data))

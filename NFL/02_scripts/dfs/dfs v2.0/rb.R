@@ -3,15 +3,19 @@
 week = 8
 folder = glue("./01_data/contests/2023_w{sprintf(\"%02d\", week)}")
 
-# nfl dfs salaries
-
-salaries <- read.csv(glue("{folder}/DKSalaries.csv")) %>% 
-  select(1,3,6:8) %>% 
-  rename_with(~c("pos", "name", "salary", "game_info", "team")) %>% 
-  separate(game_info, sep = "@", into = c("alpha", "bravo")) %>% 
-  separate(bravo, sep = " ", into = c("charlie", "delta"), extra = "drop") %>% 
-  mutate(opp = if_else(team == alpha, charlie, alpha)) %>% 
-  select(pos, name, salary, team, opp)
+# load salary
+dk_salaries <- function(){
+  salaries <<- read.csv(glue("{folder}/DKSalaries.csv")) %>% 
+    select(1,3,6:8) %>% 
+    rename_with(~c("pos", "name", "salary", "game_info", "team")) %>% 
+    separate(game_info, sep = "@", into = c("alpha", "bravo")) %>% 
+    separate(bravo, sep = " ", into = c("charlie", "delta"), extra = "drop") %>% 
+    mutate(opp = if_else(team == alpha, charlie, alpha)) %>% 
+    select(pos, name, salary, team, opp) %>% 
+    mutate(name = str_replace(name, "Gardner Minshew II","Gardner Minshew")) %>% 
+    left_join(pff_own %>% select(player, ownership), by = c("name" = "player"))
+}
+dk_salaries()
 
 rushing_summary <- read.csv(glue("{folder}/pff/rushing_summary.csv"))
 
@@ -27,8 +31,6 @@ rb <- salaries %>%
   filter(pos == "RB") %>%
   mutate(name = str_replace(name, "Brian Robinson Jr\\.", "Brian Robinson")) %>% 
   left_join(rushing_summary, by = c('name' = 'player')) %>% 
-  #left_join(rg, by=c("name" = "name")) %>% 
-  #filter(pos == "RB" & proj_own >= 0) %>% 
   left_join(pbp_def, by = c('opp' = 'defteam')) %>% 
   left_join(pbp_off, by = c('team' = 'posteam')) %>%
   left_join(chart_oline_dline_matchup, by = c('team' = 'offTeam')) %>% 
@@ -59,10 +61,11 @@ rb$sum_sd <- round(
     digits = 3)
 
 rb %>% 
-  #filter(proj_own != 0) %>% 
+  filter(is.na(ownership) == F) %>% 
   select(name,
          team,
          salary,
+         ownership, 
          sum_sd,
          touches_game,
          targets_game,

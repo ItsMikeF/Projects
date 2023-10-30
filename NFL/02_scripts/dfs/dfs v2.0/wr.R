@@ -13,14 +13,19 @@ week = 8
 folder = glue("./01_data/contests/2023_w{sprintf(\"%02d\", week)}")
 
 # nfl dfs salaries
-
-salaries <- read.csv(glue("{folder}/DKSalaries.csv")) %>% 
-  select(1,3,6:8) %>% 
-  rename_with(~c("pos", "name", "salary", "game_info", "team")) %>% 
-  separate(game_info, sep = "@", into = c("alpha", "bravo")) %>% 
-  separate(bravo, sep = " ", into = c("charlie", "delta"), extra = "drop") %>% 
-  mutate(opp = if_else(team == alpha, charlie, alpha)) %>% 
-  select(pos, name, salary, team, opp)
+# load salary
+dk_salaries <- function(){
+  salaries <<- read.csv(glue("{folder}/DKSalaries.csv")) %>% 
+    select(1,3,6:8) %>% 
+    rename_with(~c("pos", "name", "salary", "game_info", "team")) %>% 
+    separate(game_info, sep = "@", into = c("alpha", "bravo")) %>% 
+    separate(bravo, sep = " ", into = c("charlie", "delta"), extra = "drop") %>% 
+    mutate(opp = if_else(team == alpha, charlie, alpha)) %>% 
+    select(pos, name, salary, team, opp) %>% 
+    mutate(name = str_replace(name, "Gardner Minshew II","Gardner Minshew")) %>% 
+    left_join(pff_own %>% select(player, ownership), by = c("name" = "player"))
+}
+dk_salaries()
 
 #load the wr matchup table
 chart_wr_cb_matchup <- read.csv(glue("{folder}/pff/wr_cb_matchup_chart.csv")) %>% 
@@ -47,10 +52,9 @@ receiving_scheme <- read.csv(glue("{folder}/pff/receiving_scheme.csv"))
 receiving_scheme <- replace(receiving_scheme, receiving_scheme =='D.K. Metcalf','DK Metcalf')
 
 
-wr <- salaries %>% filter(pos=="WR") %>%
+wr <- salaries %>% 
+  filter(pos=="WR") %>%
   left_join(receiving_summary, by = c('name' = 'player')) %>% 
-  #left_join(rg, by=c("Name" = "name")) %>% 
-  #filter(pos == "WR" & proj_own >= 0) %>% 
   left_join(chart_wr_cb_matchup, by = c('name' = 'offPlayer')) %>% 
   left_join(pbp_def, by = c('opp' = 'defteam')) %>% 
   left_join(defense_coverage_scheme, by = c('opp' = 'team_name')) %>% 
@@ -82,10 +86,11 @@ wr$sum_sd <-
   (0.20 * wr$man_grade_yprr_man_cov_sd)
 
 wr %>%
-  #filter(proj_own != 0) %>% 
+  filter(is.na(ownership) == F) %>% 
   select(name,
          team,
          salary,
+         ownership, 
          grades_pass_route, 
          advantage,
          targets_per_game,

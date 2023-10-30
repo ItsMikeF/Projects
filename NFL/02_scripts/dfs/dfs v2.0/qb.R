@@ -2,6 +2,20 @@
 week = 8
 folder = glue("./01_data/contests/2023_w{sprintf(\"%02d\", week)}")
 
+# load salary
+dk_salaries <- function(){
+  salaries <<- read.csv(glue("{folder}/DKSalaries.csv")) %>% 
+    select(1,3,6:8) %>% 
+    rename_with(~c("pos", "name", "salary", "game_info", "team")) %>% 
+    separate(game_info, sep = "@", into = c("alpha", "bravo")) %>% 
+    separate(bravo, sep = " ", into = c("charlie", "delta"), extra = "drop") %>% 
+    mutate(opp = if_else(team == alpha, charlie, alpha)) %>% 
+    select(pos, name, salary, team, opp) %>% 
+    mutate(name = str_replace(name, "Gardner Minshew II","Gardner Minshew")) %>% 
+    left_join(pff_own %>% select(player, ownership), by = c("name" = "player"))
+}
+dk_salaries()
+
 pblk <- read.csv(glue("{folder}/pff/line_pass_blocking_efficiency.csv"))
 pblk <- pblk %>% 
   mutate(across('team_name', str_replace, 'ARZ', 'ARI'),
@@ -21,11 +35,11 @@ qb_ids <- pbp %>% select(passer_id, passer) %>% drop_na() %>% unique()
 
 
 #QB
-qb <- salaries %>% filter(pos=="QB") %>%
+qb <- salaries %>% 
+  filter(pos=="QB") %>%
+  mutate(name = str_replace(name, "Gardner Minshew II","Gardner Minshew")) %>% 
   filter(salary > 5000) %>% 
   left_join(passing_summary, by = c('name' = 'player')) %>% 
-  #left_join(rg, by=c("name" = "name")) %>% 
-  #filter(pos == "QB" & proj_own >= 0) %>% 
   left_join(pblk, by = c('team' = 'team_name')) %>% 
   left_join(passing_concept, by = c('name' = 'player')) %>% 
   left_join(reciever_salary, by = c('team' = 'team'))
@@ -69,7 +83,7 @@ qb$sum_sd <- round(
   digits = 3)
 
 qb %>%
-  #filter(proj_own != 0) %>% 
+  filter(is.na(ownership) == F) %>% 
   select(name,
          team,
          salary,
