@@ -9,7 +9,7 @@ suppressMessages({
   library(gt)
 })
 
-week = 8
+week = 9
 folder = glue("./01_data/contests/2023_w{sprintf(\"%02d\", week)}")
 
 # nfl dfs salaries

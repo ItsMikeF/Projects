@@ -190,7 +190,7 @@ contest_rb <- lapply(contest, function(x){
     salaries <- read.csv(glue("{folder}/DKSalaries.csv")) %>% 
       select(1,3,6:8) %>% 
       rename_with(~c("pos", "name", "salary", "game_info", "team")) %>% 
-      separate(game_info, sep = "@", into = c("alpha", "bravo")) %>% 
+      separate(game_info, sep = "@", into = c("alpha", "bravo"), extra = "drop") %>% 
       mutate(away_team = alpha) %>% 
       separate(bravo, sep = " ", into = c("charlie", "delta"), extra = "drop") %>% 
       mutate(home_team = charlie, 
@@ -235,7 +235,7 @@ contest_rb <- lapply(contest, function(x){
              contest_week = game_week,
              contest = x, 
              join = paste(name, contest, sep = "_")) %>% 
-      separate(contest, into = c("folder", "contest"), sep = "./01_data/contests/")
+      separate(contest, into = c("folder", "contest"), sep = "./01_data/contests/", extra = "drop")
     
     rb$sum_sd <- round(
       (0.05 * rb$runBlockAdv_sd) +
@@ -297,8 +297,9 @@ contest_rb <- lapply(contest, function(x){
   
 })
 
-# contest 
+status_names <- c("status_NA", "status_Questionable", "status_Doubtful", "status_Out")
 
+# contest 
 contest_rb <- bind_rows(contest_rb) %>% 
   
   # joining odds
@@ -322,9 +323,12 @@ contest_rb <- bind_rows(contest_rb) %>%
               values_fill = 0,
               values_fn = function(x) 1) %>%
   select(-id) 
+#%>% 
+ # mutate(status_Questionable = 0, 
+  #       status_Out = 0)
 
 
-c("status_NA", "status_Questionable", "status_Doubtful", "status_Out")
+# 3.0 Load model and make projections -------------------------------------
 
 # load model
 load("./04_models/rb_pts_models.RData")
@@ -334,21 +338,27 @@ model_projections <- predict(rb_pts_models$lm,
                              newdata = contest_rb)
 
 # join projections to data
-test <- contest_rb %>% drop_na(sum_sd)
-alpha <- cbind(test, model_projections)
+contest_rb <- contest_rb %>% 
+  drop_na(sum_sd)
+contest_rb <- cbind(contest_rb, model_projections)
 
-alpha %>% select(name, model_projections) %>% arrange(-model_projections)
+# find saber file
+files <- list.files(glue("./01_data/contests/{contest}"))
+
+file = files[which(grepl("DK_Main", files, ignore.case = TRUE))]
+file
 
 # load saber
-saber <- read.csv("./01_data/contests/2023_w08/NFL_2023-10-29_DK_Main.csv")
+saber <- read.csv(glue("./01_data/contests/{contest}/{file}"))
 
 # join saber
-bravo <- alpha %>% 
+contest_rb <- contest_rb %>% 
   left_join(saber %>% select(Name, SS.Proj), 
             by=c("name"="Name")) %>% 
-  mutate(model_projections = round(model_projections, digits = 2)) %>% 
-  select(name, model_projections, SS.Proj)
+  mutate(model_projections = round(model_projections, digits = 2)) 
 
-bravo %>% arrange(-SS.Proj) %>% head(10)
-
-bravo %>% arrange(-model_projections) %>% head(10)
+# print projections
+contest_rb %>% 
+  select(name, model_projections, SS.Proj) %>% 
+  arrange(-model_projections) %>% 
+  head(20)

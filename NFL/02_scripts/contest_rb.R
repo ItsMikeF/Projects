@@ -441,6 +441,7 @@ contests_rb <- bind_rows(contests_rb) %>%
               values_fn = function(x) 1) %>%
   select(-id) 
 
+# add average rb fpts up to that game week
 
 # 5.0 eda -----------------------------------------------------------------
 

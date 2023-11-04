@@ -13,7 +13,7 @@ suppressMessages({
 # 0.0 Define Inputs -------------------------------------------------------
 
 pbp <- load_pbp(2023)
-game_week = 8
+game_week = 9
 
 # 1.0 defense epa table -------------------------------------------------------
 
@@ -232,7 +232,7 @@ def_table <- function(week) {
            team_name = gsub('LA','LAR', team_name), 
            team_name = gsub('LARC','LAC', team_name))
 }
-def_table(week)
+def_table(game_week)
 
 # 3.1 defense coverage scheme -------------------------------------------------
 
@@ -268,7 +268,7 @@ defense_coverage_scheme <- function(week) {
            def_zone_grade = round(def_zone_grade, digits = 1), 
            def_zone_grade_rank = round(rank(-def_zone_grade), digits = 0))
 }
-defense_coverage_scheme(week)
+defense_coverage_scheme(game_week)
 
 # 3.2 Slot and Wide Coverage ----------------------------------------------
 
@@ -285,7 +285,7 @@ slot <- function(week){
   
   slot <<- slot %>% left_join(wide, by=c('team_name'))
 }
-slot(week)
+slot(game_week)
 
 # 4.0 pff defense blitz  ----------------------------------------------------------
 
@@ -344,4 +344,4 @@ blitz <- function(week) {
     left_join(team_blitz, by=c('team_name')) 
   
 }
-blitz(week)
+blitz(game_week)
