@@ -19,7 +19,7 @@ sprintf("%02d", week)
 folder = glue("./01_data/contests/2023_w{sprintf(\"%02d\", week)}")
 
 # load saber
-saber <- read.csv(glue("{folder}/NFL_2023-10-29_DK_Main.csv"))
+saber <- read.csv(glue("{folder}/NFL_2023-11-05_DK_Main.csv"))
 
 # load pff own
 pff_own <- read.csv(glue("{folder}/dk-ownership.csv"))

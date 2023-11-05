@@ -38,7 +38,6 @@ qb_ids <- pbp %>% select(passer_id, passer) %>% drop_na() %>% unique()
 qb <- salaries %>% 
   filter(pos=="QB") %>%
   mutate(name = str_replace(name, "Gardner Minshew II","Gardner Minshew")) %>% 
-  filter(salary > 5000) %>% 
   left_join(passing_summary, by = c('name' = 'player')) %>% 
   left_join(pblk, by = c('team' = 'team_name')) %>% 
   left_join(passing_concept, by = c('name' = 'player')) %>% 

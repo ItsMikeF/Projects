@@ -22,12 +22,9 @@ epa_def <- function() {
   #def pass epa
   pbp_def_pass <- pbp %>% 
     filter(pass == 1 &
-             wp > 0.1 &
-             wp < 0.9 &
-             half_seconds_remaining > 120 & 
              week < game_week) %>% 
     group_by(defteam) %>% 
-    summarize(def_pass_epa = round(mean(epa), digits = 3),
+    summarize(def_pass_epa = round(mean(epa, na.rm = T), digits = 3),
               n_plays = n()) %>% 
     arrange(def_pass_epa) %>% 
     mutate(def_pass_epa_rank = round(rank(def_pass_epa), digits = 0), 
@@ -36,12 +33,9 @@ epa_def <- function() {
   #def rush epa
   pbp_def_rush <- pbp %>% 
     filter(rush == 1 &
-             wp > 0.1 &
-             wp < 0.9 &
-             half_seconds_remaining > 120 & 
              week < game_week) %>% 
     group_by(defteam) %>% 
-    summarize(def_rush_epa = round(mean(epa), digits = 3),
+    summarize(def_rush_epa = round(mean(epa, na.rm = T), digits = 3),
               n_plays = n()) %>% 
     arrange(def_rush_epa) %>% 
     mutate(def_rush_epa_rank = round(rank(def_rush_epa), digits = 0), 
@@ -95,9 +89,7 @@ def_rankings <- pbp_def %>%
 epa_off <- function(print_plot) {
   pbp_off_pass <- pbp %>% 
     filter(pass == 1 &
-             wp > .10 &
-             wp < .90 &
-             half_seconds_remaining > 120) %>% 
+             week < game_week) %>% 
     group_by(posteam) %>% 
     summarize(off_pass_epa = round(mean(epa), digits = 3),
               n_plays = n()) %>% 
@@ -107,9 +99,7 @@ epa_off <- function(print_plot) {
   
   pbp_off_rush <- pbp %>% 
     filter(rush == 1 &
-             wp > .10 &
-             wp < .90 &
-             half_seconds_remaining > 120) %>% 
+             week < game_week) %>% 
     group_by(posteam) %>% 
     summarize(off_rush_epa = round(mean(epa), digits = 3),
               n_plays = n()) %>% 
@@ -131,7 +121,6 @@ off_rankings <- pbp_off %>%
   select(1,4,8) %>% 
   mutate(off_rank = (off_pass_epa_rank + off_rush_epa_rank)/2) %>% 
   arrange(off_rank) 
-
 
 # 2.1 Merge Offense and Defense rankings ----------------------------------
 

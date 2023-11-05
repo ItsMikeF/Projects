@@ -147,9 +147,6 @@ contests_rb <- lapply(contest_files, function(x){
     # def pass epa
     pbp_def_pass <- pbp %>% 
       filter(pass == 1 &
-               wp > 0.1 &
-               wp < 0.9 &
-               half_seconds_remaining > 120 & 
                week < game_week) %>% 
       group_by(defteam) %>% 
       summarize(def_pass_epa = round(mean(epa), digits = 3),
@@ -161,9 +158,6 @@ contests_rb <- lapply(contest_files, function(x){
     # def rush epa
     pbp_def_rush <- pbp %>% 
       filter(rush == 1 &
-               wp > 0.1 &
-               wp < 0.9 &
-               half_seconds_remaining > 120 & 
                week < game_week) %>% 
       group_by(defteam) %>% 
       summarize(def_rush_epa = round(mean(epa), digits = 3),
@@ -189,9 +183,6 @@ contests_rb <- lapply(contest_files, function(x){
     # off pass epa
     pbp_off_pass <- pbp %>% 
       filter(pass == 1 &
-               wp > .10 &
-               wp < .90 &
-               half_seconds_remaining > 120 & 
                week < game_week) %>% 
       group_by(posteam) %>% 
       summarize(off_pass_epa = round(mean(epa), digits = 3),
@@ -203,9 +194,6 @@ contests_rb <- lapply(contest_files, function(x){
     # off rush epa
     pbp_off_rush <- pbp %>% 
       filter(rush == 1 &
-               wp > .10 &
-               wp < .90 &
-               half_seconds_remaining > 120 & 
                week < game_week) %>% 
       group_by(posteam) %>% 
       summarize(off_rush_epa = round(mean(epa), digits = 3),
