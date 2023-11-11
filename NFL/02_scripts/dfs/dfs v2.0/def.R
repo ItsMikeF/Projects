@@ -14,12 +14,12 @@ suppressMessages({
 team_names = c('ARZ'='ARI', 'BLT'='BAL', 'CLV'='CLE', 'HST'='HOU', 'JAX'='JAC', 'LA'='LAR')
 name_changes=c('DJ Moore'='D.J. Moore')
 
-week = 9
+week = 10
 sprintf("%02d", week)
 folder = glue("./01_data/contests/2023_w{sprintf(\"%02d\", week)}")
 
 # load saber
-saber <- read.csv(glue("{folder}/NFL_2023-11-05_DK_Main.csv"))
+saber <- read.csv(glue("{folder}/NFL_2023-11-12_DK_Main.csv"))
 
 # load pff own
 pff_own <- read.csv(glue("{folder}/dk-ownership.csv"))

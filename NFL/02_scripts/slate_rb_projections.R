@@ -322,10 +322,8 @@ contest_rb <- bind_rows(contest_rb) %>%
               names_prefix = "status_", 
               values_fill = 0,
               values_fn = function(x) 1) %>%
-  select(-id) 
-#%>% 
- # mutate(status_Questionable = 0, 
-  #       status_Out = 0)
+  select(-id) %>% 
+  mutate(status_Questionable = 0, status_Out = 0)
 
 
 # 3.0 Load model and make projections -------------------------------------

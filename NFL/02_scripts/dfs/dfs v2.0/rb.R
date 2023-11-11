@@ -1,6 +1,6 @@
 # rbs
 
-week = 9
+week = 10
 folder = glue("./01_data/contests/2023_w{sprintf(\"%02d\", week)}")
 
 # load salary

@@ -396,8 +396,26 @@ contests_qb <- lapply(contest_files, function(x){
   # run te
   print(paste(x, ": Run te"))
   tight_end <- function(){
+    
+    salaries <- read.csv(glue("{folder}/DKSalaries.csv")) %>% 
+      select(1,3,6:8) %>% 
+      rename_with(~c("pos", "name", "salary", "game_info", "team")) %>% 
+      separate(game_info, sep = "@", into = c("alpha", "bravo")) %>% 
+      mutate(away_team = alpha) %>% 
+      separate(bravo, sep = " ", into = c("charlie", "delta"), extra = "drop") %>% 
+      mutate(home_team = charlie, 
+             opp = if_else(team == alpha, charlie, alpha), 
+             home = if_else(team == home_team, 1, 0)) %>% 
+      select(pos, name, salary, team, home, opp, home_team, away_team)
+    
+    # load pff data
+    chart_te_matchup <- read.csv(glue("{folder}/pff/te_matchup_chart.csv"))
+    receiving_summary <- read.csv(glue("{folder}/pff/receiving_summary.csv"))
+    receiving_summary <- replace(receiving_summary, receiving_summary =='D.K. Metcalf','DK Metcalf') 
+    receiving_scheme <- read.csv(glue("{folder}/pff/receiving_scheme.csv"))
+    
     # create te dataframe
-    te <- salaries %>% filter(pos=="TE") %>% 
+    te <<- salaries %>% filter(pos=="TE") %>% 
       left_join(chart_te_matchup, by = c('name'='offPlayer')) %>% 
       left_join(receiving_summary %>% filter(position=="TE"), by = c('name'='player')) %>%
       left_join(receiving_scheme %>% select(player, man_yprr, man_routes, zone_yprr, zone_routes), by = c('name' = 'player')) %>% 
@@ -412,7 +430,6 @@ contests_qb <- lapply(contest_files, function(x){
              opp,
              name,
              salary, 
-             ownership, 
              offYprr,
              grades_offense,
              adv, 
@@ -436,6 +453,18 @@ contests_qb <- lapply(contest_files, function(x){
   # run wr
   print(paste(x, ": Run wr"))
   wide_receiver <- function(){
+    
+    salaries <- read.csv(glue("{folder}/DKSalaries.csv")) %>% 
+      select(1,3,6:8) %>% 
+      rename_with(~c("pos", "name", "salary", "game_info", "team")) %>% 
+      separate(game_info, sep = "@", into = c("alpha", "bravo")) %>% 
+      mutate(away_team = alpha) %>% 
+      separate(bravo, sep = " ", into = c("charlie", "delta"), extra = "drop") %>% 
+      mutate(home_team = charlie, 
+             opp = if_else(team == alpha, charlie, alpha), 
+             home = if_else(team == home_team, 1, 0)) %>% 
+      select(pos, name, salary, team, home, opp, home_team, away_team)
+    
     #load the wr matchup table
     chart_wr_cb_matchup <- read.csv(glue("{folder}/pff/wr_cb_matchup_chart.csv")) %>% 
       filter(defPlayer == 'All Defenders')
@@ -515,14 +544,13 @@ contests_qb <- lapply(contest_files, function(x){
     reciever_salary$total_rec_salary <- rowSums(reciever_salary[,c("wr_sum_salary", "te_sum_salary")], na.rm=TRUE)
     
     reciever_salary$total_rec_salary_sd <- round((reciever_salary$total_rec_salary - mean(reciever_salary$total_rec_salary, na.rm=T)) / sd(reciever_salary$total_rec_salary, na.rm = T), digits = 2)
-
     
-    wr <- wr %>%
-      filter(is.na(ownership) == F) %>% 
+    reciever_salary <<- reciever_salary
+    
+    wr <<- wr %>%
       select(name,
              team,
              salary,
-             ownership, 
              grades_pass_route, 
              advantage,
              targets_per_game,
@@ -634,7 +662,7 @@ contests_qb <- lapply(contest_files, function(x){
         (0.00 * (qb$pbe_sd - qb$prsh_sd)), 
       digits = 3)
     
-    qb <- qb %>%
+    qb <<- qb %>%
       select(name,
              team,
              salary,
