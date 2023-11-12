@@ -1,5 +1,4 @@
-# read and aggregate dk exposures
-
+# read and aggregate dk exposures for best ball
 
 # Load packages
 library(tidyverse)
