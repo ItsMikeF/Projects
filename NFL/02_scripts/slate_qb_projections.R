@@ -1,8 +1,5 @@
-# create a list of all the qb slates
+# run for current game week
 
-# 0.0 load packages -------------------------------------------------------
-
-#load packages
 suppressMessages({
   library(nflfastR) # pbp data
   library(nflreadr) # nfl schedule
@@ -10,127 +7,17 @@ suppressMessages({
   library(glue) # interpreted literal strings
   library(caret) # data partition
   library(randomForest) # rf model
-  library(xgboost) # xgb model
+  library(kernlab)
 })
 
-# 1.0 ---------------------------------------------------------------------
+#
+contest_files <- list.files(path = "./01_data/contests/")
 
-files <- function(){
-  
-  # define contests 
-  contest_files <- list.files(path = "./01_data/contests/")
-  contest_files
-  
-  # remove 2021 weeks bc they dont have all the needed files
-  indices <- which(!grepl("2021", contest_files))
-  contest_files[indices]
-  contest_files <- contest_files[indices]
-  
-  # remove week 8 for missing files
-  contest_files <- contest_files[-which(grepl("2022_w08", contest_files))]
-  contest_files
-  
-  # remove week 1s
-  contest_files <<- contest_files[-which(grepl("w01", contest_files))]
-  
-  # remove unncessary objects
-  rm(indices)
-  
-}
-files()
-
-# 2.0 load pbp and calc fpts ----------------------------------------------
+contest <- contest_files[length(contest_files)]
+contest
 
 # load pbp
-pbp <- load_pbp(2022:2023)
-
-# calc rb fpts by game week
-qb_fpts_pbp <- function(){
-  
-  # Load regular season data
-  qb_pbp <- pbp %>% 
-    group_by(passer, passer_id, posteam, week, season) %>% 
-    summarize(
-      
-      passing_yards = sum(passing_yards, na.rm = T), 
-      pass_attempt = sum(pass_attempt, na.rm = T), 
-      pass_touchdown = sum(pass_touchdown, na.rm = T), 
-      interception = sum(interception, na.rm = T)
-      
-    ) %>% 
-    drop_na() %>% 
-    ungroup() %>% 
-    mutate(join = paste(season, week, passer_id, sep = "_"))
-  
-  # Get passer rushing stats
-  passer_pbp <- pbp %>% 
-    group_by(passer, passer_id, posteam, week, season) %>% 
-    summarise(
-      
-      qb_scramble = sum(qb_scramble, na.rm = T),
-      rush_attempt = sum(rush_attempt, na.rm = T),
-      rushing_yards = sum(rushing_yards, na.rm = T),
-      rush_touchdown = sum(rush_touchdown, na.rm = T),
-      
-      fumble = sum(fumble, na.rm = T)) %>% 
-    drop_na() %>% 
-    ungroup() %>% 
-    mutate(join = paste(season, week, passer_id, sep = "_"))
-  
-  # Get rusher rushing stats
-  rusher_pbp <- pbp %>% 
-    group_by(rusher, rusher_id, posteam, week, season) %>% 
-    summarise(
-      
-      rush_attempt = sum(rush_attempt, na.rm = T),
-      rushing_yards = sum(rushing_yards, na.rm = T),
-      rush_touchdown = sum(rush_touchdown, na.rm = T),
-      
-      fumble = sum(fumble, na.rm = T)) %>% 
-    drop_na() %>% 
-    ungroup() %>% 
-    mutate(join = paste(season, week, rusher_id, sep = "_"))
-  
-  qb_rush <- passer_pbp %>%
-    left_join(rusher_pbp, by = "join") %>%
-    mutate(across(c(rush_attempt.x, rush_attempt.y, 
-                    rushing_yards.x, rushing_yards.y, 
-                    rush_touchdown.x, rush_touchdown.y, 
-                    fumble.x, fumble.y), 
-                  ~ replace_na(., 0))) %>% 
-    mutate(rush_attempt = rush_attempt.x + rush_attempt.y, 
-           rushing_yards = rushing_yards.x + rushing_yards.y,
-           rush_touchdown = rush_touchdown.x + rush_touchdown.y,
-           fumble = fumble.x + fumble.y) %>% 
-    select(passer_id, rush_attempt, rushing_yards, rush_touchdown, fumble, join)
-  
-  # join stats and calc fpts, dk scoring
-  qb_fpts <<- qb_pbp %>% 
-    left_join(qb_rush, by=c("join")) %>% 
-    replace(is.na(.),0) %>% 
-    mutate(
-      big_rush = ifelse(rushing_yards > 100, 1,0), 
-      big_pass = ifelse(passing_yards > 100, 1,0), 
-      fpts = 
-        
-        big_pass * 3 +
-        big_rush * 3 +
-        
-        pass_touchdown * 4 +
-        passing_yards * .04 +
-        interception * -1 +
-        
-        rushing_yards * .1 +
-        rush_touchdown * 6 +
-        fumble * -1, 
-      
-      fpts_ntile = ntile(fpts, 100)
-    ) %>% 
-    arrange(-fpts) %>% 
-    mutate(join = paste(season, week, posteam, passer, sep = "_"))
-  
-}
-qb_fpts_pbp()
+pbp <- load_pbp(2023)
 
 # 2.1 load spreads and totals ---------------------------------------------
 
@@ -148,16 +35,16 @@ odds <- function(year){
     ) %>% 
     select(-spread_line)
 }
-odds(2022:2023)
+odds(2023)
 
-# 2.2 load injuries -------------------------------------------------------
+# 2.2 injury report---------------------------------------------------------
 
-inj <- load_injuries(2022:2023) %>% 
+inj <- load_injuries(2023) %>% 
   mutate(inj_join = paste(season, week, team, full_name, sep = "_"))
 
-# 3.0 load qb contest -----------------------------------------------------
+# 3.0 load and join all contests ------------------------------------------
 
-contests_qb <- lapply(contest_files, function(x){
+contest_qb <- lapply(contest, function(x){
   
   print(paste(x, ": Begin"))
   
@@ -177,8 +64,10 @@ contests_qb <- lapply(contest_files, function(x){
     
     # def pass epa
     pbp_def_pass <- pbp %>% 
-      filter(pass == 1 & 
-               year == year &
+      filter(pass == 1 &
+               wp > 0.1 &
+               wp < 0.9 &
+               half_seconds_remaining > 120 & 
                week < game_week) %>% 
       group_by(defteam) %>% 
       summarize(def_pass_epa = round(mean(epa), digits = 3),
@@ -190,7 +79,9 @@ contests_qb <- lapply(contest_files, function(x){
     # def rush epa
     pbp_def_rush <- pbp %>% 
       filter(rush == 1 &
-               year == year &
+               wp > 0.1 &
+               wp < 0.9 &
+               half_seconds_remaining > 120 & 
                week < game_week) %>% 
       group_by(defteam) %>% 
       summarize(def_rush_epa = round(mean(epa), digits = 3),
@@ -216,7 +107,9 @@ contests_qb <- lapply(contest_files, function(x){
     # off pass epa
     pbp_off_pass <- pbp %>% 
       filter(pass == 1 &
-               year == year &
+               wp > .10 &
+               wp < .90 &
+               half_seconds_remaining > 120 & 
                week < game_week) %>% 
       group_by(posteam) %>% 
       summarize(off_pass_epa = round(mean(epa), digits = 3),
@@ -228,7 +121,9 @@ contests_qb <- lapply(contest_files, function(x){
     # off rush epa
     pbp_off_rush <- pbp %>% 
       filter(rush == 1 &
-               year == year &
+               wp > .10 &
+               wp < .90 &
+               half_seconds_remaining > 120 & 
                week < game_week) %>% 
       group_by(posteam) %>% 
       summarize(off_rush_epa = round(mean(epa), digits = 3),
@@ -586,8 +481,8 @@ contests_qb <- lapply(contest_files, function(x){
   wide_receiver()
   
   # run qb
-  print(paste(x, ": Run quarterback"))
-  quarterback <- function(){
+  print(paste(x, ": Run quarteqback"))
+  quarteqback <- function(){
     
     salaries <- read.csv(glue("{folder}/DKSalaries.csv")) %>% 
       select(1,3,6:8) %>% 
@@ -702,33 +597,17 @@ contests_qb <- lapply(contest_files, function(x){
              join, 
              away_team, 
              home_team
-             ) %>%
+      ) %>%
       arrange(-sum_sd)
   }
-  quarterback()
+  quarteqback()
   
 })
 
-# remove objects
-rm(pbp_def, pbp_off)
+status_names <- c("status_NA", "status_Questionable", "status_Doubtful", "status_Out")
 
-# 4.0 create dataframe ----------------------------------------------------
-
-# bind to single dataframe and process data
-contests_qb <- bind_rows(contests_qb) %>% 
-  drop_na() %>% 
-  
-  # changing name to pbp format
-  separate(name, into = c("first_name", "last_name"), sep = " ", extra = "drop") %>% 
-  mutate(player = paste0(substr(first_name, 1, 1), ".", last_name), 
-         join = paste(contest_year, contest_week, team, player, sep = "_"), 
-         name = paste(first_name, last_name)) %>%
-  relocate(name, .before = "first_name") %>% 
-  select(-c("first_name", "last_name")) %>%
-  
-  # joining fpts
-  left_join(qb_fpts %>% select(join, fpts, fpts_ntile), by=c("join")) %>%
-  replace_na(list(fpts = 0, fpts_ntile = 0)) %>%
+# contest 
+contest_qb <- bind_rows(contest_qb) %>% 
   
   # joining odds
   mutate(schedule_join = sprintf("%02d", contest_week), 
@@ -738,7 +617,6 @@ contests_qb <- bind_rows(contests_qb) %>%
   mutate(spread = if_else(home == 1, home_spread, away_spread)) %>% 
   relocate(c(spread, total_line), .after = "team") %>% 
   
-  # add sd columns
   mutate(inj_join = paste(contest_year, contest_week, team, name, sep = "_")) %>% 
   
   left_join(inj %>% select(inj_join, report_status, practice_status), by=c("inj_join")) %>% 
@@ -751,78 +629,41 @@ contests_qb <- bind_rows(contests_qb) %>%
               names_prefix = "status_", 
               values_fill = 0,
               values_fn = function(x) 1) %>%
-  select(-id) 
+  select(-id) %>% 
+  mutate(status_Questionable = 0, status_Out = 0)
 
-# 5.0 eda -----------------------------------------------------------------
 
-# find individual correlations
-cor(contests_qb$dropbacks_game, 
-    contests_qb$fpts)
+# 3.0 Load model and make projections -------------------------------------
 
-# select only numeric columns
-numeric_contests_qb <- contests_qb[, sapply(contests_qb, is.numeric)]
+# load model
+load("./04_models/qb_pts_models.RData")
 
-# find cor of all variables
-cor(numeric_contests_qb)[,"fpts"]
+# projections
+model_projections <- predict(qb_pts_models$lm, 
+                             newdata = contest_qb)
 
-# 6.0 split train test ----------------------------------------------------
+# join projections to data
+contest_qb <- contest_qb %>% 
+  drop_na(sum_sd)
+contest_qb <- cbind(contest_qb, model_projections)
 
-model_data <- numeric_contests_qb
+# find saber file
+files <- list.files(glue("./01_data/contests/{contest}"))
 
-set.seed(123)
+file = files[which(grepl("DK_Main", files, ignore.case = TRUE))]
+file
 
-# split data
-split_index <- createDataPartition(model_data$fpts, 
-                                   p = 0.75, 
-                                   list = F, 
-                                   times = 1)
+# load saber
+saber <- read.csv(glue("./01_data/contests/{contest}/{file}"))
 
-train_data <- model_data[split_index, ]
-test_data <- model_data[-split_index, ]
+# join saber
+contest_qb <- contest_qb %>% 
+  left_join(saber %>% select(Name, SS.Proj), 
+            by=c("name"="Name")) %>% 
+  mutate(model_projections = round(model_projections, digits = 2)) 
 
-# list of models to train
-models <- c("lm", "glm", # linear models 
-            "gbm", # gradient boosting
-            "svmRadial", # kernel trick
-            "knn") # k nearest neighbors
-
-models_not_ready <- c("rf", "nnet", "rpart")
-
-# set up control parameters
-ctrl <- trainControl(method = "cv", 
-                     number = 10, 
-                     savePredictions = "all")
-
-# Train each model and store the results.
-qb_pts_models <- lapply(models, function(model){
-  
-  print(paste(model, "start"))
-  
-  set.seed(1)
-  
-  fit <- train(fpts ~ salary + spread + total_line + 
-                 sum_sd + 
-                 status_NA + status_Questionable + status_Out, 
-               data = train_data, 
-               method = model, 
-               trControl = ctrl)
-  
-})
-# removed temporarily
-#status_Doubtful
-
-names(qb_pts_models) <- models
-
-#Evaluate Models on Test Data:
-predictions <- lapply(qb_pts_models, function(fit) predict(fit, test_data))
-
-# get performance metrics
-performance <- lapply(predictions, function(pred) postResample(pred, test_data$fpts))
-
-# visualize and compare
-performance_df <- as.data.frame(do.call(rbind, performance))
-performance_df
-
-# 6.3 model selection -----------------------------------------------------
-
-save(qb_pts_models, file = "./04_models/qb_pts_models.RData")
+# print projections
+contest_qb %>% 
+  select(name, model_projections, SS.Proj) %>% 
+  arrange(-model_projections) %>% 
+  head(20)
