@@ -256,8 +256,6 @@ contest_rb <- lapply(contest, function(x){
              touches_game,
              targets_game,
              attempts_game,
-             gap_attempts_game,
-             zone_attempts_game,
              first_downs, 
              first_downs_att,
              ypa, 
@@ -360,3 +358,7 @@ contest_rb %>%
   select(name, model_projections, SS.Proj) %>% 
   arrange(-model_projections) %>% 
   head(20)
+
+contest_rb <- contest_rb %>% 
+  relocate(c(model_projections, SS.Proj), .after = team) %>% 
+  arrange(-model_projections)

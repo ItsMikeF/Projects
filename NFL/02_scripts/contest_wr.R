@@ -1,5 +1,8 @@
-# run for current game week
+# create a list of all the qb slates
 
+# 0.0 load packages -------------------------------------------------------
+
+#load packages
 suppressMessages({
   library(nflfastR) # pbp data
   library(nflreadr) # nfl schedule
@@ -7,17 +10,102 @@ suppressMessages({
   library(glue) # interpreted literal strings
   library(caret) # data partition
   library(randomForest) # rf model
-  library(kernlab)
+  library(xgboost) # xgb model
 })
 
-#
-contest_files <- list.files(path = "./01_data/contests/")
+# 1.0 ---------------------------------------------------------------------
 
-contest <- contest_files[length(contest_files)]
-contest
+files <- function(){
+  
+  # define contests 
+  contest_files <- list.files(path = "./01_data/contests/")
+  contest_files
+  
+  # remove 2021 weeks bc they dont have all the needed files
+  indices <- which(!grepl("2021", contest_files))
+  contest_files[indices]
+  contest_files <- contest_files[indices]
+  
+  # remove week 8 for missing files
+  contest_files <- contest_files[-which(grepl("2022_w08", contest_files))]
+  contest_files
+  
+  # remove week 1s
+  contest_files <<- contest_files[-which(grepl("w01", contest_files))]
+  
+  # remove unncessary objects
+  rm(indices)
+  
+}
+files()
+
+# 2.0 load pbp and calc fpts ----------------------------------------------
 
 # load pbp
-pbp <- load_pbp(2023)
+pbp <- load_pbp(2022:2023)
+
+# calc rb fpts by game week
+wr_fpts_pbp <- function(){
+  
+  # Load regular season data
+  wr_pbp <- pbp %>% 
+    group_by(receiver, receiver_id, posteam, week, season) %>% 
+    summarize(
+      
+      receptions = sum(complete_pass, na.rm = T),
+      receiving_yards = sum(receiving_yards, na.rm = T),
+      targets = sum(pass_attempt, na.rm = T),
+      pass_touchdown = sum(pass_touchdown, na.rm = T),
+      fumble_lost = sum(fumble_lost, na.rm = T), 
+      .groups = "drop"
+      
+    ) %>% 
+    drop_na() %>% 
+    mutate(join = paste(season, week, receiver_id, sep = "_"))
+  
+  # Get receiver rushing stats
+  rusher_pbp <- pbp %>% 
+    group_by(rusher, rusher_id, posteam, week, season) %>% 
+    summarise(
+      
+      rush_attempt = sum(rush_attempt, na.rm = T),
+      rushing_yards = sum(rushing_yards, na.rm = T),
+      rush_touchdown = sum(rush_touchdown, na.rm = T),
+      fumble = sum(fumble, na.rm = T), 
+      .groups = "drop"
+      
+      ) %>% 
+    drop_na() %>% 
+    mutate(join = paste(season, week, rusher_id, sep = "_")) %>% 
+    select(join, rush_attempt, rushing_yards, rush_touchdown, fumble)
+  
+  # join stats and calc fpts, dk scoring
+  wr_fpts <<- wr_pbp %>% 
+    left_join(rusher_pbp, by=c("join")) %>% 
+    replace(is.na(.),0) %>% 
+    mutate(
+      big_rush = ifelse(rushing_yards > 100, 1,0), 
+      big_rec = ifelse(receiving_yards > 100, 1,0), 
+      fpts = 
+        
+        big_rush * 3 +
+        big_rec * 3 +
+        
+        pass_touchdown * 6 +
+        receiving_yards * .1 +
+        receptions * 1 +
+
+        rushing_yards * .1 +
+        rush_touchdown * 6 +
+        fumble * -1, 
+      
+      fpts_ntile = ntile(fpts, 100)
+    ) %>% 
+    arrange(-fpts) %>% 
+    mutate(join = paste(season, week, posteam, receiver, sep = "_"))
+  
+}
+wr_fpts_pbp()
 
 # 2.1 load spreads and totals ---------------------------------------------
 
@@ -35,16 +123,16 @@ odds <- function(year){
     ) %>% 
     select(-spread_line)
 }
-odds(2023)
+odds(2022:2023)
 
-# 2.2 injury report---------------------------------------------------------
+# 2.2 load injuries -------------------------------------------------------
 
-inj <- load_injuries(2023) %>% 
+inj <- load_injuries(2022:2023) %>% 
   mutate(inj_join = paste(season, week, team, full_name, sep = "_"))
 
-# 3.0 load and join all contests ------------------------------------------
+# 3.0 load qb contest -----------------------------------------------------
 
-contest_qb <- lapply(contest, function(x){
+contests_wr <- lapply(contest_files, function(x){
   
   print(paste(x, ": Begin"))
   
@@ -64,10 +152,8 @@ contest_qb <- lapply(contest, function(x){
     
     # def pass epa
     pbp_def_pass <- pbp %>% 
-      filter(pass == 1 &
-               wp > 0.1 &
-               wp < 0.9 &
-               half_seconds_remaining > 120 & 
+      filter(pass == 1 & 
+               year == year &
                week < game_week) %>% 
       group_by(defteam) %>% 
       summarize(def_pass_epa = round(mean(epa), digits = 3),
@@ -79,9 +165,7 @@ contest_qb <- lapply(contest, function(x){
     # def rush epa
     pbp_def_rush <- pbp %>% 
       filter(rush == 1 &
-               wp > 0.1 &
-               wp < 0.9 &
-               half_seconds_remaining > 120 & 
+               year == year &
                week < game_week) %>% 
       group_by(defteam) %>% 
       summarize(def_rush_epa = round(mean(epa), digits = 3),
@@ -107,9 +191,7 @@ contest_qb <- lapply(contest, function(x){
     # off pass epa
     pbp_off_pass <- pbp %>% 
       filter(pass == 1 &
-               wp > .10 &
-               wp < .90 &
-               half_seconds_remaining > 120 & 
+               year == year &
                week < game_week) %>% 
       group_by(posteam) %>% 
       summarize(off_pass_epa = round(mean(epa), digits = 3),
@@ -121,9 +203,7 @@ contest_qb <- lapply(contest, function(x){
     # off rush epa
     pbp_off_rush <- pbp %>% 
       filter(rush == 1 &
-               wp > .10 &
-               wp < .90 &
-               half_seconds_remaining > 120 & 
+               year == year &
                week < game_week) %>% 
       group_by(posteam) %>% 
       summarize(off_rush_epa = round(mean(epa), digits = 3),
@@ -236,6 +316,8 @@ contest_qb <- lapply(contest, function(x){
   # define blitz table
   print(paste(x, ": Run team blitz"))
   blitz <- function(week) {
+    
+    # load fukes
     defense_summary <- read.csv(glue("{folder}/pff/defense_summary.csv"))
     pass_rush_summary <- read.csv(glue("{folder}/pff/pass_rush_summary.csv")) 
     run_defense_summary <- read.csv(glue("{folder}/pff/run_defense_summary.csv")) 
@@ -260,12 +342,14 @@ contest_qb <- lapply(contest, function(x){
     #blitz
     def_blitz_pos <- def %>% 
       group_by(team_name, position) %>% 
-      summarise(snaps = sum(snap_counts_pass_rush.x)) %>% 
+      summarise(snaps = sum(snap_counts_pass_rush.x), 
+                .groups = "drop") %>% 
       ungroup()
     
     def_blitz <- def %>% 
       group_by(team_name) %>% 
-      summarise(prsh_snaps = sum(snap_counts_pass_rush.x))
+      summarise(prsh_snaps = sum(snap_counts_pass_rush.x), 
+                .groups = "drop")
     
     def_blitz_pos <- def_blitz_pos %>% 
       left_join(def_blitz, by=c('team_name')) 
@@ -276,7 +360,7 @@ contest_qb <- lapply(contest, function(x){
     
     team_blitz <<- def_blitz_pos %>% 
       group_by(team_name) %>% 
-      summarise(blitz_team = sum(blitz_pos)) %>% 
+      summarise(blitz_team = sum(blitz_pos), .groups = "drop") %>% 
       mutate(blitz_rank = dense_rank(desc(blitz_team)), 
              team_name = gsub('ARZ','ARI', team_name), 
              team_name = gsub('BLT','BAL', team_name), 
@@ -284,70 +368,13 @@ contest_qb <- lapply(contest, function(x){
              team_name = gsub('HST','HOU', team_name), 
              #team_name = gsub('JAX','JAC', team_name), 
              team_name = gsub('LA','LAR', team_name), 
-             team_name = gsub('LARC','LAC', team_name))
+             team_name = gsub('LARC','LAC', team_name)) 
     
     def_blitz_pos <- def_blitz_pos %>% 
       left_join(team_blitz, by=c('team_name')) 
     
   }
   blitz(game_week)
-  
-  # run te
-  print(paste(x, ": Run te"))
-  tight_end <- function(){
-    
-    salaries <- read.csv(glue("{folder}/DKSalaries.csv")) %>% 
-      select(1,3,6:8) %>% 
-      rename_with(~c("pos", "name", "salary", "game_info", "team")) %>% 
-      separate(game_info, sep = "@", into = c("alpha", "bravo")) %>% 
-      mutate(away_team = alpha) %>% 
-      separate(bravo, sep = " ", into = c("charlie", "delta"), extra = "drop") %>% 
-      mutate(home_team = charlie, 
-             opp = if_else(team == alpha, charlie, alpha), 
-             home = if_else(team == home_team, 1, 0)) %>% 
-      select(pos, name, salary, team, home, opp, home_team, away_team)
-    
-    # load pff data
-    chart_te_matchup <- read.csv(glue("{folder}/pff/te_matchup_chart.csv"))
-    receiving_summary <- read.csv(glue("{folder}/pff/receiving_summary.csv"))
-    receiving_summary <- replace(receiving_summary, receiving_summary =='D.K. Metcalf','DK Metcalf') 
-    receiving_scheme <- read.csv(glue("{folder}/pff/receiving_scheme.csv"))
-    
-    # create te dataframe
-    te <<- salaries %>% filter(pos=="TE") %>% 
-      left_join(chart_te_matchup, by = c('name'='offPlayer')) %>% 
-      left_join(receiving_summary %>% filter(position=="TE"), by = c('name'='player')) %>%
-      left_join(receiving_scheme %>% select(player, man_yprr, man_routes, zone_yprr, zone_routes), by = c('name' = 'player')) %>% 
-      
-      left_join(pbp_def, by = c('opp' = 'defteam')) %>% 
-      left_join(def_table, by = c('opp' = 'team_name')) %>% 
-      left_join(defense_coverage_scheme, by = c('opp' = 'team_name')) %>% 
-      
-      mutate(man_zone_yprr_split = man_yprr - zone_yprr, 
-             test = man_zone_yprr_split * man_percentage) %>% 
-      select(team,
-             opp,
-             name,
-             salary, 
-             offYprr,
-             grades_offense,
-             adv, 
-             def_pass_epa_rank, 
-             cov_rank,
-             man_zone_yprr_split,
-             man_rank, 
-             man_percentage, 
-             test, 
-             def_man_grade_rank,
-             man_yprr,
-             man_routes, 
-             zone_rank, 
-             def_zone_grade_rank, 
-             zone_yprr, 
-             zone_routes)
-    
-  }
-  tight_end()
   
   # run wr
   print(paste(x, ": Run wr"))
@@ -409,10 +436,11 @@ contest_qb <- lapply(contest, function(x){
              man_grade_yprr_man_cov_sd = round((man_grade_yprr_man_cov - mean(man_grade_yprr_man_cov, na.rm=T)) / sd(man_grade_yprr_man_cov, na.rm = T), digits = 2), 
              targets_per_game = round(targets / player_game_count.x, digits = 1),
              targets_per_game_sd = round((targets_per_game - mean(targets_per_game, na.rm=T)) / sd(targets_per_game, na.rm = T), digits = 2), 
-             man_zone_yprr_split = man_yprr - zone_yprr)
-    #slot_rate_cov = round((slot_rate/100)*slot +(1-slot_rate/100)*wide,digits=1), 
-    #adv = grades_pass_route-slot_rate_cov)
-    
+             man_zone_yprr_split = man_yprr - zone_yprr, 
+             contest_year = year, 
+             contest_week = game_week,
+             contest = x, 
+             join = paste(name, contest, sep = "_"))
     
     wr$sum_sd <- 
       (0.20 * wr$yprr_sd) + 
@@ -422,33 +450,10 @@ contest_qb <- lapply(contest, function(x){
       (0.10 * wr$cov_sd) + 
       (0.20 * wr$man_grade_yprr_man_cov_sd)
     
-    #Salary Table
-    wr_salary_table <- wr %>%
-      group_by(team) %>%
-      summarise(wr_sum_salary = round(mean(salary), digits = 0))
-    
-    wr_count <- table(wr$team)
-    
-    te_salary_table <- te %>% 
-      group_by(team) %>% 
-      summarise(te_sum_salary = round(mean(salary), digits = 0))
-    
-    names(te_salary_table)[2] <- 'te_sum_salary'
-    
-    reciever_salary <- wr_salary_table %>% 
-      left_join(te_salary_table, by = c('team' = 'team'))
-    
-    reciever_salary$total_rec_salary <- reciever_salary$wr_sum_salary + reciever_salary$te_sum_salary
-    
-    reciever_salary$total_rec_salary <- rowSums(reciever_salary[,c("wr_sum_salary", "te_sum_salary")], na.rm=TRUE)
-    
-    reciever_salary$total_rec_salary_sd <- round((reciever_salary$total_rec_salary - mean(reciever_salary$total_rec_salary, na.rm=T)) / sd(reciever_salary$total_rec_salary, na.rm = T), digits = 2)
-    
-    reciever_salary <<- reciever_salary
-    
     wr <<- wr %>%
       select(name,
              team,
+             home,
              salary,
              grades_pass_route, 
              advantage,
@@ -457,6 +462,7 @@ contest_qb <- lapply(contest, function(x){
              sum_sd,
              opp,
              def_pass_epa_rank,
+             cov, 
              cov_rank,
              man_zone_yprr_split,
              man_yprr,
@@ -475,139 +481,39 @@ contest_qb <- lapply(contest, function(x){
              def_zone_grade_rank,
              def_pass_epa,
              touchdowns,
-             yards_after_catch_per_reception) %>%
-      arrange(-sum_sd)
-  }
-  wide_receiver()
-  
-  # run qb
-  print(paste(x, ": Run quarteqback"))
-  quarteqback <- function(){
-    
-    salaries <- read.csv(glue("{folder}/DKSalaries.csv")) %>% 
-      select(1,3,6:8) %>% 
-      rename_with(~c("pos", "name", "salary", "game_info", "team")) %>% 
-      separate(game_info, sep = "@", into = c("alpha", "bravo")) %>% 
-      mutate(away_team = alpha) %>% 
-      separate(bravo, sep = " ", into = c("charlie", "delta"), extra = "drop") %>% 
-      mutate(home_team = charlie, 
-             opp = if_else(team == alpha, charlie, alpha), 
-             home = if_else(team == home_team, 1, 0)) %>% 
-      select(pos, name, salary, team, home, opp, home_team, away_team)
-    
-    pblk <- read.csv(glue("{folder}/pff/line_pass_blocking_efficiency.csv"))
-    pblk <- pblk %>% 
-      mutate(across('team_name', str_replace, 'ARZ', 'ARI'),
-             across('team_name', str_replace, 'BLT', 'BAL'), 
-             across('team_name', str_replace, 'CLV', 'CLE'), 
-             across('team_name', str_replace, 'HST', 'HOU'),
-             across('team_name', str_replace, 'LA', 'LAR'), 
-             across('team_name', str_replace, 'LARC', 'LAC')) %>% 
-      mutate(pbe_rank = round(rank(-pblk$pbe), digits = 0), 
-             pbe_sd = round((pblk$pbe - mean(pblk$pbe, na.rm=T)) / sd(pblk$pbe, na.rm = T), digits = 2))
-    
-    passing_summary <- read.csv(glue("{folder}/pff/passing_summary.csv"))
-    passing_concept <- read.csv(glue("{folder}/pff/passing_concept.csv"))
-    passing_pressure_blitz <- read.csv(glue("{folder}/pff/passing_pressure.csv"))
-    
-    qb_ids <- pbp %>% select(passer_id, passer) %>% drop_na() %>% unique()
-    
-    
-    #QB
-    qb <- salaries %>% 
-      filter(pos=="QB") %>%
-      mutate(name = str_replace(name, "Gardner Minshew II","Gardner Minshew")) %>% 
-      filter(salary > 5000) %>% 
-      left_join(passing_summary, by = c('name' = 'player')) %>% 
-      left_join(pblk, by = c('team' = 'team_name')) %>% 
-      left_join(passing_concept, by = c('name' = 'player')) %>% 
-      left_join(reciever_salary, by = c('team' = 'team'))
-    
-    player <- passing_pressure_blitz$player
-    blitz_dropbacks_percent <- passing_pressure_blitz$blitz_dropbacks_percent / 100
-    blitz_grades_pass <- passing_pressure_blitz$blitz_grades_pass
-    pressure_grades_pass <- passing_pressure_blitz$pressure_grades_pass
-    
-    qb_blitz <- tibble(player, blitz_dropbacks_percent, blitz_grades_pass, pressure_grades_pass)
-    
-    qb <- qb %>% 
-      left_join(qb_blitz, by = c('name' = 'player')) %>% 
-      left_join(pbp_def, by = c('opp' = 'defteam')) %>% 
-      left_join(def_table, by = c('opp' = 'team_name')) %>% 
-      left_join(team_blitz, by = c('opp' = 'team_name')) 
-    
-    qb <- qb %>% 
-      mutate(#points_per_dollar = round(fantasyPoints / (salary/100), digits = 3), 
-        name_salary = paste(name, salary), 
-        #name_salary_own = paste(name, salary, proj_own), 
-        btt_twp_ratio = round(btt_rate / twp_rate, digits = 1), 
-        btt_twp_ratio_sd = round((btt_twp_ratio - mean(btt_twp_ratio, na.rm=T)) / sd(btt_twp_ratio, na.rm = T), digits = 2), 
-        dropbacks_game = round(dropbacks.x / player_game_count, digits = 1), 
-        pressure_vs_prsh = round(pressure_grades_pass/ prsh, digits =1), 
-        pressure_vs_prsh_sd = round((pressure_vs_prsh - mean(pressure_vs_prsh, na.rm=T)) / sd(pressure_vs_prsh, na.rm = T), digits = 2), 
-        ttt_run_p2s = round(avg_time_to_throw*grades_run/pressure_to_sack_rate, digits = 1), 
-        contest_year = year, 
-        contest_week = game_week,
-        contest = x, 
-        join = paste(name, contest, sep = "_"))
-    
-    qb$blitz_grades_pass_sq_blitz_rate <- round(qb$blitz_grades_pass^2 * qb$blitz_team, digits = -1)
-    qb$blitz_grades_pass_sq_blitz_rate_sd <- round((qb$blitz_grades_pass_sq_blitz_rate - mean(qb$blitz_grades_pass_sq_blitz_rate, na.rm=T)) / sd(qb$blitz_grades_pass_sq_blitz_rate, na.rm = T), digits = 2)
-    
-    qb$grades_pass_sd <- round((qb$grades_pass - weighted.mean(qb$grades_pass, qb$dropbacks.x, na.rm=T)) / sd(qb$grades_pass, na.rm = T), digits = 2)
-    
-    qb$sum_sd <- round(
-      (0.30 * qb$grades_pass_sd) +
-        (0.30 * qb$def_pass_epa_sd) +
-        (0.10 * (qb$total_rec_salary_sd - qb$cov_sd)) +
-        (0.10 * qb$blitz_grades_pass_sq_blitz_rate_sd)+
-        (0.00 * qb$pressure_vs_prsh_sd) +
-        (0.00 * (qb$pbe_sd - qb$prsh_sd)), 
-      digits = 3)
-    
-    qb <<- qb %>%
-      select(name,
-             team,
-             home,
-             salary,
-             grades_pass,
-             dropbacks_game,
-             sum_sd,
-             opp, 
-             def_pass_epa_rank,
-             def_rank, 
-             cov_rank,
-             ttt_run_p2s,
-             grades_run, 
-             def_rush_epa_rank,
-             pbe_rank,
-             prsh_rank,
-             prsh, 
-             pressure_grades_pass, 
-             avg_time_to_throw,
-             avg_depth_of_target, 
-             pressure_vs_prsh, 
-             blitz_dropbacks_percent,
-             blitz_grades_pass,
-             blitz_rank,
-             blitz_grades_pass_sq_blitz_rate, 
+             yards_after_catch_per_reception, 
              contest_year, 
              contest_week,
              contest, 
              join, 
              away_team, 
-             home_team
-      ) %>%
+             home_team) %>%
       arrange(-sum_sd)
   }
-  quarteqback()
+  wide_receiver()
   
 })
 
-status_names <- c("status_NA", "status_Questionable", "status_Doubtful", "status_Out")
+# remove objects
+rm(pbp_def, pbp_off)
 
-# contest 
-contest_qb <- bind_rows(contest_qb) %>% 
+# 4.0 create dataframe ----------------------------------------------------
+
+# bind to single dataframe and process data
+contests_wr <- bind_rows(contests_wr) %>% 
+  drop_na() %>% 
+  
+  # changing name to pbp format
+  separate(name, into = c("first_name", "last_name"), sep = " ", extra = "drop") %>% 
+  mutate(player = paste0(substr(first_name, 1, 1), ".", last_name), 
+         join = paste(contest_year, contest_week, team, player, sep = "_"), 
+         name = paste(first_name, last_name)) %>%
+  relocate(name, .before = "first_name") %>% 
+  select(-c("first_name", "last_name")) %>%
+  
+  # joining fpts
+  left_join(wr_fpts %>% select(join, fpts, fpts_ntile), by=c("join")) %>%
+  replace_na(list(fpts = 0, fpts_ntile = 0)) %>%
   
   # joining odds
   mutate(schedule_join = sprintf("%02d", contest_week), 
@@ -617,6 +523,7 @@ contest_qb <- bind_rows(contest_qb) %>%
   mutate(spread = if_else(home == 1, home_spread, away_spread)) %>% 
   relocate(c(spread, total_line), .after = "team") %>% 
   
+  # add sd columns
   mutate(inj_join = paste(contest_year, contest_week, team, name, sep = "_")) %>% 
   
   left_join(inj %>% select(inj_join, report_status, practice_status), by=c("inj_join")) %>% 
@@ -629,45 +536,80 @@ contest_qb <- bind_rows(contest_qb) %>%
               names_prefix = "status_", 
               values_fill = 0,
               values_fn = function(x) 1) %>%
-  select(-id) %>% 
-  mutate(status_Questionable = 0, status_Out = 0)
+  select(-id) 
 
+# 5.0 eda -----------------------------------------------------------------
 
-# 3.0 Load model and make projections -------------------------------------
+# find individual correlations
+cor(contests_wr$yprr, 
+    contests_wr$fpts)
 
-# load model
-load("./04_models/qb_pts_models.RData")
+# select only numeric columns
+numeric_contests_wr <- contests_wr[, sapply(contests_wr, is.numeric)]
 
-# projections
-model_projections <- predict(qb_pts_models$lm, 
-                             newdata = contest_qb)
+# find cor of all variables
+cor(numeric_contests_wr)[,"fpts"]
 
-# join projections to data
-contest_qb <- contest_qb %>% 
-  drop_na(sum_sd)
-contest_qb <- cbind(contest_qb, model_projections)
+# 6.0 split train test ----------------------------------------------------
 
-# find saber file
-files <- list.files(glue("./01_data/contests/{contest}"))
+model_data <- numeric_contests_wr %>% 
+  filter(salary > 4000)
 
-file = files[which(grepl("DK_Main", files, ignore.case = TRUE))]
-file
+set.seed(123)
 
-# load saber
-saber <- read.csv(glue("./01_data/contests/{contest}/{file}"))
+# split data
+split_index <- createDataPartition(model_data$fpts, 
+                                   p = 0.75, 
+                                   list = F, 
+                                   times = 1)
 
-# join saber
-contest_qb <- contest_qb %>% 
-  left_join(saber %>% select(Name, SS.Proj), 
-            by=c("name"="Name")) %>% 
-  mutate(model_projections = round(model_projections, digits = 2)) 
+train_data <- model_data[split_index, ]
+test_data <- model_data[-split_index, ]
 
-# print projections
-contest_qb %>% 
-  select(name, model_projections, SS.Proj) %>% 
-  arrange(-model_projections) %>% 
-  head(20)
+# list of models to train
+models <- c("lm", "glm", # linear models 
+            "gbm", # gradient boosting
+            "svmRadial", # kernel trick
+            "knn") # k nearest neighbors
 
-contest_qb <- contest_qb %>% 
-  relocate(c(model_projections, SS.Proj), .after = team) %>% 
-  arrange(-model_projections)
+models_not_ready <- c("rf", "nnet", "rpart")
+
+# set up control parameters
+ctrl <- trainControl(method = "cv", 
+                     number = 10, 
+                     savePredictions = "all")
+
+# Train each model and store the results.
+wr_pts_models <- lapply(models, function(model){
+  
+  print(paste("Model training:", model))
+  
+  set.seed(1)
+  
+  fit <- train(fpts ~ salary + spread + total_line + 
+                 yprr + targets_per_game + advantage + man_yprr + man_percentage +
+                 def_pass_epa + cov +
+                 status_NA + status_Questionable + status_Out, 
+               data = train_data, 
+               method = model, 
+               trControl = ctrl)
+  
+})
+# removed temporarily
+#status_Doubtful
+
+names(wr_pts_models) <- models
+
+#Evaluate Models on Test Data:
+predictions <- lapply(wr_pts_models, function(fit) predict(fit, test_data))
+
+# get performance metrics
+performance <- lapply(predictions, function(pred) postResample(pred, test_data$fpts))
+
+# visualize and compare
+performance_df <- as.data.frame(do.call(rbind, performance))
+performance_df
+
+# 6.3 model selection -----------------------------------------------------
+
+save(wr_pts_models, file = "./04_models/wr_pts_models.RData")
