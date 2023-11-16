@@ -5,7 +5,7 @@ library(tidyverse)
 #Inputs
 sport <- "icehockey_nhl"
 url <- paste0("https://odds.p.rapidapi.com/v4/sports/",sport,"/odds")
-date <- "2022-03-23"
+date <- "2022-11-15"
 
 #Write query string
 queryString <- list(

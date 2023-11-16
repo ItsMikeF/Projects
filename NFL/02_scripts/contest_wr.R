@@ -587,7 +587,7 @@ wr_pts_models <- lapply(models, function(model){
   set.seed(1)
   
   fit <- train(fpts ~ salary + spread + total_line + 
-                 yprr + targets_per_game + advantage + man_yprr + man_percentage +
+                 targets_per_game + advantage + man_yprr + man_percentage + zone_yprr + yards_after_catch_per_reception +
                  def_pass_epa + cov +
                  status_NA + status_Questionable + status_Out, 
                data = train_data, 

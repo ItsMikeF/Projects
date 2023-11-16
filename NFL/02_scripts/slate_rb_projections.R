@@ -353,12 +353,12 @@ contest_rb <- contest_rb %>%
             by=c("name"="Name")) %>% 
   mutate(model_projections = round(model_projections, digits = 2)) 
 
+contest_rb <- contest_rb %>% 
+  relocate(c(model_projections, SS.Proj), .after = team) %>% 
+  arrange(-model_projections)
+
 # print projections
 contest_rb %>% 
   select(name, model_projections, SS.Proj) %>% 
   arrange(-model_projections) %>% 
   head(20)
-
-contest_rb <- contest_rb %>% 
-  relocate(c(model_projections, SS.Proj), .after = team) %>% 
-  arrange(-model_projections)
