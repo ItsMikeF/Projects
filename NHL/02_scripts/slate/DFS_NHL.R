@@ -6,15 +6,18 @@
 suppressMessages({
   library(tidyverse)
   library(lubridate)
-  library(ggrepel)
-  library(gt)
   library(fastRhockey)
 })
 
-# Specify date
-date <- Sys.Date()
+options(digits = 3)
 
-#Import CSVs
+# Specify date
+date <- "2023-11-16"
+
+# Define the recoding rules as a named vector
+team_abbrev_recode <- c("ANH" = "ANA", "NJ" = "NJD", "SJ" = "SJS", "MON" = "MTL")
+
+# Import CSVs
 nhl_salaries <- read.csv(paste0("./01_data/contests/", date, "/DKSalaries.csv")) %>%
   separate(Game.Info, 
            c("Away", "String"), 
@@ -23,13 +26,12 @@ nhl_salaries <- read.csv(paste0("./01_data/contests/", date, "/DKSalaries.csv"))
            c("Home", "Date", "Time"), 
            sep = " ", 
            extra = "drop") %>% 
-  mutate(Opponent = if_else(Home == TeamAbbrev, Away, Home)) 
+  mutate(across(c(TeamAbbrev, Home, Away), ~recode(., !!!team_abbrev_recode))) %>%
+  mutate(Opponent = if_else(Home == TeamAbbrev, Away, Home))
 
-#Change Team Abbrevs
-nhl_salaries <- replace(nhl_salaries, nhl_salaries == "ANH", "ANA")
-nhl_salaries <- replace(nhl_salaries, nhl_salaries == "NJ", "NJD")
-nhl_salaries <- replace(nhl_salaries, nhl_salaries == "SJ", "SJS")
-nhl_salaries <- replace(nhl_salaries, nhl_salaries == "MON", "MTL")
+# get games
+
+games <- nhl_salaries %>% select(Away, Home) %>% distinct()
 
 # load money puck data
 mp_skaters <- read.csv(paste0("./01_data/contests/", date,"/skaters.csv"))
@@ -37,13 +39,71 @@ mp_lines <- read.csv(paste0("./01_data/contests/", date,"/lines.csv"))
 mp_goalies <- read.csv(paste0("./01_data/contests/", date,"/goalies.csv"))
 mp_teams <- read.csv(paste0("./01_data/contests/", date,"/teams.csv"))
 
-rotowire_nhl <- read.csv(paste0("./01_data/contests/", date,"/nhl-odds-rotowire.csv"))
 nhl_team_table <- read.csv("./01_data/nhlteams.csv")
+
+
+# process data ------------------------------------------------------------
+
 
 #Skaters
 skaters <- nhl_salaries %>% 
   left_join(mp_skaters, by = c('Name' = "name")) %>% 
   filter(situation == "all") 
+
+# power play
+pp_gf <- mp_teams %>% 
+  filter(situation == "5on4") %>% 
+  select(name, 
+         iceTime,
+         games_played,
+         penalityMinutesFor,
+         xGoalsFor,
+         flurryScoreVenueAdjustedxGoalsFor) %>% 
+  mutate(iceTime = iceTime/60, # convert seconds to minutes
+         pp_per60 = (iceTime / (games_played*60))*60, 
+         xGoalsFor_per60 = xGoalsFor / (iceTime/60), 
+         flurryScoreVenueAdjustedxGoalsFor_per60 = flurryScoreVenueAdjustedxGoalsFor / (iceTime/60)) %>% 
+  arrange(-xGoalsFor_per60)
+
+pp_ga <- mp_teams %>% 
+  filter(situation == "4on5") %>% 
+  select(name, 
+         iceTime, 
+         games_played, 
+         penalityMinutesAgainst,
+         xGoalsAgainst, 
+         flurryScoreVenueAdjustedxGoalsAgainst) %>% 
+  mutate(iceTime = iceTime/60, # convert seconds to minutes
+         pp_per60 = (iceTime / (games_played*60))*60, 
+         xGoalsAgainst_per60 = xGoalsAgainst / (iceTime/60), 
+         flurryScoreVenueAdjustedxGoalsAgainst_per60 = flurryScoreVenueAdjustedxGoalsAgainst / (iceTime/60)) %>% 
+  arrange(-xGoalsAgainst_per60)
+
+pp_slate_home <- games %>% select(Home) %>% rename(home = Home) %>% 
+  left_join(
+    pp_gf %>% 
+      select(name, xGoalsFor_per60, penalityMinutesFor) %>% 
+      rename(home_xGoalsFor_per60 = xGoalsFor_per60, home_penalityMinutesFor = penalityMinutesFor),
+    by = c("home" = "name")
+  ) %>%
+  left_join(
+    pp_ga %>% 
+      select(name, xGoalsAgainst_per60, penalityMinutesAgainst) %>% 
+      rename(home_xGoalsAgainst_per60 = xGoalsAgainst_per60, home_penalityMinutesAgainst = penalityMinutesAgainst),
+    by = c("home" = "name")
+  )
+
+pp_slate_away <- games %>% select(Away) %>% rename(away = Away) %>% 
+  left_join(pp_gf %>% 
+              select(name, xGoalsFor_per60, penalityMinutesFor) %>% 
+              rename(away_xGoalsFor_per60 = xGoalsFor_per60, away_penalityMinutesFor = penalityMinutesFor), 
+            by=c("away" = "name")) %>% 
+  left_join(pp_ga %>% 
+              select(name, xGoalsAgainst_per60, penalityMinutesAgainst) %>% 
+              rename(away_xGoalsAgainst_per60 = xGoalsAgainst_per60, away_penalityMinutesAgainst = penalityMinutesAgainst), 
+            by=c("away" = "name"))
+
+pp <- cbind(pp_slate_away, pp_slate_home)
 
 # teams
 teams <- mp_teams %>% 
@@ -67,9 +127,13 @@ teams <- mp_teams %>%
          
          name_xg_ratio = paste(name, xg_ratio))
 
+# lines
 mp_team_lines <- function(){
-  team_lines <- list()
+  
 }
+
+team_lines <- list()
+
 for (i in 1:32) {
   team_lines[[i]] <- mp_lines %>% 
     filter(team == nhl_team_table$TeamAbbrev[i] & position == "line") %>% 
@@ -80,7 +144,6 @@ for (i in 1:32) {
 
 team_lines <- do.call("rbind", team_lines)
 names(team_lines)[c(1,3)] <- c("line","line_games_played")
-
 
 teams <- teams %>% 
   left_join(team_lines, by = c("name" = "team"))
@@ -115,8 +178,102 @@ xg_plot <- function(){
     scale_y_reverse(n.breaks = 10)
 }
 
+# centers
+slate_centers <- function(){
+  centers <- skaters %>% 
+    filter(position == "C" &
+             Salary > 2500) %>% 
+    left_join(teams, by = c('Opponent' = 'name')) %>% 
+    mutate(xg_min = round(I_F_xGoals_with_earned_rebounds / (icetime/60), digits = 4), 
+           xg_min_rank = round(rank(-xg_min), digits = 0))
+  
+  centers <- centers %>% 
+    select(Name,
+           Salary,
+           TeamAbbrev,
+           xg_min,
+           xg_min_rank,
+           Opponent,
+           xga_per_game,
+           xga_rank,
+           xgd,
+           I_F_points,
+           I_F_xGoals,
+           I_F_xGoals_with_earned_rebounds,
+           I_F_points) %>% 
+    arrange(-I_F_xGoals) %>%
+    view(title = "Centers")
+}
+
+# wingers
+slate_wingers <- function(){
+  wingers <- skaters %>% 
+    filter(position == "L" | position == "R" &
+             Salary > 2500) %>%
+    select(Name,
+           Salary,
+           TeamAbbrev,
+           Opponent,
+           I_F_points,
+           I_F_xGoals,
+           I_F_xGoals_with_earned_rebounds,
+           AvgPointsPerGame, 
+           games_played,
+           icetime,
+           iceTimeRank,
+           I_F_points) %>% 
+    arrange(-I_F_xGoals) %>% 
+    view(title = "Wingers")
+}
+
+# defensemen
+slate_defenders <- function(){
+  defenders <- skaters %>%
+    filter(position == "D" &
+             Salary > 2500) %>%
+    select(Name,
+           Salary,
+           TeamAbbrev,
+           Opponent,
+           I_F_points,
+           I_F_xGoals,
+           I_F_xGoals_with_earned_rebounds,
+           AvgPointsPerGame, 
+           games_played,
+           icetime,
+           iceTimeRank,
+           I_F_points) %>% 
+    arrange(-I_F_xGoals) %>% 
+    view(title = "Defenders")
+}
+
+# goalies
+slate_goalies <- function(){
+  goalies <- nhl_salaries %>% 
+    left_join(mp_goalies, by = c('Name' = "name")) %>% 
+    filter(situation == "all") %>% 
+    mutate(gsae <- flurryAdjustedxGoals - goals,
+           gsae_per_game <- round((flurryAdjustedxGoals - goals) / games_played, digits = 2),
+           icetime <- round(icetime/60, digits = 0))
+  
+  goalies %>% 
+    select(Name, 
+           Salary,
+           team,
+           games_played,
+           gsae,
+           gsae_per_game) %>% 
+    arrange(-gsae_per_game) %>% 
+    view(title = "Goalies")
+}
+
+# arhive -----------------------------------------------------------------
+
 #Rotowire NHL
 rotowire <- function(){
+  
+  rotowire_nhl <- read.csv(paste0("./01_data/contests/", date,"/nhl-odds-rotowire.csv"))
+  
   names(rotowire_nhl)[c(1,2,11)] <- c('Squad', 'DateTime', 'Opp.Score')
   
   rotowire_nhl <- rotowire_nhl[-c(1),-c(4,6,8)]
@@ -158,90 +315,6 @@ rotowire <- function(){
     arrange(-xgd_home) %>% 
     view(title = "NHL Slate")
 }
-
-#Centers
-centers <- skaters %>% 
-  filter(position == "C" &
-           Salary > 2500) %>% 
-  left_join(teams, by = c('Opponent' = 'name'))
-
-centers$xg_min <- round(centers$I_F_xGoals_with_earned_rebounds / (centers$icetime/60), digits = 4)
-centers$xg_min_rank <- round(rank(-centers$xg_min), digits = 0)
-
-centers <- centers %>% 
-  select(Name,
-         Salary,
-         TeamAbbrev,
-         xg_min,
-         xg_min_rank,
-         Opponent,
-         xga_per_game,
-         xga_rank,
-         xgd,
-         I_F_points,
-         I_F_xGoals,
-         I_F_xGoals_with_earned_rebounds,
-         I_F_points) %>% 
-  arrange(-I_F_xGoals) %>%
-  view(title = "Centers")
-
-# Wingers
-wingers <- skaters %>% 
-  filter(position == "L" | position == "R" &
-           Salary > 2500) %>%
-  select(Name,
-         Salary,
-         TeamAbbrev,
-         Opponent,
-         I_F_points,
-         I_F_xGoals,
-         I_F_xGoals_with_earned_rebounds,
-         AvgPointsPerGame, 
-         games_played,
-         icetime,
-         iceTimeRank,
-         I_F_points) %>% 
-  arrange(-I_F_xGoals) %>% 
-  view(title = "Wingers")
-
-###Defenders###
-
-defenders <- skaters %>%
-  filter(position == "D" &
-           Salary > 2500) %>%
-  select(Name,
-         Salary,
-         TeamAbbrev,
-         Opponent,
-         I_F_points,
-         I_F_xGoals,
-         I_F_xGoals_with_earned_rebounds,
-         AvgPointsPerGame, 
-         games_played,
-         icetime,
-         iceTimeRank,
-         I_F_points) %>% 
-  arrange(-I_F_xGoals) %>% 
-  view(title = "Defenders")
-
-# Goalies
-goalies <- nhl_salaries %>% 
-  left_join(mp_goalies, by = c('Name' = "name")) %>% 
-  filter(situation == "all")
-
-goalies$gsae <- goalies$flurryAdjustedxGoals - goalies$goals
-goalies$gsae_per_game <- round((goalies$flurryAdjustedxGoals - goalies$goals) / goalies$games_played, digits = 2)
-goalies$icetime <- round(goalies$icetime/60, digits = 0)
-
-goalies %>% 
-  select(Name, 
-         Salary,
-         team,
-         games_played,
-         gsae,
-         gsae_per_game) %>% 
-  arrange(-gsae_per_game) %>% 
-  view(title = "Goalies")
 
 #Combinations
 combinations <- function(){
