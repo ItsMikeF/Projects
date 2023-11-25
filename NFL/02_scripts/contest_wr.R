@@ -430,16 +430,26 @@ contests_wr <- lapply(contest_files, function(x){
     wr <- wr %>% 
       mutate(name_salary = paste(name, salary), 
              #name_salary_own = paste(name, salary, proj_own), 
+
              yprr_sd = round((yprr - mean(yprr, na.rm=T)) / sd(yprr, na.rm = T), digits = 2), 
              advantage_sd = round((advantage - mean(advantage, na.rm=T)) / sd(advantage, na.rm = T), digits = 2), 
              man_grade_yprr_man_cov = round((man_grades_pass_route * man_yprr * man_percentage), digits = 1), 
              man_grade_yprr_man_cov_sd = round((man_grade_yprr_man_cov - mean(man_grade_yprr_man_cov, na.rm=T)) / sd(man_grade_yprr_man_cov, na.rm = T), digits = 2), 
+             
+             routes_game = round(routes/player_game_count.x, digits = 2), 
+             yards_game = round(yards/player_game_count.x, digits = 2),
              targets_per_game = round(targets / player_game_count.x, digits = 1),
+             touchdowns_game = round(touchdowns / player_game_count.x, digits = 1), 
+             
+             target_share = round(targets / routes / route_rate, digits = 2), 
+             
              targets_per_game_sd = round((targets_per_game - mean(targets_per_game, na.rm=T)) / sd(targets_per_game, na.rm = T), digits = 2), 
              man_zone_yprr_split = man_yprr - zone_yprr, 
              contest_year = year, 
              contest_week = game_week,
              contest = x, 
+             yprr_scheme = round((zone_yprr * zone_percentage) + (man_yprr * man_percentage), digits = 2), 
+             yprr_delta = yprr_scheme - yprr,
              join = paste(name, contest, sep = "_"))
     
     wr$sum_sd <- 
@@ -457,8 +467,14 @@ contests_wr <- lapply(contest_files, function(x){
              salary,
              grades_pass_route, 
              advantage,
+             route_rate, 
+             routes_game,
+             target_share,
+             yards_game,
              targets_per_game,
+             touchdowns_game,
              yprr,
+             avg_depth_of_target, 
              sum_sd,
              opp,
              def_pass_epa_rank,
@@ -485,6 +501,8 @@ contests_wr <- lapply(contest_files, function(x){
              contest_year, 
              contest_week,
              contest, 
+             yprr_scheme, 
+             yprr_delta,
              join, 
              away_team, 
              home_team) %>%
@@ -541,7 +559,7 @@ contests_wr <- bind_rows(contests_wr) %>%
 # 5.0 eda -----------------------------------------------------------------
 
 # find individual correlations
-cor(contests_wr$yprr, 
+cor(contests_wr$salary, 
     contests_wr$fpts)
 
 # select only numeric columns
@@ -586,8 +604,10 @@ wr_pts_models <- lapply(models, function(model){
   
   set.seed(1)
   
-  fit <- train(fpts ~ salary + spread + total_line + 
-                 targets_per_game + advantage + man_yprr + man_percentage + zone_yprr + yards_after_catch_per_reception +
+  fit <- train(fpts ~ 
+                 salary + spread + total_line + home +
+                 yards_game + touchdowns_game + 
+                 grades_pass_route + yprr_scheme + yprr_delta + avg_depth_of_target +
                  def_pass_epa + cov +
                  status_NA + status_Questionable + status_Out, 
                data = train_data, 

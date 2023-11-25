@@ -349,12 +349,20 @@ contest_wr <- lapply(contest, function(x){
              advantage_sd = round((advantage - mean(advantage, na.rm=T)) / sd(advantage, na.rm = T), digits = 2), 
              man_grade_yprr_man_cov = round((man_grades_pass_route * man_yprr * man_percentage), digits = 1), 
              man_grade_yprr_man_cov_sd = round((man_grade_yprr_man_cov - mean(man_grade_yprr_man_cov, na.rm=T)) / sd(man_grade_yprr_man_cov, na.rm = T), digits = 2), 
+             
+             routes_game = round(routes/player_game_count.x, digits = 2), 
+             yards_game = round(yards/player_game_count.x, digits = 2),
              targets_per_game = round(targets / player_game_count.x, digits = 1),
+             touchdowns_game = round(touchdowns / player_game_count.x, digits = 1),
+             target_share = round(targets / routes / route_rate, digits = 2), 
+             
              targets_per_game_sd = round((targets_per_game - mean(targets_per_game, na.rm=T)) / sd(targets_per_game, na.rm = T), digits = 2), 
              man_zone_yprr_split = man_yprr - zone_yprr, 
              contest_year = year, 
              contest_week = game_week,
              contest = x, 
+             yprr_scheme = round((zone_yprr * zone_percentage) + (man_yprr * man_percentage), digits = 2), 
+             yprr_delta = yprr_scheme - yprr,
              join = paste(name, contest, sep = "_"))
     
     wr$sum_sd <- 
@@ -372,8 +380,14 @@ contest_wr <- lapply(contest, function(x){
              salary,
              grades_pass_route, 
              advantage,
+             routes_game,
+             yards_game,
              targets_per_game,
+             touchdowns_game,
+             route_rate,
+             target_share,
              yprr,
+             avg_depth_of_target,
              sum_sd,
              opp,
              def_pass_epa_rank,
@@ -401,6 +415,8 @@ contest_wr <- lapply(contest, function(x){
              contest_week,
              contest, 
              join, 
+             yprr_scheme, 
+             yprr_delta,
              away_team, 
              home_team) %>%
       arrange(-sum_sd)
@@ -442,19 +458,20 @@ contest_wr <- bind_rows(contest_wr) %>%
 # load model
 load("./04_models/wr_pts_models.RData")
 
+# join projections to data
+contest_wr <- contest_wr %>% drop_na(sum_sd)
+
 # projections
 model_projections <- predict(wr_pts_models$lm, 
                              newdata = contest_wr)
 
-# join projections to data
-contest_wr <- contest_wr %>% 
-  drop_na(sum_sd)
+
 contest_wr <- cbind(contest_wr, model_projections)
 
 # find saber file
 files <- list.files(glue("./01_data/contests/{contest}"))
 
-file = files[which(grepl("DK_Main", files, ignore.case = TRUE))]
+file = files[which(grepl("DK_", files, ignore.case = TRUE))]
 file
 
 # load saber
@@ -462,7 +479,7 @@ saber <- read.csv(glue("./01_data/contests/{contest}/{file}"))
 
 # join saber
 contest_wr <- contest_wr %>% 
-  left_join(saber %>% select(Name, SS.Proj), 
+  left_join(saber %>% select(Name, SS.Proj, My.Own), 
             by=c("name"="Name")) %>% 
   mutate(model_projections = round(model_projections, digits = 2)) 
 
@@ -472,6 +489,12 @@ contest_wr <- contest_wr %>%
 
 # print projections
 contest_wr %>% 
-  select(name, model_projections, SS.Proj) %>% 
+  select(name, model_projections, SS.Proj, My.Own) %>% 
   arrange(-model_projections) %>% 
   head(20)
+
+scheme <- contest_wr %>% 
+  select(name, salary, zone_yprr, zone_percentage, zone_rank, man_yprr, man_percentage, man_rank, yprr) %>% 
+  mutate(yprr_scheme = round((zone_yprr * zone_percentage) + (man_yprr * man_percentage), digits = 2), 
+         yprr_delta = yprr_scheme - yprr) %>% 
+  arrange(-yprr_delta)

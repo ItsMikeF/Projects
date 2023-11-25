@@ -1,5 +1,16 @@
+# slate qbs
 
-week = 10
+#load packages
+suppressMessages({
+  library(nflfastR) #nflfastr nflseedr nflplotr
+  library(nflreadr) #cleaning
+  library(tidyverse) #ggplot2 dplyr tibble tidyr purrr forecats 
+  library(ggrepel) #automatically position non-overlapping text labels
+  library(glue) #interpreted literal strings
+  library(gt)
+})
+
+week = 12
 folder = glue("./01_data/contests/2023_w{sprintf(\"%02d\", week)}")
 
 # load salary
@@ -11,25 +22,25 @@ dk_salaries <- function(){
     separate(bravo, sep = " ", into = c("charlie", "delta"), extra = "drop") %>% 
     mutate(opp = if_else(team == alpha, charlie, alpha)) %>% 
     select(pos, name, salary, team, opp) %>% 
-    mutate(name = str_replace(name, "Gardner Minshew II","Gardner Minshew")) %>% 
-    left_join(pff_own %>% select(player, ownership), by = c("name" = "player"))
+    mutate(name = str_replace(name, "Gardner Minshew II","Gardner Minshew")) 
 }
 dk_salaries()
 
 pblk <- read.csv(glue("{folder}/pff/line_pass_blocking_efficiency.csv"))
-pblk <- pblk %>% 
-  mutate(across('team_name', str_replace, 'ARZ', 'ARI'),
-         across('team_name', str_replace, 'BLT', 'BAL'), 
-         across('team_name', str_replace, 'CLV', 'CLE'), 
-         across('team_name', str_replace, 'HST', 'HOU'),
-         across('team_name', str_replace, 'LA', 'LAR'), 
-         across('team_name', str_replace, 'LARC', 'LAC')) %>% 
-  mutate(pbe_rank = round(rank(-pblk$pbe), digits = 0), 
+
+pblk <- read.csv(glue("{folder}/pff/line_pass_blocking_efficiency.csv")) %>% 
+  mutate(team_name = clean_team_abbrs(team_name), 
+         pbe_rank = round(rank(-pblk$pbe), digits = 0), 
          pbe_sd = round((pblk$pbe - mean(pblk$pbe, na.rm=T)) / sd(pblk$pbe, na.rm = T), digits = 2))
 
-passing_summary <- read.csv(glue("{folder}/pff/passing_summary.csv"))
-passing_concept <- read.csv(glue("{folder}/pff/passing_concept.csv"))
-passing_pressure_blitz <- read.csv(glue("{folder}/pff/passing_pressure.csv"))
+passing_summary <- read.csv(glue("{folder}/pff/passing_summary.csv")) %>% 
+  mutate(team_name = clean_team_abbrs(team_name))
+
+passing_concept <- read.csv(glue("{folder}/pff/passing_concept.csv")) %>% 
+  mutate(team_name = clean_team_abbrs(team_name))
+
+passing_pressure_blitz <- read.csv(glue("{folder}/pff/passing_pressure.csv")) %>% 
+  mutate(team_name = clean_team_abbrs(team_name))
 
 qb_ids <- pbp %>% select(passer_id, passer) %>% drop_na() %>% unique()
 

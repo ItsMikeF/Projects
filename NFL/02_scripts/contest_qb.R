@@ -5,7 +5,7 @@
 #load packages
 suppressMessages({
   library(nflfastR) # pbp data
-  library(nflreadr) # nfl schedule
+  library(nflreadr) # nfl schedule and cleaning
   library(tidyverse) # ggplot2 dplyr tibble tidyr purrr forecats 
   library(glue) # interpreted literal strings
   library(caret) # data partition
@@ -602,18 +602,18 @@ contests_qb <- lapply(contest_files, function(x){
     
     pblk <- read.csv(glue("{folder}/pff/line_pass_blocking_efficiency.csv"))
     pblk <- pblk %>% 
-      mutate(across('team_name', str_replace, 'ARZ', 'ARI'),
-             across('team_name', str_replace, 'BLT', 'BAL'), 
-             across('team_name', str_replace, 'CLV', 'CLE'), 
-             across('team_name', str_replace, 'HST', 'HOU'),
-             across('team_name', str_replace, 'LA', 'LAR'), 
-             across('team_name', str_replace, 'LARC', 'LAC')) %>% 
+      mutate(team_name = clean_team_abbrs(team_name)) %>% 
       mutate(pbe_rank = round(rank(-pblk$pbe), digits = 0), 
              pbe_sd = round((pblk$pbe - mean(pblk$pbe, na.rm=T)) / sd(pblk$pbe, na.rm = T), digits = 2))
     
-    passing_summary <- read.csv(glue("{folder}/pff/passing_summary.csv"))
-    passing_concept <- read.csv(glue("{folder}/pff/passing_concept.csv"))
-    passing_pressure_blitz <- read.csv(glue("{folder}/pff/passing_pressure.csv"))
+    passing_summary <- read.csv(glue("{folder}/pff/passing_summary.csv")) %>% 
+      mutate(team_name = clean_team_abbrs(team_name))
+    
+    passing_concept <- read.csv(glue("{folder}/pff/passing_concept.csv")) %>% 
+      mutate(team_name = clean_team_abbrs(team_name))
+    
+    passing_pressure_blitz <- read.csv(glue("{folder}/pff/passing_pressure.csv")) %>% 
+      mutate(team_name = clean_team_abbrs(team_name))
     
     qb_ids <- pbp %>% select(passer_id, passer) %>% drop_na() %>% unique()
     
@@ -679,6 +679,7 @@ contests_qb <- lapply(contest_files, function(x){
              dropbacks_game,
              sum_sd,
              opp, 
+             def_pass_epa, 
              def_pass_epa_rank,
              def_rank, 
              cov_rank,
@@ -715,7 +716,7 @@ rm(pbp_def, pbp_off)
 # 4.0 create dataframe ----------------------------------------------------
 
 # bind to single dataframe and process data
-contests_qb <- bind_rows(contests_qb) %>% 
+contests_qb <- {bind_rows(contests_qb) %>% 
   drop_na() %>% 
   
   # changing name to pbp format
@@ -752,7 +753,8 @@ contests_qb <- bind_rows(contests_qb) %>%
               values_fill = 0,
               values_fn = function(x) 1) %>%
   select(-id) 
-
+}
+  
 # 5.0 eda -----------------------------------------------------------------
 
 # find individual correlations
@@ -800,8 +802,9 @@ qb_pts_models <- lapply(models, function(model){
   
   set.seed(1)
   
-  fit <- train(fpts ~ salary + spread + total_line + 
-                 sum_sd + 
+  fit <- train(fpts ~ salary + spread + total_line + home +
+                 grades_pass + blitz_grades_pass_sq_blitz_rate + dropbacks_game + 
+                 def_pass_epa +
                  status_NA + status_Questionable + status_Out, 
                data = train_data, 
                method = model, 

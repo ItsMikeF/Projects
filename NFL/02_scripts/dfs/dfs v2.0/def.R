@@ -14,7 +14,7 @@ suppressMessages({
 team_names = c('ARZ'='ARI', 'BLT'='BAL', 'CLV'='CLE', 'HST'='HOU', 'JAX'='JAC', 'LA'='LAR')
 name_changes=c('DJ Moore'='D.J. Moore')
 
-week = 10
+week = 12
 sprintf("%02d", week)
 folder = glue("./01_data/contests/2023_w{sprintf(\"%02d\", week)}")
 

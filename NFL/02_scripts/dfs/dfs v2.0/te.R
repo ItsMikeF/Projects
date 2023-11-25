@@ -1,6 +1,6 @@
 # tight ends
 
-week = 10
+week = 11
 folder = glue("./01_data/contests/2023_w{sprintf(\"%02d\", week)}")
 
 # load pff data

@@ -446,7 +446,7 @@ cor(numeric_contest_rb)[,"fpts"]
 # 6.0 split train test ----------------------------------------------------
 
 model_data <- numeric_contest_rb %>% 
-  filter(touches_game > 10)
+  filter(touches_game > 5)
 
 set.seed(123)
 

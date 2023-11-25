@@ -341,7 +341,7 @@ contest_rb <- cbind(contest_rb, model_projections)
 # find saber file
 files <- list.files(glue("./01_data/contests/{contest}"))
 
-file = files[which(grepl("DK_Main", files, ignore.case = TRUE))]
+file = files[which(grepl("DK_", files, ignore.case = TRUE))]
 file
 
 # load saber
@@ -349,16 +349,16 @@ saber <- read.csv(glue("./01_data/contests/{contest}/{file}"))
 
 # join saber
 contest_rb <- contest_rb %>% 
-  left_join(saber %>% select(Name, SS.Proj), 
+  left_join(saber %>% select(Name, SS.Proj, My.Own), 
             by=c("name"="Name")) %>% 
   mutate(model_projections = round(model_projections, digits = 2)) 
 
 contest_rb <- contest_rb %>% 
-  relocate(c(model_projections, SS.Proj), .after = team) %>% 
+  relocate(c(model_projections, SS.Proj, My.Own), .after = team) %>% 
   arrange(-model_projections)
 
 # print projections
 contest_rb %>% 
-  select(name, model_projections, SS.Proj) %>% 
+  select(name, model_projections, SS.Proj, My.Own) %>% 
   arrange(-model_projections) %>% 
   head(20)
