@@ -362,3 +362,4 @@ contest_rb %>%
   select(name, model_projections, SS.Proj, My.Own) %>% 
   arrange(-model_projections) %>% 
   head(20)
+

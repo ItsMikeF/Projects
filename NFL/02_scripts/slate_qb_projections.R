@@ -641,7 +641,7 @@ contest_qb <- contest_qb %>%
 
 # print projections
 contest_qb %>% 
-  select(name, model_projections, SS.Proj, My.Own) %>% 
+  select(name, salary, model_projections, SS.Proj, My.Own) %>% 
   arrange(-model_projections) %>% 
   head(20)
 
@@ -686,9 +686,11 @@ apply_conditional_formatting <- function(gt_table, column) {
 }
 
 df <- contest_qb %>% 
-  select(name, model_projections, My.Own) %>% 
+  select(name, salary, opp, model_projections, My.Own, spread, total_line, home) %>% 
   rename(Proj_own = My.Own) %>% 
   arrange(-model_projections) %>% 
+  drop_na() %>% 
+  filter(Proj_own > 0) %>% 
   head(20) %>% 
   separate(name, into = c("first_name", "last_name"), sep = " ", extra = "drop") %>% 
   mutate(passer = paste0(substr(first_name, 1, 1), ".", last_name), 
@@ -702,6 +704,7 @@ df <- contest_qb %>%
 
 gt_table <- gt(df) %>% 
   gt_nfl_headshots(passer_id, height = 50) %>% 
+  #gt_nfl_logos(opp, height = 50) %>% 
   tab_header("2023 Week 11 Qbs") %>% 
   opt_interactive(use_compact_mode = TRUE)
 
@@ -712,7 +715,7 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session){
-  output$table <- render_gt(expr = model_inputs)
+  output$table <- render_gt(expr = gt_table)
 }
 
-shinyApp(ui = ui, server = server)
+#shinyApp(ui = ui, server = server)
