@@ -639,12 +639,6 @@ contest_qb <- contest_qb %>%
             by=c("name"="Name")) %>% 
   mutate(model_projections = round(model_projections, digits = 2)) 
 
-# print projections
-contest_qb %>% 
-  select(name, salary, model_projections, SS.Proj, My.Own) %>% 
-  arrange(-model_projections) %>% 
-  head(20)
-
 contest_qb <- contest_qb %>% 
   relocate(c(model_projections, SS.Proj, My.Own), .after = team) %>% 
   arrange(-model_projections)
@@ -685,8 +679,8 @@ apply_conditional_formatting <- function(gt_table, column) {
     )
 }
 
-df <- contest_qb %>% 
-  select(name, salary, opp, model_projections, My.Own, spread, total_line, home) %>% 
+test <- contest_qb %>% 
+  select(name, salary, opp, def_pass_epa_rank ,model_projections, My.Own, spread, total_line, home) %>% 
   rename(Proj_own = My.Own) %>% 
   arrange(-model_projections) %>% 
   drop_na() %>% 
@@ -702,11 +696,14 @@ df <- contest_qb %>%
   select(-passer) %>% 
   relocate(passer_id, .after = name) 
 
-gt_table <- gt(df) %>% 
+alpha <- test %>% 
+  gt() %>% 
   gt_nfl_headshots(passer_id, height = 50) %>% 
   #gt_nfl_logos(opp, height = 50) %>% 
-  tab_header("2023 Week 11 Qbs") %>% 
-  opt_interactive(use_compact_mode = TRUE)
+  tab_header("2023 Week 11 Qbs")
+  #opt_interactive(use_compact_mode = TRUE)
+
+#alpha
 
 # create shiny ------------------------------------------------------------
 
@@ -715,7 +712,13 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session){
-  output$table <- render_gt(expr = gt_table)
+  output$table <- render_gt(expr = alpha)
 }
 
 #shinyApp(ui = ui, server = server)
+
+# print projections
+contest_qb %>% 
+  select(name, salary, opp, def_pass_epa_rank ,model_projections, SS.Proj, My.Own, spread, total_line, home, dropbacks_game) %>% 
+  arrange(-model_projections) %>% 
+  head(20)

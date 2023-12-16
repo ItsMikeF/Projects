@@ -78,9 +78,6 @@ contest_wr <- lapply(contest, function(x){
     # def rush epa
     pbp_def_rush <- pbp %>% 
       filter(rush == 1 &
-               wp > 0.1 &
-               wp < 0.9 &
-               half_seconds_remaining > 120 & 
                week < game_week) %>% 
       group_by(defteam) %>% 
       summarize(def_rush_epa = round(mean(epa), digits = 3),
@@ -106,9 +103,6 @@ contest_wr <- lapply(contest, function(x){
     # off pass epa
     pbp_off_pass <- pbp %>% 
       filter(pass == 1 &
-               wp > .10 &
-               wp < .90 &
-               half_seconds_remaining > 120 & 
                week < game_week) %>% 
       group_by(posteam) %>% 
       summarize(off_pass_epa = round(mean(epa), digits = 3),
@@ -120,9 +114,6 @@ contest_wr <- lapply(contest, function(x){
     # off rush epa
     pbp_off_rush <- pbp %>% 
       filter(rush == 1 &
-               wp > .10 &
-               wp < .90 &
-               half_seconds_remaining > 120 & 
                week < game_week) %>% 
       group_by(posteam) %>% 
       summarize(off_rush_epa = round(mean(epa), digits = 3),
@@ -489,12 +480,13 @@ contest_wr <- contest_wr %>%
 
 # print projections
 contest_wr %>% 
-  select(name, model_projections, SS.Proj, My.Own) %>% 
+  select(name, salary, team, opp, def_pass_epa_rank, model_projections, SS.Proj, My.Own) %>% 
   arrange(-model_projections) %>% 
   head(20)
 
 scheme <- contest_wr %>% 
-  select(name, salary, zone_yprr, zone_percentage, zone_rank, man_yprr, man_percentage, man_rank, yprr) %>% 
+  select(name, salary, team, opp, def_pass_epa_rank, zone_yprr, zone_percentage, zone_rank, man_yprr, man_percentage, man_rank, yprr, 
+         home) %>% 
   mutate(yprr_scheme = round((zone_yprr * zone_percentage) + (man_yprr * man_percentage), digits = 2), 
          yprr_delta = yprr_scheme - yprr) %>% 
   arrange(-yprr_delta)
