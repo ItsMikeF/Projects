@@ -20,7 +20,7 @@ process_file <- function(file_path) {
 }
 
 # List all the files
-files <- list.files("./01_data/exposures/dk/", full.names = TRUE)
+files <- list.files("./01_data/exposures/dk_r2/", full.names = TRUE)
 
 # Apply the function to each file and bind them together
 result_df <- bind_rows(lapply(files, process_file))
@@ -52,13 +52,12 @@ dk <- dk %>%
 
 # group by
 expo <- dk %>%
-  group_by(name, slotName, teamName) %>% 
+  group_by(name, pos, teamName) %>% 
   summarise(n=n()) %>% 
   ungroup() %>% 
-  mutate(expo = round(n/199, digits = 3)) %>% 
+  mutate(expo = round(n/50, digits = 3)) %>% 
   arrange(-expo) %>% 
   left_join(ud %>% select(name, adp), by=c("name"))
 
-save(expo, file = "./01_data/exposures/dk/dk_exposures.RData")
-
-load("./01_data/exposures/dk/dk_exposures.RData")
+save(expo, file = "./01_data/exposures/dk/dk_r2_exposures.RData")
+write.csv(expo, file = "./01_data/exposures/dk_r2_exposures.csv")
