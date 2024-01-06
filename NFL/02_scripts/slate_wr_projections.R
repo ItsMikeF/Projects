@@ -64,9 +64,6 @@ contest_wr <- lapply(contest, function(x){
     # def pass epa
     pbp_def_pass <- pbp %>% 
       filter(pass == 1 &
-               wp > 0.1 &
-               wp < 0.9 &
-               half_seconds_remaining > 120 & 
                week < game_week) %>% 
       group_by(defteam) %>% 
       summarize(def_pass_epa = round(mean(epa), digits = 3),

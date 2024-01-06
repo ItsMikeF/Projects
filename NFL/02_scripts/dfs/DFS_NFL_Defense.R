@@ -13,7 +13,7 @@ suppressMessages({
 # 0.0 Define Inputs -------------------------------------------------------
 
 pbp <- load_pbp(2023)
-game_week = 15
+game_week = 16
 
 # 1.0 defense epa table -------------------------------------------------------
 
