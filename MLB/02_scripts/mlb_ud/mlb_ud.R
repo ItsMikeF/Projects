@@ -30,16 +30,16 @@ teams_colors_logos <- mlbplotR::load_mlb_teams() %>%
 
 # 1.0 rankings --------------------------------------------------------------
 
-date1 = "jan23"
-date2 = "mar26"
+date1 = "jan19"
+date2 = "feb14"
 
 #load the rankings
-rankings_1 <- read.csv(glue("./01_data/projections_season/rankings_{date1}.csv")) %>% 
+rankings_1 <- read.csv(glue("./01_data/projections_season/2024/rankings_{date1}.csv")) %>% 
   mutate(name = paste(firstName, lastName),
          adp = as.numeric(adp)) %>% 
   select(name, slotName, adp, projectedPoints, positionRank, slotName, teamName)
 
-rankings_2 <- read.csv(glue("./01_data/projections_season/rankings_{date2}.csv")) %>% 
+rankings_2 <- read.csv(glue("./01_data/projections_season/2024/rankings_{date2}.csv")) %>% 
   mutate(name = paste(firstName, lastName),
          adp = as.numeric(adp)) %>% 
   select(name, slotName, adp, projectedPoints, positionRank, slotName, teamName)
