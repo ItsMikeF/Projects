@@ -8,6 +8,7 @@ suppressMessages({
   library(gt)
   library(gtExtras)
   library(glue)
+  library(openxlsx)
 })
 
 # 1.0 rankings --------------------------------------------------------------
@@ -16,12 +17,12 @@ date1 = "mar13"
 date2 = "apr16"
 
 #load the rankings
-rankings_1 <- read.csv(glue("./01_data/playoffs/rankings_{date1}.csv")) %>% 
+rankings_1 <- read.csv(glue("./01_data/projections/playoffs/rankings_{date1}.csv")) %>% 
   mutate(name = paste(firstName, lastName),
          adp = as.numeric(adp)) %>% 
   select(name, slotName, adp, projectedPoints, positionRank, slotName, teamName)
 
-rankings_2 <- read.csv(glue("./01_data/playoffs/rankings_{date2}.csv")) %>% 
+rankings_2 <- read.csv(glue("./01_data/projections/playoffs/rankings_{date2}.csv")) %>% 
   mutate(name = paste(firstName, lastName),
          adp = as.numeric(adp)) %>% 
   select(name, slotName, adp, projectedPoints, positionRank, slotName, teamName)
@@ -65,6 +66,8 @@ rankings %>%
     domain = c(-.45,2))) %>% 
   gt_theme_dark()
 
+# write rankings xlsx file
+write.xlsx(rankings, file = "./03_outputs/2023_zamboni_rankings.xlsx")
 
 # 3.0 Gtsave the draft guide ----------------------------------------
 
