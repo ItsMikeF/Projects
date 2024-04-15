@@ -13,16 +13,16 @@ suppressMessages({
 
 # 1.0 rankings --------------------------------------------------------------
 
-date1 = "mar13"
-date2 = "apr16"
+date1 = "mar03"
+date2 = "apr14"
 
 #load the rankings
-rankings_1 <- read.csv(glue("./01_data/projections/playoffs/rankings_{date1}.csv")) %>% 
+rankings_1 <- read.csv(glue("./01_data/rankings/2024/playoffs/rankings_{date1}.csv")) %>% 
   mutate(name = paste(firstName, lastName),
          adp = as.numeric(adp)) %>% 
   select(name, slotName, adp, projectedPoints, positionRank, slotName, teamName)
 
-rankings_2 <- read.csv(glue("./01_data/projections/playoffs/rankings_{date2}.csv")) %>% 
+rankings_2 <- read.csv(glue("./01_data/rankings/2024/playoffs/rankings_{date2}.csv")) %>% 
   mutate(name = paste(firstName, lastName),
          adp = as.numeric(adp)) %>% 
   select(name, slotName, adp, projectedPoints, positionRank, slotName, teamName)
@@ -91,4 +91,4 @@ rankings %>%
     domain = c(-4,4)
   )) %>% 
   gt_theme_dark() %>% 
-  gtsave(filename = "2023 UD Zamboni Board.html")
+  gtsave(filename = "2024 UD Zamboni Board.html")

@@ -21,14 +21,14 @@ teams_colors_logos <- team_logos_colors
 
 # 2.0 load exposures and projections--------------------------------------------
 
-exposure <- read.csv("./playoffs/exposure.csv") %>% 
+exposure <- read.csv("./01_data/rankings/2024/playoffs/exposure.csv") %>% 
   mutate(Picked.At = as.Date(as.POSIXct(exposure$Picked.At, format="%Y-%m-%d %H:%M:%S", tz="UTC")), 
          name = paste(First.Name, Last.Name), 
          Team = replace(Team, Team == "TB", "TBL"), 
          Team = replace(Team, Team == "NJ", "NJD"),) %>% 
   select(name, Team, Position, Picked.At, Pick.Number, Draft) %>% 
   left_join(teams_colors_logos %>% select(team_abbr, team_logo_espn), by=c('Team'='team_abbr')) %>%
-  left_join(read.csv("./playoffs/rankings_apr16.csv") %>% 
+  left_join(read.csv("./01_data/rankings/2024/playoffs/rankings_apr14.csv") %>% 
               mutate(name = paste(firstName, lastName), 
                      adp = as.numeric(adp)) %>% 
               select(name, adp, projectedPoints, positionRank) %>% 
@@ -40,31 +40,6 @@ exposure <- read.csv("./playoffs/exposure.csv") %>%
   arrange(Pick.Number)
 
 
-# code test area ----------------------------------------------------------
-
-exposure <- read.csv("./playoffs/exposure.csv") %>% 
-  mutate(Picked.At = as.Date(as.POSIXct(exposure$Picked.At, format="%Y-%m-%d %H:%M:%S", tz="UTC")), 
-         name = paste(First.Name, Last.Name), 
-         Team = replace(Team, Team == "TB", "TBL"), 
-         Team = replace(Team, Team == "NJ", "NJD"),) %>% 
-  select(name, Team, Position, Picked.At, Pick.Number, Draft) %>% 
-  left_join(teams_colors_logos %>% select(team_abbr, team_logo_espn), by=c('Team'='team_abbr')) 
-
-test <- read.csv("./playoffs/rankings_mar13.csv") %>% 
-  mutate(name = paste(firstName, lastName), 
-         adp = as.numeric(adp)) %>% 
-  distinct(name, .keep_all = T) %>% 
-  select(name, adp, projectedPoints, positionRank) %>% 
-  drop_na() %>% 
-  distinct(name, .keep_all = T)
-
-join <- exposure %>% left_join(test, by = c("name")) %>% select(1:7) %>% distinct()
-antijoin <- anti_join(exposure, join, by=c("name", "Picked.At", "Draft"))
-
-
-# end of code test --------------------------------------------------------
-
-
 #drafts by date
 drafts_by_date <- exposure %>% 
   group_by(Picked.At) %>% 
@@ -74,12 +49,20 @@ drafts_by_date <- exposure %>%
   mutate(value_per_pick = round(total_value/total_picks,digits = 2), 
          rel_value_per_pick = round(total_rel_value/total_picks,digits=2))
 
-
+# group by draft
+drafts <- exposure %>% 
+  group_by(Draft, Picked.At) %>% 
+  summarize(total_picks = n(),
+            total_value = sum(value, na.rm = T), 
+            total_rel_value = sum(rel_value, na.rm = T)) %>% 
+  mutate(value_per_pick = round(total_value/total_picks,digits = 2), 
+         rel_value_per_pick = round(total_rel_value/total_picks,digits=2))
+  
 #top ten picks by value
 exposure %>% 
   select(name, Pick.Number, adp, value, rel_value, Picked.At, Draft) %>% 
   arrange(-rel_value) %>% 
-  slice_head(n=25)
+  slice_head(n=10)
 
 #group by team drafted
 exposure %>% 
@@ -92,7 +75,6 @@ exposure %>%
   gt() %>% 
   gt_img_rows(columns = team) %>% 
   gt_theme_dark() 
-
 
 #group by position
 exposure %>% 
@@ -251,23 +233,16 @@ exposure %>%
 
 # best draft  -------------------------------------------------------------
 
-draft_id <- "e350b09c-3389-46f0-8539-337179228c9a"
+draft_id <- "ea1d87fe-52a5-494a-b94c-df4df0339073"
 
 draft <- exposure %>% 
   filter(Draft==draft_id) %>% 
-  select(name, team_logo_espn, espn_headshot, Pick.Number, adp, value, rel_value, projectedPoints) %>% 
+  select(name, team_logo_espn, Pick.Number, adp, value, rel_value, projectedPoints) %>% 
   arrange(Pick.Number)
-
-file <- paste(drafts$config[which(drafts$Draft == draft_id)],
-              drafts$teams_stacked[which(drafts$Draft == draft_id)],
-              drafts$batters[which(drafts$Draft == draft_id)],
-              drafts$big_stack[which(drafts$Draft == draft_id)],
-              drafts$first_pick[which(drafts$Draft == draft_id)])
 
 draft %>% 
   gt() %>% 
   gt_img_rows(columns = team_logo_espn, height = 50) %>% 
-  gt_img_rows(columns = espn_headshot, height = 50) %>% 
-  gt_color_rows(rel_value, palette = c("red","green"), domain = c(-.5,.5)) %>% 
+  #gt_color_rows(rel_value, palette = c("red","green"), domain = c(-.5,.5)) %>% 
   gt_theme_dark() %>% 
-  gtsave(filename = paste0(file,".html"))
+  gtsave("./03_outputs/draft.html")
