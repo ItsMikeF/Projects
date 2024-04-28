@@ -1,4 +1,4 @@
-#nhl playoffs 
+#mlb season 
 #source for the gt table
 #https://jthomasmock.github.io/gtExtras/reference/gt_img_rows.html
 
@@ -13,18 +13,16 @@ suppressMessages({
 
 # 1.0 rankings --------------------------------------------------------------
 
-date1 = "feb27"
-date2 = "mar01"
-
-contest_year <- year(Sys.Date())
+date1 = "mar03"
+date2 = "apr14"
 
 #load the rankings
-rankings_1 <- read.csv(glue("./01_data/projections/playoffs/{contest_year}/rankings_{date1}.csv")) %>% 
+rankings_1 <- read.csv(glue("./01_data/rankings/2024/playoffs/rankings_{date1}.csv")) %>% 
   mutate(name = paste(firstName, lastName),
          adp = as.numeric(adp)) %>% 
   select(name, slotName, adp, projectedPoints, positionRank, slotName, teamName)
 
-rankings_2 <- read.csv(glue("./01_data/projections/playoffs/{contest_year}/rankings_{date2}.csv")) %>% 
+rankings_2 <- read.csv(glue("./01_data/rankings/2024/playoffs/rankings_{date2}.csv")) %>% 
   mutate(name = paste(firstName, lastName),
          adp = as.numeric(adp)) %>% 
   select(name, slotName, adp, projectedPoints, positionRank, slotName, teamName)
@@ -49,15 +47,14 @@ rankings <- rankings_2 %>%
 
 rankings_2 %>% 
   drop_na(adp) %>% 
-  filter(adp < 60) %>% 
+  filter(adp < 230) %>% 
   group_by(teamName) %>% 
   summarise(adp_mean = round(mean(adp, na.rm = T),digits = 1), 
-            proj = sum(projectedPoints)) %>% 
-  arrange(adp_mean)
+            proj = sum(projectedPoints))
 
 rankings %>% 
   drop_na() %>% 
-  filter(apr16 < 60) %>% 
+  filter(apr16 < 239) %>% 
   group_by(teamName) %>% 
   summarise(adp_mean = round(mean(apr16, na.rm = T),digits = 1),
             adp_delta = round(mean(delta, na.rm = T),digits = 1), 
@@ -94,4 +91,4 @@ rankings %>%
     domain = c(-4,4)
   )) %>% 
   gt_theme_dark() %>% 
-  gtsave(filename = "2023 UD Zamboni Board.html")
+  gtsave(filename = "2024 UD Zamboni Board.html")
