@@ -12,7 +12,8 @@ suppressMessages({
   library(ggrepel) #Automatically Position Non-Overlapping Text Labels with 'ggplot2'
   library(glue)
   library(mlbplotR)
-  library(baseballr) 
+  library(baseballr)
+  library(openxlsx)
 })
 
 
@@ -31,7 +32,7 @@ teams_colors_logos <- mlbplotR::load_mlb_teams() %>%
 # 1.0 rankings --------------------------------------------------------------
 
 date1 = "jan19"
-date2 = "feb14"
+date2 = "feb23"
 
 #load the rankings
 rankings_1 <- read.csv(glue("./01_data/projections_season/2024/rankings_{date1}.csv")) %>% 
@@ -100,6 +101,8 @@ rankings %>%
     domain = c(-500, 500))) %>% 
   gtsave(filename = "rankings_delta.html")
 
+write.xlsx(rankings, file = glue("./03_outputs/rankings_{date2}.xlsx"))
+
 # 2.0 team data -----------------------------------------------------------
 
 team_1 <- rankings_2 %>% 
@@ -124,7 +127,7 @@ team %>%
   mutate(Rank = 1:30) %>% 
   select(Rank, teamName, team_logo_espn, adp_mean, adp_delta, percent_change) %>% 
   gt() %>% 
-  tab_header(title = "Playoff Best Ball - Mean Team ADP Movement", 
+  tab_header(title = "The Dinger - Mean Team ADP Movement", 
              subtitle = "Period: Jan23 to mar26") %>% 
   gt_img_rows(columns=team_logo_espn) %>% 
   tab_footnote(footnote = "Data from Underdog MLB Rankings, players ADP > 239 filtered out") %>% 
@@ -139,7 +142,7 @@ tab1 <- team %>%
   arrange(adp_mean) %>% 
   slice(1:15) %>% 
   gt() %>% 
-  tab_header(title = "Playoff Best Ball - Mean Team ADP Movement", 
+  tab_header(title = "The Dinger - Mean Team ADP Movement", 
              subtitle = "Period: Jan23 to mar26") %>% 
   gt_img_rows(columns=team_logo_espn) %>% 
   tab_footnote(footnote = "Data from Underdog MLB Rankings, players ADP > 239 filtered out") %>% 
@@ -154,7 +157,7 @@ tab2 <- team %>%
   arrange(adp_mean) %>%
   slice(16:30) %>% 
   gt() %>% 
-  tab_header(title = "Playoff Best Ball - Mean Team ADP Movement", 
+  tab_header(title = "The Dinger - Mean Team ADP Movement", 
              subtitle = "Period: Jan23 to mar26") %>% 
   gt_img_rows(columns=team_logo_espn) %>% 
   tab_footnote(footnote = "Data from Underdog MLB Rankings, players ADP > 239 filtered out") %>% 
@@ -166,7 +169,7 @@ tab2 <- team %>%
 listed_tables <- list(tab1, tab2)
 
 #split the table into two tables side by side with 16 rows each
-gt_two_column_layout(listed_tables, output = "save", filename = "C:/Users/mikef/Documents/GitHub/Projects/MLB/gt_split.png")
+gt_two_column_layout(listed_tables, output = "save", filename = "./outputs/gt_split.html")
 
 # 3.0 Pitchers ------------------------------------------------------------
 

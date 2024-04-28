@@ -1,4 +1,4 @@
-#mlb season 
+#nhl playoffs 
 #source for the gt table
 #https://jthomasmock.github.io/gtExtras/reference/gt_img_rows.html
 
@@ -13,16 +13,18 @@ suppressMessages({
 
 # 1.0 rankings --------------------------------------------------------------
 
-date1 = "mar13"
-date2 = "apr16"
+date1 = "feb27"
+date2 = "mar01"
+
+contest_year <- year(Sys.Date())
 
 #load the rankings
-rankings_1 <- read.csv(glue("./01_data/projections/playoffs/rankings_{date1}.csv")) %>% 
+rankings_1 <- read.csv(glue("./01_data/projections/playoffs/{contest_year}/rankings_{date1}.csv")) %>% 
   mutate(name = paste(firstName, lastName),
          adp = as.numeric(adp)) %>% 
   select(name, slotName, adp, projectedPoints, positionRank, slotName, teamName)
 
-rankings_2 <- read.csv(glue("./01_data/projections/playoffs/rankings_{date2}.csv")) %>% 
+rankings_2 <- read.csv(glue("./01_data/projections/playoffs/{contest_year}/rankings_{date2}.csv")) %>% 
   mutate(name = paste(firstName, lastName),
          adp = as.numeric(adp)) %>% 
   select(name, slotName, adp, projectedPoints, positionRank, slotName, teamName)
@@ -47,14 +49,15 @@ rankings <- rankings_2 %>%
 
 rankings_2 %>% 
   drop_na(adp) %>% 
-  filter(adp < 230) %>% 
+  filter(adp < 60) %>% 
   group_by(teamName) %>% 
   summarise(adp_mean = round(mean(adp, na.rm = T),digits = 1), 
-            proj = sum(projectedPoints))
+            proj = sum(projectedPoints)) %>% 
+  arrange(adp_mean)
 
 rankings %>% 
   drop_na() %>% 
-  filter(apr16 < 239) %>% 
+  filter(apr16 < 60) %>% 
   group_by(teamName) %>% 
   summarise(adp_mean = round(mean(apr16, na.rm = T),digits = 1),
             adp_delta = round(mean(delta, na.rm = T),digits = 1), 
