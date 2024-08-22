@@ -30,7 +30,9 @@ ws_odds <- function(variables) {
     dateFormat = "iso"
   )
   
-  response <- VERB("GET", url, add_headers('X-RapidAPI-Host' = 'odds.p.rapidapi.com', 
+  response <- VERB("GET", 
+                   url, 
+                   add_headers('X-RapidAPI-Host' = 'odds.p.rapidapi.com', 
                                            'X-RapidAPI-Key' = 'b34680a5eamsh5c39b8cf066dd0ap1e8d93jsnc9e5097b3c8c'), 
                    query = queryString, content_type("application/octet-stream"))
   
@@ -75,7 +77,7 @@ plot <- ws_odds %>%
     axis.text = element_text(size = 20)
   )
 
-ggsave(filename = paste0("./03_plots/ws_odds/",Sys.Date()," World Series Odds.png"), 
+ggsave(filename = paste0("./03_outputs/ws_odds/",Sys.Date()," World Series Odds.png"), 
        width = 26.7, 
        height = 15, 
        dpi = 300)

@@ -18,7 +18,7 @@ suppressMessages({
 # define contest
 contest_files <- list.files(path = "./01_data/contests/")
 
-contest <- contest_files[length(contest_files)]
+contest <- contest_files[length(contest_files)-2]
 contest
 
 # load pbp
@@ -28,7 +28,7 @@ pbp <- load_pbp(2023)
 
 odds <- function(year){
   odds <<- load_schedules(year) %>% 
-    select(season, week, away_team, home_team, spread_line, total_line) %>% 
+    select(season, week, away_team, home_team, spread_line, total_line, roof) %>% 
     mutate(away_spread = spread_line, 
            home_spread = spread_line * -1, 
            away_team = clean_team_abbrs(away_team), 
