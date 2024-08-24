@@ -13,7 +13,7 @@ get_live_sports_odds <- function() {
   url <- "https://api.the-odds-api.com"  # Replace with your API URL
   
   # Make the GET request with the API key in the headers
-  response <- GET(url, add_headers("Authorization" = paste("Bearer", api_key)))
+  response <- GET(url, add_headers("Authorization" = paste("bearer", api_key)))
   
   # Check if the request was successful
   if (status_code(response) == 200) {
