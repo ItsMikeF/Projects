@@ -61,6 +61,7 @@ draft_positions <- function(i) {
   #filters out picks beyond the draft size
   picks <<- picks[picks %in% 1:(league_size*rounds)]
 }
+draft_positions(4)
 
 
 # 2.0 load exposures and projections--------------------------------------------

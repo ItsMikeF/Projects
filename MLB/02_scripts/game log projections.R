@@ -66,12 +66,13 @@ games <- schedule %>%
 
 slate_probables <- map_df(games$game_pk, mlb_probables) %>% 
   left_join(pitcher_ids, by=c("fullName"="PlayerName")) %>% # join pitcher ids
-  select(game_pk, game_date, NfullName, playerid, team, team_id) %>% 
+  select(game_pk, game_date, fullName, playerid, team, team_id) %>% 
   drop_na() %>% 
   left_join(games, by=c("game_pk")) %>% # add opp team id for team k join 
   mutate(opp = if_else(team == teams_away_team_name, teams_home_team_name, teams_away_team_name), 
          opp_id = if_else(team == teams_away_team_name, teams_home_team_id, teams_away_team_id)) %>% 
-  select(-c(teams_home_team_name, teams_away_team_name, teams_home_team_id, teams_away_team_id)) %>%   left_join(savant_select, by=c("fullName")) %>% 
+  select(-c(teams_home_team_name, teams_away_team_name, teams_home_team_id, teams_away_team_id)) %>%   
+  left_join(savant_select, by=c("fullName")) %>% 
   left_join(team_k %>% select(2:4), by=c("opp_id"="team_id_num")) %>% 
   select(-c(team_id, opp_id)) %>%
   relocate(opp, .after = est_woba) %>% 
@@ -127,7 +128,7 @@ game_log_display <- function(pitcher_id) {
     view(glue("{pitcher} game log"))
   
 }
-game_log_display(22267)
+game_log_display(13164)
 
 # 4.0 test code area ------------------------------------------------------
 
