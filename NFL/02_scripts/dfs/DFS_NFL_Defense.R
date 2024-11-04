@@ -4,6 +4,7 @@
 suppressMessages({
   library(nflfastR)
   library(nflseedR)
+  library(nflreadr)
   library(tidyverse) #ggplot2 dplyr tibble tidyr purrr forecats 
   library(ggrepel) #automatically position non-overlapping text labels
   library(glue) #interpreted literal strings
@@ -28,6 +29,11 @@ target_date <- Sys.Date()
 target_row <- which.min(abs((as.Date(schedule$gameday)-target_date)))
 
 game_week = as.numeric(schedule$week[target_row])
+
+depth_charts <- load_depth_charts(seasons = nfl_year) %>% 
+  filter(week == game_week) %>%
+  filter(position == "QB") %>% 
+  filter(depth_team == 1)
 
 # 1.0 defense epa table -------------------------------------------------------
 
