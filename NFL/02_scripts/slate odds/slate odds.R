@@ -1,4 +1,4 @@
-# Get nhl odds via lso api
+# Get NFL odds via LSO api
 
 # Load packages
 suppressMessages({

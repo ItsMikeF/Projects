@@ -21,8 +21,11 @@ contest_files <- list.files(path = "./01_data/contests/")
 contest <- contest_files[length(contest_files)-2]
 contest
 
-# load pbp
-pbp <- load_pbp(2023)
+# define year
+nfl_year <- year(Sys.Date())
+
+# save pbp
+pbp <- load_pbp(nfl_year)
 
 # 2.1 load spreads and totals ---------------------------------------------
 
@@ -38,11 +41,11 @@ odds <- function(year){
     ) %>% 
     select(-spread_line)
 }
-odds(2023)
+odds(nfl_year)
 
 # 2.2 injury report---------------------------------------------------------
 
-inj <- load_injuries(2023) %>% 
+inj <- load_injuries(nfl_year) %>% 
   mutate(inj_join = paste(season, week, team, full_name, sep = "_"))
 
 # 3.0 load and join all contests ------------------------------------------
@@ -661,7 +664,7 @@ model_inputs <- contest_qb %>%
   relocate(passer_id, .after = name) %>% 
   gt() %>% 
   gt_nfl_headshots(passer_id, height = 50) %>% 
-  tab_header("2023 Week 11 Qbs") %>% 
+  tab_header("nfl_year Week 11 Qbs") %>% 
   opt_interactive(use_compact_mode = TRUE) %>% 
   data_color(columns = salary, method = "numeric", 
              colors = scales::col_numeric(palette = c("green", "red"), 
@@ -700,7 +703,7 @@ alpha <- test %>%
   gt() %>% 
   gt_nfl_headshots(passer_id, height = 50) %>% 
   #gt_nfl_logos(opp, height = 50) %>% 
-  tab_header("2023 Week 11 Qbs")
+  tab_header("nfl_year Week 11 Qbs")
   #opt_interactive(use_compact_mode = TRUE)
 
 #alpha

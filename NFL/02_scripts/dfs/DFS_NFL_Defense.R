@@ -2,18 +2,32 @@
 
 #load packages
 suppressMessages({
-  library(nflfastR) #nflfastr nflseedr nflplotr
+  library(nflfastR)
+  library(nflseedR)
   library(tidyverse) #ggplot2 dplyr tibble tidyr purrr forecats 
   library(ggrepel) #automatically position non-overlapping text labels
   library(glue) #interpreted literal strings
   library(gt)
   library(gtExtras)
+  library(lubridate)
 })
 
 # 0.0 Define Inputs -------------------------------------------------------
 
-pbp <- load_pbp(2023)
-game_week = 16
+# define year
+nfl_year <- year(Sys.Date())
+
+# save pbp
+pbp <- load_pbp(nfl_year)
+
+# define game week
+schedule <- load_schedules(nfl_year)
+
+# set today as target date
+target_date <- Sys.Date()
+target_row <- which.min(abs((as.Date(schedule$gameday)-target_date)))
+
+game_week = as.numeric(schedule$week[target_row])
 
 # 1.0 defense epa table -------------------------------------------------------
 
