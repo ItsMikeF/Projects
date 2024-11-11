@@ -10,6 +10,9 @@ suppressMessages({
   library(kernlab)
 })
 
+# define year
+nfl_year <- year(Sys.Date())
+
 #
 contest_files <- list.files(path = "./01_data/contests/")
 
@@ -17,7 +20,7 @@ contest <- contest_files[length(contest_files)]
 contest
 
 # load pbp
-pbp <- load_pbp(2023)
+pbp <- load_pbp(nfl_year)
 
 # 2.1 load spreads and totals ---------------------------------------------
 
@@ -35,11 +38,11 @@ odds <- function(year){
     ) %>% 
     select(-spread_line)
 }
-odds(2023)
+odds(nfl_year)
 
 # 2.2 injury report---------------------------------------------------------
 
-inj <- load_injuries(2023) %>% 
+inj <- load_injuries(nfl_year) %>% 
   mutate(inj_join = paste(season, week, team, full_name, sep = "_"))
 
 # 3.0 load and join all contests ------------------------------------------
@@ -172,7 +175,7 @@ contest_rb <- lapply(contest, function(x){
   print(paste(x, ": Run running back"))
   running_back <- function(){
     
-    inj <- load_injuries(2023) %>% 
+    inj <- load_injuries(nfl_year) %>% 
       mutate(inj_join = paste(season, week, team, full_name, sep = "_"))
     
     salaries <- read.csv(glue("{folder}/DKSalaries.csv")) %>% 
@@ -346,7 +349,6 @@ contest_rb <- contest_rb %>%
   arrange(-model_projections)
 
 # print projections
-contest_rb %>% 
+contest_rb_summary <- contest_rb %>% 
   select(name, salary, model_projections, SS.Proj, My.Own, opp, def_rush_epa_rank, spread, total_line, home) %>% 
-  arrange(-model_projections) %>% 
-  head(20)
+  arrange(-model_projections)

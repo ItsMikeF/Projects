@@ -1,4 +1,5 @@
 # create a list of all the qb slates
+# update qb fpts model
 
 # 0.0 load packages -------------------------------------------------------
 
@@ -41,8 +42,11 @@ files()
 
 # 2.0 load pbp and calc fpts ----------------------------------------------
 
+# define year
+nfl_year <- year(Sys.Date())
+
 # load pbp
-pbp <- load_pbp(2022:2023)
+pbp <- load_pbp(2022:nfl_year)
 
 # calc rb fpts by game week
 qb_fpts_pbp <- function(){
@@ -148,11 +152,11 @@ odds <- function(year){
     ) %>% 
     select(-spread_line)
 }
-odds(2022:2023)
+odds(2022:nfl_year)
 
 # 2.2 load injuries -------------------------------------------------------
 
-inj <- load_injuries(2022:2023) %>% 
+inj <- load_injuries(2022:nfl_year) %>% 
   mutate(inj_join = paste(season, week, team, full_name, sep = "_"))
 
 # 3.0 load qb contest -----------------------------------------------------

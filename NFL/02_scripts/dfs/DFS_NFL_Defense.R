@@ -32,7 +32,7 @@ game_week = as.numeric(schedule$week[target_row])
 
 depth_charts <- load_depth_charts(seasons = nfl_year) %>% 
   filter(week == game_week) %>%
-  filter(position == "QB") %>% 
+  filter(position == "RB") %>% 
   filter(depth_team == 1)
 
 # 1.0 defense epa table -------------------------------------------------------
