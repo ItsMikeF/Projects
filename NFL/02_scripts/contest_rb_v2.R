@@ -5,6 +5,7 @@
 
 #load packages
 suppressMessages({
+  options(nflreadr.verbose = FALSE)
   library(nflfastR) # pbp data
   library(nflreadr) # nfl schedule
   library(tidyverse) # ggplot2 dplyr tibble tidyr purrr forecats 
@@ -357,7 +358,7 @@ contests_rb_df <- bind_rows(contests_rb) %>%
   # changing name to pbp format
   separate(full_name, into = c("first_name", "last_name"), sep = " ", extra = "drop") %>% 
   mutate(player = paste0(substr(first_name, 1, 1), ".", last_name), 
-         join = paste(contest_year, contest_week, club_code, player, sep = "_"), 
+         join = paste(season, week, club_code, player, sep = "_"), 
          name = paste(first_name, last_name)) %>%
   relocate(name, .before = "first_name") %>% 
   select(-c("first_name", "last_name")) %>%
@@ -406,8 +407,6 @@ contests_rb_df %>% summarize(zeros = sum(fpts == 0))
 
 # 5.0 eda -----------------------------------------------------------------
 
-contests_rb_df$z_score
-contests_rb_df$fpts
 
 # find individual correlations
 cor(contests_rb_df$z_score, 
@@ -476,7 +475,7 @@ for (model in models) {
   
   set.seed(1)
   
-  fit <- train(fpts ~  sum_sd + spread + total_line + 
+  fit <- train(fpts ~  z_score + spread + total_line + 
                  status_NA + status_Questionable + status_Out, 
                data = train_data, 
                method = model, 
@@ -553,7 +552,7 @@ save(rb_pts_models_v2, file = "./04_models/rb_pts_models_v2.RData")
 
 # 7.0 baseline salary model ------------------------------------------------
 
-baseline_model <- lm(fpts ~ salary + spread + total_line, 
+baseline_model <- lm(fpts ~ spread + total_line, 
                      data = train_data)
 
 baseline_proj <- predict(baseline_model, newdata = test_data)
