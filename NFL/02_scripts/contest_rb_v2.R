@@ -290,7 +290,7 @@ contests_rb <- lapply(contest_files, function(x){
       filter(depth_position == "RB") %>% 
       select(1:5, 10, 12, 15) %>% 
       mutate(game_id = paste(season, week, club_code, sep = "_")) %>% 
-      left_join(odds %>% select(away_team, home_team, home_spread, away_spread, home_join), by = c("game_id" = "home_join")) %>% 
+      left_join(odds %>% select(away_team, home_team, home_spread, away_spread, home_join, total_line), by = c("game_id" = "home_join")) %>% 
       left_join(odds %>% select(away_team, home_team, home_spread, away_spread, away_join), by = c("game_id" = "away_join")) %>% 
       mutate(away_team = coalesce(away_team.x, away_team.y),
              home_team = coalesce(home_team.x, home_team.y),
@@ -324,20 +324,21 @@ contests_rb <- lapply(contest_files, function(x){
              touches_game_sd = round((touches_game - mean(touches_game, na.rm=T)) / sd(touches_game, na.rm = T), digits = 2), 
              off_def = (def_rush_epa_rank+rdef_rank)/2 - off_rush_epa_rank, 
              attempts_game = round(attempts / player_game_count, digits = 1),
-             gap_attempts_game = round(gap_attempts / player_game_count, digits = 1), 
-             zone_attempts_game = round(zone_attempts / player_game_count, digits = 1), 
+             #gap_attempts_game = round(gap_attempts / player_game_count, digits = 1), 
+             #zone_attempts_game = round(zone_attempts / player_game_count, digits = 1), 
              yards_per_game = round(attempts_game * ypa, digits = 1), 
-             first_downs_att = round(first_downs / attempts, digits = 1), 
+             #first_downs_att = round(first_downs / attempts, digits = 1), 
              targets_game = round(targets / player_game_count, digits = 1), 
              contest_year = nfl_year, 
              contest_week = game_week,
              contest = x) %>% 
       separate(contest, into = c("folder", "contest"), sep = "./01_data/contests/") %>% 
       mutate(z_score = round(
-        (0.20 * off_rush_epa_sd) - (0.20 * def_rush_epa_sd) - 
+          (0.20 * off_rush_epa_sd) - 
+          (0.20 * def_rush_epa_sd) - 
           (0.20 * rdef_sd) + 
           (0.10 * (yco_attempt_sd - tack_sd)) +
-          (0.40 * touches_game_sd), 
+          (0.30 * touches_game_sd), 
         digits = 3))
 
   }
@@ -365,14 +366,6 @@ contests_rb_df <- bind_rows(contests_rb) %>%
   left_join(rbs_fpts %>% select(join, fpts, fpts_ntile), by=c("join")) %>%
   replace_na(list(fpts = 0, fpts_ntile = 0)) %>%
   
-  # joining odds
-  mutate(schedule_join = sprintf("%02d", contest_week), 
-         schedule_join = paste(contest_year, schedule_join, away_team, home_team, sep = "_")) %>% 
-  left_join(odds %>% select(game_id, total_line, away_spread, home_spread), 
-            by = c("schedule_join" = "game_id")) %>% 
-  mutate(spread = if_else(home == 1, home_spread, away_spread)) %>% 
-  relocate(c(spread, total_line), .after = "team") %>% 
-  
   # add sd columns
   mutate(#def_rush_epa_sd = round((def_rush_epa - weighted.mean(def_rush_epa, n_plays.y.x, na.rm=T)) / sd(def_rush_epa, na.rm = T), digits = 2),
          #off_rush_epa_sd = round((off_rush_epa - weighted.mean(off_rush_epa, n_plays.y.y, na.rm=T)) / sd(off_rush_epa, na.rm = T), digits = 2),
@@ -384,15 +377,7 @@ contests_rb_df <- bind_rows(contests_rb) %>%
          yco_attempt_sd = round((yco_attempt - mean(yco_attempt, na.rm=T)) / sd(yco_attempt, na.rm = T), digits = 2), 
          touches_game_sd = round((touches_game - mean(touches_game, na.rm=T)) / sd(touches_game, na.rm = T), digits = 2), 
          
-         inj_join = paste(contest_year, contest_week, club_code, name, sep = "_"),
-         
-         sum_sd = round(
-             (0.20 * off_rush_epa_sd) -
-             (0.15 * def_rush_epa_sd) - 
-             (0.15 * rdef_sd) + 
-             (0.10 * (yco_attempt_sd - tack_sd)) +
-             (0.40 * touches_game_sd), 
-           digits = 3)) %>% 
+         inj_join = paste(contest_year, contest_week, club_code, name, sep = "_")) %>% 
   
   left_join(inj %>% select(inj_join, report_status, practice_status), by=c("inj_join")) %>% 
   
@@ -405,7 +390,17 @@ contests_rb_df <- bind_rows(contests_rb) %>%
               values_fill = 0,
               values_fn = function(x) 1) %>%
   select(-id) %>% 
-  filter(fpts > 0)
+  filter(attempts > 10) %>% 
+  filter(status_Out == 0) %>% 
+  relocate(z_score, .after = game_id) %>% 
+  relocate(fpts, .after = z_score) %>% 
+  relocate(join, .after = name) %>% 
+  arrange(-z_score)
+
+names(contests_rb_df)
+  
+# count zeros in fpts column
+contests_rb_df %>% summarize(zeros = sum(fpts == 0))
 
 # add average rb fpts up to that game week
 
