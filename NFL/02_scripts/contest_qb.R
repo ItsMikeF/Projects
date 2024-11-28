@@ -114,7 +114,7 @@ qb_fpts_pbp <- function(){
     replace(is.na(.),0) %>% 
     mutate(
       big_rush = ifelse(rushing_yards > 100, 1,0), 
-      big_pass = ifelse(passing_yards > 100, 1,0), 
+      big_pass = ifelse(passing_yards > 300, 1,0), 
       fpts = 
         
         big_pass * 3 +
