@@ -53,22 +53,35 @@ qb_fpts_pbp <- function(){
   
   # Load regular season data
   qb_pbp <- pbp %>% 
-    group_by(passer, passer_id, posteam, week, season) %>% 
+    group_by(game_id, passer, passer_id, posteam) %>% 
     summarize(
+      
+      epa = round(sum(qb_epa, na.rm = T), digits = 2),
+      snaps = n(),
+      epa_per_play = round(epa/snaps, digits = 2),
       
       passing_yards = sum(passing_yards, na.rm = T), 
       pass_attempt = sum(pass_attempt, na.rm = T), 
       pass_touchdown = sum(pass_touchdown, na.rm = T), 
-      interception = sum(interception, na.rm = T)
+      interception = sum(interception, na.rm = T), 
+      
+      # use to get last non-missing values
+      season_type = last(season_type), 
+      temp = last(temp), 
+      wind = last(wind), 
+      spread_line = last(spread_line), 
+      total_line = last(total_line), 
+      posteam = last(posteam), 
+      week = last(week), 
+      season = last(season)
       
     ) %>% 
-    drop_na() %>% 
     ungroup() %>% 
-    mutate(join = paste(season, week, passer_id, sep = "_"))
+    mutate(join = paste(game_id, passer_id, sep = "_"))
   
   # Get passer rushing stats
   passer_pbp <- pbp %>% 
-    group_by(passer, passer_id, posteam, week, season) %>% 
+    group_by(game_id, passer, passer_id, posteam) %>% 
     summarise(
       
       qb_scramble = sum(qb_scramble, na.rm = T),
@@ -76,14 +89,17 @@ qb_fpts_pbp <- function(){
       rushing_yards = sum(rushing_yards, na.rm = T),
       rush_touchdown = sum(rush_touchdown, na.rm = T),
       
-      fumble = sum(fumble, na.rm = T)) %>% 
+      fumble = sum(fumble, na.rm = T), 
+      
+    ) %>% 
     drop_na() %>% 
     ungroup() %>% 
-    mutate(join = paste(season, week, passer_id, sep = "_"))
+    mutate(join = paste(game_id, passer_id, sep = "_"))
   
   # Get rusher rushing stats
   rusher_pbp <- pbp %>% 
-    group_by(rusher, rusher_id, posteam, week, season) %>% 
+    group_by(game_id, season_type, temp, spread_line, total_line, 
+             rusher, rusher_id, posteam, week, season) %>% 
     summarise(
       
       rush_attempt = sum(rush_attempt, na.rm = T),
@@ -93,24 +109,30 @@ qb_fpts_pbp <- function(){
       fumble = sum(fumble, na.rm = T)) %>% 
     drop_na() %>% 
     ungroup() %>% 
-    mutate(join = paste(season, week, rusher_id, sep = "_"))
+    mutate(join = paste(game_id, rusher_id, sep = "_"))
   
   qb_rush <- passer_pbp %>%
     left_join(rusher_pbp, by = "join") %>%
+    
+    # add zeros so that the columns can be added
     mutate(across(c(rush_attempt.x, rush_attempt.y, 
                     rushing_yards.x, rushing_yards.y, 
                     rush_touchdown.x, rush_touchdown.y, 
                     fumble.x, fumble.y), 
                   ~ replace_na(., 0))) %>% 
+    
+    # add the columns from scrambles + designed rushes
     mutate(rush_attempt = rush_attempt.x + rush_attempt.y, 
            rushing_yards = rushing_yards.x + rushing_yards.y,
            rush_touchdown = rush_touchdown.x + rush_touchdown.y,
            fumble = fumble.x + fumble.y) %>% 
-    select(passer_id, rush_attempt, rushing_yards, rush_touchdown, fumble, join)
+    select(rush_attempt, rushing_yards, rush_touchdown, fumble, join)
   
   # join stats and calc fpts, dk scoring
   qb_fpts <<- qb_pbp %>% 
-    left_join(qb_rush, by=c("join")) %>% 
+    left_join(qb_rush, by=c("join")) %>% # add passer + rusher stat 
+    select(-c("join")) %>% # drop the join column
+    drop_na(passer) %>% 
     replace(is.na(.),0) %>% 
     mutate(
       big_rush = ifelse(rushing_yards > 100, 1,0), 
@@ -131,7 +153,13 @@ qb_fpts_pbp <- function(){
       fpts_ntile = ntile(fpts, 100)
     ) %>% 
     arrange(-fpts) %>% 
-    mutate(join = paste(season, week, posteam, passer, sep = "_"))
+    mutate(join = paste(season, week, posteam, passer, sep = "_")) %>% 
+    left_join(schedule %>% select(game_id, roof), by=c("game_id")) %>% 
+    mutate(temp = if_else(roof == "closed" | roof == "dome", 70, temp), 
+           wind = if_else(is.na(wind), 0, wind), 
+           weather_check = if_else(temp == 0 & wind == 0, 0, 1)) %>% 
+    relocate(weather_check, .after = wind) %>% 
+    relocate(c("fpts", "fpts_ntile", "spread_line", "total_line"), .after = posteam)
   
 }
 qb_fpts_pbp()

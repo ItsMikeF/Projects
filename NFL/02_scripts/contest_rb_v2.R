@@ -5,14 +5,26 @@
 
 #load packages
 suppressMessages({
+  
+  #nflverse packages
   options(nflreadr.verbose = FALSE)
   library(nflfastR) # pbp data
   library(nflreadr) # nfl schedule
   library(tidyverse) # ggplot2 dplyr tibble tidyr purrr forecats 
+  
+  # data pacakges
   library(glue) # interpreted literal strings
+  
+  # modeling packages
   library(caret) # data partition
   library(randomForest) # rf model
-  library(xgboost) # xgb model
+  library(ranger) # fast implementation of random forest
+  library(MultivariateRandomForest) # models multivariate cases using random forests
+  
+  # processing time packages
+  library(doParallel) # Foreach parallel adaptor for parallel package
+  library(h2o) # for cpu clustering
+  library(foreach) # looping construct
 })
 
 
@@ -88,33 +100,51 @@ pbp <- load_pbp(data_start:nfl_year)
 rb_fpts_pbp <- function(){
   # Get rushing stats
   rb_pbp <- pbp %>% 
-    group_by(rusher, rusher_id, posteam, defteam, week, season) %>% 
+    group_by(game_id, rusher, rusher_id) %>% 
     summarise(
       
       rush_attempt = sum(rush_attempt, na.rm = T),
       rushing_yards = sum(rushing_yards, na.rm = T),
-      rush_touchdown = sum(rush_touchdown, na.rm = T),
+      rush_touchdown = sum(rush_touchdown, na.rm = T), 
+      fumble = sum(fumble, na.rm = T),
       
-      fumble = sum(fumble, na.rm = T)) %>% 
-    drop_na() %>% 
+      # use to get last non-missing values
+      season_type = last(season_type), 
+      temp = last(temp, na_rm = F), 
+      wind = last(wind, na_rm = F), 
+      spread_line = last(spread_line), 
+      total_line = last(total_line), 
+      posteam = last(posteam), 
+      
+      week = last(week), 
+      season = last(season),
+      
+      posteam = last(posteam), 
+      defteam = last(defteam)
+      
+      ) %>% 
+    drop_na(rusher) %>% 
     ungroup() %>% 
     mutate(join = paste(season, week, rusher_id, sep = "_"))
   
   # Get receiving stats
   wr_pbp <- pbp %>% 
-    group_by(receiver, receiver_id, posteam, defteam, week, season) %>% 
+    group_by(game_id, receiver, receiver_id, posteam, defteam) %>% 
     summarize(
       fumble = sum(fumble, na.rm = T), 
       
       receptions = sum(complete_pass, na.rm = T),
       receiving_yards = sum(receiving_yards, na.rm = T), 
-      rec_touchdown = sum(pass_touchdown, na.rm = T)) %>% 
-    drop_na() %>% 
+      rec_touchdown = sum(pass_touchdown, na.rm = T), 
+      
+      week = last(week), 
+      season = last(season)) %>% 
+    drop_na(receiver) %>% 
     ungroup() %>% 
     mutate(join = paste(season, week, receiver_id, sep = "_"))
   
   # join stats and calc fpts
-  rbs_fpts <<- rb_pbp %>% 
+  rb_fpts <<- rb_pbp %>% 
     left_join(wr_pbp %>% select(receptions, receiving_yards, rec_touchdown, join), 
               by=c("join")) %>% 
     replace(is.na(.),0) %>% 
@@ -133,7 +163,14 @@ rb_fpts_pbp <- function(){
         receiving_yards * .1,  
       fpts_ntile = ntile(fpts, 100)) %>% 
     arrange(-fpts) %>% 
-    mutate(join = paste(season, week, posteam, rusher, sep = "_"))
+    mutate(join = tolower(paste(season, week, posteam, rusher, sep = "_"))) %>% 
+    left_join(schedule %>% select(game_id, roof), by=c("game_id")) %>% 
+    mutate(temp = if_else(roof == "closed" | roof == "dome", 70, temp), 
+           wind = if_else(is.na(wind), 0, wind), 
+           weather_check = if_else(temp == 0 & wind == 0, 0, 1), 
+           dome_games = if_else(roof == "dome" | roof == "closed",1,0)) %>% 
+    relocate(weather_check, .after = wind) %>% 
+    relocate(c("fpts", "fpts_ntile", "spread_line", "total_line"), .after = posteam)
   
   # remove objects
   rm(rb_pbp, wr_pbp)
@@ -284,7 +321,8 @@ contests_rb <- lapply(contest_files, function(x){
       filter(position == "RB") %>% 
       filter(depth_position == "RB") %>% 
       select(1:5, 10, 12, 15) %>% 
-      mutate(game_id = paste(season, week, club_code, sep = "_")) %>% 
+      mutate(full_name = clean_player_names(full_name, lowercase = T),
+             game_id = paste(season, week, club_code, sep = "_")) %>% 
       left_join(odds %>% select(away_team, home_team, home_spread, away_spread, home_join, total_line), by = c("game_id" = "home_join")) %>% 
       left_join(odds %>% select(away_team, home_team, home_spread, away_spread, away_join), by = c("game_id" = "away_join")) %>% 
       mutate(away_team = coalesce(away_team.x, away_team.y),
@@ -301,15 +339,33 @@ contests_rb <- lapply(contest_files, function(x){
     print(paste(x, ": Depth Charts"))
     print(depth_charts)
     
-    # load pff rushing data
-    rushing_summary <- read.csv(glue("{folder}/pff/rushing_summary.csv")) %>% 
-      select(player, player_id, player_game_count, total_touches, elu_rush_mtf, 
-             attempts, yco_attempt, gap_attempts, zone_attempts, ypa, first_downs, 
-             grades_run, targets)
+    # load and process pff rushing summary
+    pff_rush <- function() {
+      # load pff rushing data
+      rushing_summary <- read.csv(glue("{folder}/pff/rushing_summary.csv")) %>% 
+        select(player, player_id, player_game_count, team_name, 
+               total_touches, elu_rush_mtf, 
+               attempts, yco_attempt, ypa, first_downs, grades_run, 
+               targets, yprr) %>% 
+        mutate(player = clean_player_names(player, lowercase = T))
+      
+      rushing_summary_share <- rushing_summary %>% 
+        group_by(team_name) %>% 
+        summarize(team_attempts = sum(attempts))
+      
+      rushing_summary <<- rushing_summary %>% 
+        left_join(rushing_summary_share, by=c("team_name")) %>% 
+        mutate(rush_share = round(attempts / team_attempts, digits = 2)) %>% 
+        relocate(c("rush_share","team_attempts"), .after = attempts)
+    }
+    pff_rush()
+    
+    print(paste(x, ": Rushing Summary"))
     
     # join data
-    rb <- depth_charts %>%
+    rb <<- depth_charts %>%
       left_join(rushing_summary, by = c('full_name' = 'player')) %>% 
+      mutate(full_name = str_to_title(full_name)) %>% 
       left_join(pbp_def, by = c('opp' = 'defteam')) %>% 
       left_join(pbp_off, by = c('club_code' = 'posteam')) %>%
       left_join(def_table, by = c('opp' = 'team_name')) %>% 
@@ -349,20 +405,23 @@ rm(pbp_def, pbp_off)
 
 process_rb_df <- function(){
   # bind to single dataframe and process data
-  contests_rb_df <- bind_rows(contests_rb) %>% 
+  contests_rb_df <<- bind_rows(contests_rb) %>% 
     
     filter(week != 2) %>% # remove week 2s, bad data
     
     # changing name to pbp format
     separate(full_name, into = c("first_name", "last_name"), sep = " ", extra = "drop") %>% 
     mutate(player = paste0(substr(first_name, 1, 1), ".", last_name), 
-           join = paste(season, week, club_code, player, sep = "_"), 
+           join = tolower(paste(season, week, club_code, player, sep = "_")), 
            name = paste(first_name, last_name)) %>%
     relocate(name, .before = "first_name") %>% 
     select(-c("first_name", "last_name")) %>%
     
     # joining fpts
-    left_join(rbs_fpts %>% select(join, fpts, fpts_ntile), by=c("join")) %>%
+    left_join(rb_fpts %>% select(join, fpts, fpts_ntile, 
+                                 temp, wind, 
+                                 rush_attempt, rushing_yards, rush_touchdown, fumble,
+                                 receptions, receiving_yards, rec_touchdown), by=c("join")) %>%
     replace_na(list(fpts = 0, fpts_ntile = 0)) %>%
     
     # add percentile
@@ -394,10 +453,11 @@ process_rb_df <- function(){
     select(-id) %>% 
     filter(attempts > 10) %>% 
     filter(status_Out == 0) %>% 
-    relocate(c("z_score", "fpts", "fpts_ntile"), .after = game_id) %>% 
+    relocate(c("z_score", "fpts", "fpts_ntile", "rushing_yards", "rush_attempt", "rush_touchdown"), .after = game_id) %>% 
     relocate(c("off_rush_epa_sd", "def_rush_epa_sd", "rdef_sd", "yco_attempt_sd", "tack_sd", "touches_game_sd"), 
              .after = home) %>% 
-    arrange(-z_score)
+    arrange(-z_score) %>% 
+    filter(fpts != 0)
 }
 process_rb_df()
 
@@ -406,7 +466,7 @@ names(contests_rb_df)
 
 # 5.0 find correlated variables-----------------------------------------------
 
-
+# use to look for features of new models
 correlation_table <- function() {
   # find individual correlations
   cor(contests_rb_df$z_score, 
@@ -414,7 +474,7 @@ correlation_table <- function() {
       use = "complete.obs")
   
   # select only numeric columns
-  numeric_contest_rb <- contests_rb_df[, sapply(contests_rb_df, is.numeric)]
+  numeric_contest_rb <<- contests_rb_df[, sapply(contests_rb_df, is.numeric)]
   
   # find cor of all variables
   cor_df <- as_tibble(cor(numeric_contest_rb)[,"fpts"])
@@ -431,14 +491,14 @@ correlation_table <- function() {
   cor_df <- tibble::rownames_to_column(cor_df, var = "Variable")
   
   # If you only want correlations with 'fpts' column
-  cor_fpts_df <<- cor_df %>% select(Variable, fpts)
+  cor_fpts_df <<- cor_df %>% select(Variable, fpts) %>% arrange(-fpts)
 }
 correlation_table()
 
+
 # 6.0 split train test ----------------------------------------------------
 
-model_data <- numeric_contest_rb %>% 
-  filter(touches_game > 5)
+model_data <- numeric_contest_rb %>% filter(depth_team == 1)
 
 set.seed(10)
 
@@ -452,7 +512,136 @@ train_data <- model_data[split_index, ]
 test_data <- model_data[-split_index, ]
 
 
-# 6.1 train models - GPT------------------------------------------------------
+# 6.1 random forest model and tuning-------------------------------------------
+
+
+# train random forest model
+rb_fpts_rf <- randomForest(fpts ~  
+                             spread + total_line + #temp + wind + # game data
+                             attempts_game + yco_attempt_sd + # rush usage
+                             targets_game + yprr + # rec usage
+                             grades_run + # player grade
+                             def_rush_epa, # defense
+                   data = train_data, 
+                   mtry = 2, 
+                   nodesize = 20,
+                   ntree = 1000)
+
+# use rb_fpts_rf to predict on test data
+rb_fpts_rf_predictions <- round(predict(rb_fpts_rf, test_data), digits = 2)
+rb_fpts_rf_predictions
+
+# evaulated predictions 
+rb_fpts_rf_performance <- round(postResample(rb_fpts_rf_predictions, test_data$fpts), digits = 3)
+rb_fpts_rf_performance
+
+
+# Define the tuning grid
+tune_grid <- expand.grid(mtry = c(1, 2, 3, 4, 5), # Experiment with different mtry values
+                         splitrule = "variance", 
+                         min.node.size = c(5, 10, 15, 20, 25, 50, 100))
+
+# Train the model with caret
+rb_fpts_rf_tuned <- train(
+  fpts ~  spread + total_line + # game data
+    attempts_game + ypa + targets_game + yprr +# usage
+    grades_run + # player grade
+    def_rush_epa,
+  data = train_data,
+  method = "ranger",
+  trControl = trainControl(method = "cv", number = 5), # 5-fold cross-validation
+  tuneGrid = tune_grid
+)
+
+# View the best model
+print(rb_fpts_rf_tuned$bestTune)
+
+importance(rb_fpts_rf)
+varImpPlot(rb_fpts_rf)
+
+
+# 6.2 multivariate random forest model ------------------------------------
+
+# Prepare the dataset
+# Assume train_data is your training dataset and test_data is your test dataset
+# Replace target column names with actual column names in your dataset
+X_train <- as.matrix(train_data[, c("spread", "total_line", "attempts_game", 
+                                    "yco_attempt_sd", "targets_game", "yprr", 
+                                    "grades_run", "def_rush_epa")])
+
+Y_train <- as.matrix(train_data[, c("rush_attempt","rushing_yards", "rush_touchdown", 
+                                    "receptions", "receiving_yards", "rec_touchdown",
+                                    "fpts")])
+
+X_test <- as.matrix(test_data[, c("spread", "total_line", "attempts_game", 
+                                  "yco_attempt_sd", "targets_game", "yprr", 
+                                  "grades_run", "def_rush_epa")])
+
+# Train the multivariate random forest model
+set.seed(10) # For reproducibility
+
+
+
+# set up parallel backend
+num_cores <- 8 - 2
+cl <- makeCluster(num_cores)
+registerDoParallel(cl)
+
+# Define total number of trees and chunk size per core
+total_trees <- 100
+trees_per_core <- floor(total_trees / num_cores)  # Ensure integer
+
+# Ensure that total_trees is fully distributed among cores
+# Handle any remainder trees (if total_trees %% num_cores != 0)
+tree_remainder <- total_trees %% num_cores
+ntree_list <- c(rep(trees_per_core, num_cores))
+if (tree_remainder > 0) {
+  ntree_list[1:tree_remainder] <- ntree_list[1:tree_remainder] + 1
+}
+
+# Train Multivariate Random Forest in parallel
+forest_chunks <- foreach(ntree = ntree_list, 
+                         .combine = rbind, 
+                         .packages = "MultivariateRandomForest") %dopar% {
+                           build_forest_predict(
+                             trainX = X_train,
+                             trainY = Y_train,
+                             testX = X_test,
+                             n_tree = ntree,      # Subset of trees
+                             m_feature = 2,       # Features per split
+                             min_leaf = 5         # Minimum samples per leaf
+                           )
+                         }
+
+# Stop the parallel backend
+stopCluster(cl)
+
+
+# Train Multivariate Random Forest model
+mrf_model <- build_forest_predict(
+  trainX = X_train,  # Predictor matrix
+  trainY = Y_train,  # Target matrix
+  testX = X_test,
+  n_tree = 100, # Number of trees
+  m_feature = 2, # Number of features at each split
+  min_leaf = 5   # Minimum number of samples per leaf
+)
+
+# Predict on test data
+Y_pred <- predict_forest(mrf_model, X_test)
+
+# Convert predictions to a data frame for easier interpretation
+predictions <- data.frame(
+  Rushing_Yards = Y_pred[, 1],
+  Rushing_Touchdowns = Y_pred[, 2],
+  Fantasy_Points = Y_pred[, 3]
+)
+
+# View predictions
+print(predictions)
+
+
+# 6.3 train models - GPT ensemble --------------------------------------------
 
 
 # list of models to train
@@ -462,7 +651,7 @@ models <- c("lm", "glm", # linear models
             "knn", # k nearest neighbors
             "rf") 
 
-models_not_ready <- c("rf", "nnet", "rpart")
+models_not_ready <- c("nnet", "rpart")
 
 # set up control parameters
 ctrl <- trainControl(method = "cv", 
@@ -480,7 +669,7 @@ rb_pts_models_v2 <- lapply(models, function(model){
   fit <- train(fpts ~  spread + total_line + # game data
                  attempts_game + targets_game + # usage
                  grades_run + # player grade
-                 def_rush_epa + rdef, # defense 
+                 def_rush_epa, # defense 
                data = train_data, 
                method = model, 
                trControl = ctrl)
@@ -490,39 +679,29 @@ rb_pts_models_v2 <- lapply(models, function(model){
   
   # end
   print(paste(model, "end"))
-
+  
 })
 
-
 #Evaluate Models on Test Data:
-predictions <- lapply(results, function(fit) predict(fit, test_data))
+predictions <- lapply(rb_pts_models_v2, function(fit) predict(fit, test_data))
 
 # get performance metrics
 performance <- lapply(predictions, function(pred) postResample(pred, test_data$fpts))
 
 # visualize and compare
 performance_df <- as.data.frame(do.call(rbind, performance))
+
+# add model names
+performance_df <- cbind(models, performance_df) %>% 
+  arrange(-Rsquared)
+
 performance_df
 
 
-# 6.3 model selection -----------------------------------------------------
 
-save(rb_pts_models_v2, file = "./04_models/rb_pts_models_v2.Rdata")
 
-# 7.0 baseline salary model ------------------------------------------------
 
-baseline_model <- lm(fpts ~ spread + total_line, 
-                     data = train_data)
+# 7.0 save model selection -----------------------------------------------------
 
-baseline_proj <- predict(baseline_model, newdata = test_data)
-
-baseline_results <- data.frame(Actual = test_data$fpts, 
-                               Projections = baseline_proj)
-
-baseline_mae <- mean(abs(baseline_results$Actual - baseline_results$Projections))
-
-baseline_rmse <- sqrt(mean((baseline_results$Actual - baseline_results$Projections)^2))
-
-print(paste("Mean Absolute Error: ", round(baseline_mae, 2)))
-print(paste("Root Mean Squared Error: ", round(baseline_rmse, 2)))
+save(rb_fpts_rf, file = "./04_models/rb_fpts_rf.Rdata")
 

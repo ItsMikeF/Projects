@@ -1,5 +1,9 @@
 # qb eda
 
+
+# 1.0 load data and packages ----------------------------------------------
+
+
 #load packages
 suppressMessages({
   options(nflreadr.verbose = FALSE)
@@ -24,6 +28,10 @@ pbp <- load_pbp(start_year:nfl_year)
 # load schedule
 schedule <- load_schedules(start_year:nfl_year)
 
+
+# 2.0 process data --------------------------------------------------------
+
+
 # calc rb fpts by game week
 qb_fpts_pbp <- function(){
   
@@ -44,6 +52,7 @@ qb_fpts_pbp <- function(){
       # use to get last non-missing values
       season_type = last(season_type), 
       temp = last(temp), 
+      wind = last(wind), 
       spread_line = last(spread_line), 
       total_line = last(total_line), 
       posteam = last(posteam), 
@@ -130,18 +139,27 @@ qb_fpts_pbp <- function(){
     arrange(-fpts) %>% 
     mutate(join = paste(season, week, posteam, passer, sep = "_")) %>% 
     left_join(schedule %>% select(game_id, roof), by=c("game_id")) %>% 
+    mutate(temp = if_else(roof == "closed" | roof == "dome", 70, temp), 
+           wind = if_else(is.na(wind), 0, wind), 
+           weather_check = if_else(temp == 0 & wind == 0, 0, 1)) %>% 
+    relocate(weather_check, .after = wind) %>% 
     relocate(c("fpts", "fpts_ntile", "spread_line", "total_line"), .after = posteam)
   
 }
 qb_fpts_pbp()
 
-# plot
-ggplot(qb_fpts, aes(x = temp, y = fpts)) +
-  geom_point(color = "blue", size = 3) +
-  geom_smooth(method = "lm", se=F)
+qb_fpts_filtered <- qb_fpts %>% 
+  filter(weather_check == 1) %>% 
+  mutate(games_below_32 = if_else(temp<32,1,0), 
+         wind_over_15 = if_else(wind>15,1,0),
+         dome_games = if_else(roof == "dome" | roof == "closed",1,0))
 
-# generalcorrelation
-cor(qb_fpts$temp, qb_fpts$fpts)
+
+# 3.0 look at 1 qb --------------------------------------------------------
+
+
+# general correlation
+cor(qb_fpts_filtered$temp, qb_fpts_filtered$fpts)
 
 # look for specific qb
 qb <- "T.Tagovailoa"
@@ -153,9 +171,12 @@ qb <- "L.Jackson"
 qb <- "J.Goff"
 
 # filter data set
-qb_data <- qb_fpts %>% 
+qb_data <- qb_fpts_filtered %>% 
   filter(passer == qb) %>% 
-  filter(temp != 0)
+  filter(weather_check != 0)
+
+# general correlation
+qb_cor <- round(cor(qb_data$temp, qb_data$fpts), digits = 2)
 
 # fit linear model
 model <- lm(fpts ~ temp, data = qb_data)
@@ -173,26 +194,36 @@ ggplot(qb_data %>% filter(season_type == "REG"),
                    box.padding = 0.5, 
                    point.padding = 0.5) +
   annotate("text", 
-           x = 40, 
+           x = 50, 
            y = 0, 
-           label = equation)
+           label = equation) +
+  annotate("text", 
+           x= 50, 
+           y= 2, 
+           label = glue("QB Cor: {qb_cor}")) +
+  labs(title = glue("{qb}: Temperature Correlation"))
 
 # qb specific correlation
 cor(qb_data$temp, qb_data$fpts)
 
+
+# 3.1 all player correlation ----------------------------------------------
+
+
 # correlation by player
-correlation_by_player <- qb_fpts %>% 
-  filter(temp != 0) %>% 
+correlation_by_player <- qb_fpts_filtered %>% 
+  filter(weather_check != 0) %>% 
   filter(snaps > 10) %>% 
-  mutate(games_below_32 = if_else(temp<32,1,0)) %>% 
-         #dome_games = if_else(roof == "dome" | roof == "closed",1,0)
   group_by(passer, passer_id) %>% 
   summarize(
     total_fpts = sum(fpts),
     total_epa = sum(epa),
     temp_correlation = round(cor(temp, fpts), digits = 2), 
+    cold_games_fpts = round(mean(fpts[temp <= 32], na.rm = T), digits = 2), 
+    warm_games_fpts = round(mean(fpts[temp > 32], na.rm = T), digits = 2), 
     games_below_32 = sum(games_below_32),
-    #dome_games = sum(dome_games),
+    wind_over_15 = sum(wind_over_15),
+    dome_games = sum(dome_games),
     games = n()) %>% 
   arrange(-total_fpts) %>% 
   ungroup() # can not slice while data is grouped
@@ -203,7 +234,7 @@ correlation_by_player %>% slice_head(n=10)
 temp_plot <- ggplot(correlation_by_player %>% slice_head(n=10), 
        aes(x = 1, y = reorder(passer, total_fpts))) +
   # Add NFL headshots
-  geom_nfl_headshots(aes(player_gsis = passer_id.x), width = 0.1) +
+  geom_nfl_headshots(aes(player_gsis = passer_id), width = 0.1) +
   
   # Add player names
   geom_text(aes(label = passer), hjust = -0.5, size = 5) +
@@ -227,8 +258,7 @@ temp_plot <- ggplot(correlation_by_player %>% slice_head(n=10),
     axis.ticks.y = element_blank(),
     panel.grid = element_blank()
   ) +
-  labs(title = "Player Statistics with Headshots") + 
-  theme_dark()
+  labs(title = "Player Statistics with Headshots")
 
 ggsave(filename = "./03_plots/qbs/temperature correlation.png", 
        plot = temp_plot, 
