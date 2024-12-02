@@ -3,7 +3,7 @@
 # 0.0 load packages -------------------------------------------------------
 
 
-#load packages
+# load packages
 suppressMessages({
   
   #nflverse packages
@@ -19,12 +19,9 @@ suppressMessages({
   library(caret) # data partition
   library(randomForest) # rf model
   library(ranger) # fast implementation of random forest
-  library(MultivariateRandomForest) # models multivariate cases using random forests
+  #library(MultivariateRandomForest) # models multivariate cases using random forests
   
-  # processing time packages
-  library(doParallel) # Foreach parallel adaptor for parallel package
-  library(h2o) # for cpu clustering
-  library(foreach) # looping construct
+  
 })
 
 
@@ -59,6 +56,7 @@ files <- function(start_year){
 }
 files(2022)
 
+
 # 2.0 nflverse data ---------------------------------------------
 
 
@@ -68,12 +66,15 @@ odds <- function(year){
     select(season, week, away_team, home_team, spread_line, total_line) %>% 
     mutate(away_spread = spread_line, 
            home_spread = spread_line * -1, 
-           away_team = str_replace_all(away_team, "LA", "LAR"), 
-           away_team = str_replace_all(away_team, "LARC", "LAC"),
-           home_team = str_replace_all(home_team, "LA", "LAR"),
-           home_team = str_replace_all(home_team, "LARC", "LAC"),
+           
+           #away_team = str_replace_all(away_team, "LA", "LAR"), 
+           #away_team = str_replace_all(away_team, "LARC", "LAC"),
+           #home_team = str_replace_all(home_team, "LA", "LAR"),
+           #home_team = str_replace_all(home_team, "LARC", "LAC"),
+           
            week = sprintf("%02d", week), 
            week = as.numeric(week),
+           
            game_id = paste(season, week, away_team, home_team, sep = "_"), 
            away_join = paste(season, week, away_team, sep = "_"), 
            home_join = paste(season, week, home_team, sep = "_")
@@ -94,7 +95,8 @@ schedule <- load_schedules(2022:nfl_year)
 
 
 # load pbp
-pbp <- load_pbp(data_start:nfl_year)
+pbp <- load_pbp(data_start:nfl_year) %>% 
+  mutate(weather = as.character(weather))
 
 # calc 0.5ppr rb fpts by game week from since 2022
 rb_fpts_pbp <- function(){
@@ -112,6 +114,7 @@ rb_fpts_pbp <- function(){
       season_type = last(season_type), 
       temp = last(temp, na_rm = F), 
       wind = last(wind, na_rm = F), 
+      weather = last(ifelse(is.na(weather), "NA", substr(weather, 1, 4))), # Handle substr and NA
       spread_line = last(spread_line), 
       total_line = last(total_line), 
       posteam = last(posteam), 
@@ -225,8 +228,8 @@ contests_rb <- lapply(contest_files, function(x){
     pbp_def <<- pbp_def_pass %>% 
       left_join(pbp_def_rush, by = c('defteam')) %>% 
       mutate(total_plays = n_plays.x + n_plays.y,
-             defteam = gsub('LA','LAR', defteam), 
-             defteam = gsub('LARC','LAC', defteam), 
+             #defteam = gsub('LA','LAR', defteam), 
+             #defteam = gsub('LARC','LAC', defteam), 
              avg_rank = (def_rush_epa_rank + def_pass_epa_rank) /2) %>% 
       select(defteam, 
              def_rush_epa, def_rush_epa_rank, def_rush_epa_sd, 
@@ -263,8 +266,8 @@ contests_rb <- lapply(contest_files, function(x){
     pbp_off <<- pbp_off_pass %>% 
       left_join(pbp_off_rush, by = c('posteam')) %>% 
       mutate(total_plays = n_plays.x + n_plays.y, 
-             posteam = gsub('LA','LAR', posteam), 
-             posteam = gsub('LARC','LAC', posteam),
+             #posteam = gsub('LA','LAR', posteam), 
+             #posteam = gsub('LARC','LAC', posteam),
              avg_rank = (off_rush_epa_rank + off_pass_epa_rank) /2) %>% 
       select(posteam, 
              off_rush_epa, off_rush_epa_rank, off_rush_epa_sd, 
@@ -318,23 +321,32 @@ contests_rb <- lapply(contest_files, function(x){
     # load depth chart
     depth_charts <- load_depth_charts(seasons = game_year) %>% 
       filter(week == game_week) %>%
+       
       filter(position == "RB") %>% 
       filter(depth_position == "RB") %>% 
       select(1:5, 10, 12, 15) %>% 
-      mutate(full_name = clean_player_names(full_name, lowercase = T),
+      mutate(full_name = clean_player_names(full_name, lowercase = T), 
              game_id = paste(season, week, club_code, sep = "_")) %>% 
+      
       left_join(odds %>% select(away_team, home_team, home_spread, away_spread, home_join, total_line), by = c("game_id" = "home_join")) %>% 
-      left_join(odds %>% select(away_team, home_team, home_spread, away_spread, away_join), by = c("game_id" = "away_join")) %>% 
+      left_join(odds %>% select(away_team, home_team, home_spread, away_spread, away_join, total_line), by = c("game_id" = "away_join")) %>% 
+      
       mutate(away_team = coalesce(away_team.x, away_team.y),
              home_team = coalesce(home_team.x, home_team.y),
+             
              home_spread = coalesce(home_spread.x, home_spread.y),
-             away_spread = coalesce(away_spread.x, away_spread.y)) %>% 
+             away_spread = coalesce(away_spread.x, away_spread.y), 
+             
+             total_line = coalesce(total_line.x, total_line.y)) %>% 
+      
       select(-c(away_team.x, away_team.y, home_team.x, home_team.y, home_spread.x, home_spread.y, away_spread.x, away_spread.y)) %>% 
-      drop_na() %>% # to remove bye week teams
+      
       mutate(opp = if_else(club_code == home_team, away_team, home_team), 
              spread = if_else(club_code == home_team, home_spread, away_spread),
-             home = if_else(club_code == home_team, 1,0)) %>% 
-      select(-c(away_team, home_team, away_spread, home_spread))
+             home = if_else(club_code == home_team, 1,0), 
+             game_id = paste(season, week, away_team, home_team, sep = "_")) %>% 
+      
+      select(-c(away_team, home_team, away_spread, home_spread, total_line.x, total_line.y))
     
     print(paste(x, ": Depth Charts"))
     print(depth_charts)
@@ -344,8 +356,9 @@ contests_rb <- lapply(contest_files, function(x){
       # load pff rushing data
       rushing_summary <- read.csv(glue("{folder}/pff/rushing_summary.csv")) %>% 
         select(player, player_id, player_game_count, team_name, 
-               total_touches, elu_rush_mtf, 
-               attempts, yco_attempt, ypa, first_downs, grades_run, 
+               total_touches, elu_rush_mtf, elu_recv_mtf,
+               touchdowns, 
+               attempts, yco_attempt, ypa, grades_run, explosive,
                targets, yprr) %>% 
         mutate(player = clean_player_names(player, lowercase = T))
       
@@ -370,19 +383,23 @@ contests_rb <- lapply(contest_files, function(x){
       left_join(pbp_off, by = c('club_code' = 'posteam')) %>%
       left_join(def_table, by = c('opp' = 'team_name')) %>% 
       mutate(touches_game = round(total_touches / player_game_count, digits = 1), 
-             mtf_per_attempt = round(elu_rush_mtf / attempts, digits = 1), 
              yco_attempt_sd = round((yco_attempt - mean(yco_attempt, na.rm=T)) / sd(yco_attempt, na.rm = T), digits = 2), 
-             touches_game_sd = round((touches_game - mean(touches_game, na.rm=T)) / sd(touches_game, na.rm = T), digits = 2), 
+             touches_game_sd = round((touches_game - mean(touches_game, na.rm=T)) / sd(touches_game, na.rm = T), digits = 2),
+             
              off_def = (def_rush_epa_rank+rdef_rank)/2 - off_rush_epa_rank, 
+             
              attempts_game = round(attempts / player_game_count, digits = 1),
-             #gap_attempts_game = round(gap_attempts / player_game_count, digits = 1), 
-             #zone_attempts_game = round(zone_attempts / player_game_count, digits = 1), 
+             td_game = round(touchdowns / player_game_count, digits = 1),
              yards_per_game = round(attempts_game * ypa, digits = 1), 
-             #first_downs_att = round(first_downs / attempts, digits = 1), 
              targets_game = round(targets / player_game_count, digits = 1), 
+             
+             mtf_touch = (elu_recv_mtf + elu_rush_mtf) / total_touches,
+             explosive_rate = round(explosive/attempts, digits = 2),
+             
              contest_year = nfl_year, 
              contest_week = game_week,
              contest = x) %>% 
+      
       separate(contest, into = c("folder", "contest"), sep = "./01_data/contests/") %>% 
       mutate(z_score = round(
           (0.20 * off_rush_epa_sd) - 
@@ -450,13 +467,14 @@ process_rb_df <- function(){
                 names_prefix = "status_", 
                 values_fill = 0,
                 values_fn = function(x) 1) %>%
+    mutate(depth_team = as.numeric(depth_team)) %>% 
     select(-id) %>% 
     filter(attempts > 10) %>% 
     filter(status_Out == 0) %>% 
     relocate(c("z_score", "fpts", "fpts_ntile", "rushing_yards", "rush_attempt", "rush_touchdown"), .after = game_id) %>% 
     relocate(c("off_rush_epa_sd", "def_rush_epa_sd", "rdef_sd", "yco_attempt_sd", "tack_sd", "touches_game_sd"), 
              .after = home) %>% 
-    arrange(-z_score) %>% 
+    arrange(-fpts) %>% 
     filter(fpts != 0)
 }
 process_rb_df()
@@ -466,20 +484,18 @@ names(contests_rb_df)
 
 # 5.0 find correlated variables-----------------------------------------------
 
+# select only numeric columns
+numeric_contest_rb <<- contests_rb_df[, sapply(contests_rb_df, is.numeric)]
+
 # use to look for features of new models
 correlation_table <- function() {
-  # find individual correlations
-  cor(contests_rb_df$z_score, 
-      contests_rb_df$fpts,
-      use = "complete.obs")
-  
+
   # select only numeric columns
   numeric_contest_rb <<- contests_rb_df[, sapply(contests_rb_df, is.numeric)]
   
   # find cor of all variables
   cor_df <- as_tibble(cor(numeric_contest_rb)[,"fpts"])
-  cor_df
-  
+
   ## gpt built code
   # Compute the correlation matrix for numeric variables
   cor_matrix <- cor(numeric_contest_rb, use = "complete.obs")
@@ -498,7 +514,8 @@ correlation_table()
 
 # 6.0 split train test ----------------------------------------------------
 
-model_data <- numeric_contest_rb %>% filter(depth_team == 1)
+model_data <- numeric_contest_rb %>% 
+  filter(depth_team == 1 | depth_team == 2)
 
 set.seed(10)
 
@@ -514,22 +531,23 @@ test_data <- model_data[-split_index, ]
 
 # 6.1 random forest model and tuning-------------------------------------------
 
+# variables to add / sub / store
+# 
 
 # train random forest model
 rb_fpts_rf <- randomForest(fpts ~  
-                             spread + total_line + #temp + wind + # game data
-                             attempts_game + yco_attempt_sd + # rush usage
+                             spread + total_line + home + #temp + wind + # game data
+                             attempts_game + ypa + td_game + rush_share + # rush usage
                              targets_game + yprr + # rec usage
-                             grades_run + # player grade
+                             grades_run + mtf_touch + # player grade
                              def_rush_epa, # defense
                    data = train_data, 
-                   mtry = 2, 
-                   nodesize = 20,
+                   mtry = 1, 
+                   nodesize = 5,
                    ntree = 1000)
 
 # use rb_fpts_rf to predict on test data
 rb_fpts_rf_predictions <- round(predict(rb_fpts_rf, test_data), digits = 2)
-rb_fpts_rf_predictions
 
 # evaulated predictions 
 rb_fpts_rf_performance <- round(postResample(rb_fpts_rf_predictions, test_data$fpts), digits = 3)
@@ -543,9 +561,11 @@ tune_grid <- expand.grid(mtry = c(1, 2, 3, 4, 5), # Experiment with different mt
 
 # Train the model with caret
 rb_fpts_rf_tuned <- train(
-  fpts ~  spread + total_line + # game data
-    attempts_game + ypa + targets_game + yprr +# usage
-    grades_run + # player grade
+  fpts ~  
+    spread + total_line + #temp + wind + # game data
+    attempts_game + ypa + td_game + rush_share + # rush usage
+    targets_game + yprr + # rec usage
+    grades_run + mtf_touch + # player grade
     def_rush_epa,
   data = train_data,
   method = "ranger",
@@ -556,26 +576,156 @@ rb_fpts_rf_tuned <- train(
 # View the best model
 print(rb_fpts_rf_tuned$bestTune)
 
-importance(rb_fpts_rf)
+# Dotchart of variable importance as measured by a Random Forest
 varImpPlot(rb_fpts_rf)
 
 
-# 6.2 multivariate random forest model ------------------------------------
+# 6.2 ---------------------------------------------------------------------
+
+
+library(keras)
+library(tensorflow)
+library(reticulate)
+
+use_virtualenv("r-reticulate")  # Ensure correct virtual environment is used
+tensorflow::tf$constant("Hello, TensorFlow!")
+
+# Prepare data
+# Assume 'train_data' is your training dataset
+x_train <- as.matrix(train_data[, c("spread", "total_line", "attempts_game", 
+                                    "yco_attempt_sd", "targets_game", "yprr", 
+                                    "grades_run", "def_rush_epa")]) # 10 variables
+y_train <- as.matrix(train_data[, c("rush_attempt", "rushing_yards", 
+                                    "rush_touchdown", "receptions", 
+                                    "receiving_yards", "rec_touchdown", "fpts")])
+
+# Define the model
+model <- keras_model_sequential() %>%
+  layer_dense(units = 128, activation = 'relu', input_shape = ncol(x_train)) %>%
+  layer_dropout(rate = 0.3) %>% # Prevent overfitting
+  layer_dense(units = 64, activation = 'relu') %>%
+  layer_dropout(rate = 0.3) %>%
+  layer_dense(units = ncol(y_train), activation = 'linear') # Multivariate output
+
+# Compile the model
+model %>% compile(
+  optimizer = optimizer_adam(learning_rate = 0.001),
+  loss = 'mean_squared_error',
+  metrics = c('mean_absolute_error')
+)
+
+# Train the model
+history <- model %>% fit(
+  x_train, y_train,
+  epochs = 100, # Adjust epochs for convergence
+  batch_size = 32,
+  validation_split = 0.2, # Use 20% of the data for validation
+  verbose = 2
+)
+
+# Evaluate the model
+x_test <- as.matrix(test_data[, c("spread", "total_line", "attempts_game", 
+                                  "yco_attempt_sd", "targets_game", "yprr", 
+                                  "grades_run", "def_rush_epa")])
+y_test <- as.matrix(test_data[, c("rush_attempt", "rushing_yards", 
+                                  "rush_touchdown", "receptions", 
+                                  "receiving_yards", "rec_touchdown", "fpts")])
+
+evaluation <- model %>% evaluate(x_test, y_test)
+cat("Test Loss:", evaluation$loss, "\nTest MAE:", evaluation$mean_absolute_error)
+
+# Make predictions
+predictions <- model %>% predict(x_test)
+
+# Combine predictions and actuals for analysis
+results <- data.frame(
+  actuals = y_test,
+  predictions = predictions
+)
+
+
+
+# 6.3.1 benchmarking ------------------------------------------------------
+
+library(xgboost)
+
+# Convert data to DMatrix format
+train_matrix <- xgb.DMatrix(data = as.matrix(train_data[, predictors]),
+                            label = train_data[, target])
+
+# Train with GPU support
+xgb_model <- xgb.train(
+  data = train_matrix,
+  nrounds = 100,
+  max_depth = 20,
+  eta = 0.1,
+  objective = "reg:squarederror",
+  tree_method = "gpu_hist"  # Enable GPU support
+)
+
+
+
+library(h2o)
+
+# Initialize H2O cluster
+h2o.init()
+
+# Convert train_data to H2O frame
+train_h2o <- as.h2o(train_data)
+
+# Define predictors and target
+predictors <- colnames(train_data)[1:(ncol(train_data) - 1)]  # All except last column
+target <- colnames(train_data)[ncol(train_data)]             # Last column is target
+
+# Train a random forest model on CPU
+system.time({
+  rf_cpu <- h2o.randomForest(
+    x = predictors, 
+    y = target,
+    training_frame = train_h2o,
+    ntrees = 100,
+    max_depth = 20
+  )
+})
+
+# View model summary
+summary(rf_cpu)
+
+# Shutdown H2O cluster
+h2o.shutdown(prompt = FALSE)
+
+
+# Compare training times
+
+
+# 6.3,2 multivariate random forest model ------------------------------------
+
+# load cpu / gpu packages
+
+# processing time packages
+library(doParallel) # Foreach parallel adaptor for parallel package
+library(h2o) # for cpu clustering
+library(foreach) # looping construct
+
 
 # Prepare the dataset
 # Assume train_data is your training dataset and test_data is your test dataset
 # Replace target column names with actual column names in your dataset
-X_train <- as.matrix(train_data[, c("spread", "total_line", "attempts_game", 
-                                    "yco_attempt_sd", "targets_game", "yprr", 
-                                    "grades_run", "def_rush_epa")])
+X_train <- as.matrix(train_data[, c("spread", "total_line", 
+                                    "attempts_game", "yco_attempt_sd", 
+                                    "targets_game", "yprr", 
+                                    "grades_run", 
+                                    "def_rush_epa")])
 
 Y_train <- as.matrix(train_data[, c("rush_attempt","rushing_yards", "rush_touchdown", 
                                     "receptions", "receiving_yards", "rec_touchdown",
                                     "fpts")])
 
-X_test <- as.matrix(test_data[, c("spread", "total_line", "attempts_game", 
-                                  "yco_attempt_sd", "targets_game", "yprr", 
-                                  "grades_run", "def_rush_epa")])
+X_test <- as.matrix(test_data[, c("spread", "total_line", 
+                                  "attempts_game", "yco_attempt_sd", 
+                                  "targets_game", "yprr", 
+                                  "grades_run", 
+                                  "def_rush_epa")])
 
 # Train the multivariate random forest model
 set.seed(10) # For reproducibility
@@ -583,7 +733,8 @@ set.seed(10) # For reproducibility
 
 
 # set up parallel backend
-num_cores <- 8 - 2
+
+num_cores <- detectCores() - 4
 cl <- makeCluster(num_cores)
 registerDoParallel(cl)
 
@@ -601,7 +752,7 @@ if (tree_remainder > 0) {
 
 # Train Multivariate Random Forest in parallel
 forest_chunks <- foreach(ntree = ntree_list, 
-                         .combine = rbind, 
+                         .combine = rbind, # list or rbind
                          .packages = "MultivariateRandomForest") %dopar% {
                            build_forest_predict(
                              trainX = X_train,
@@ -616,13 +767,62 @@ forest_chunks <- foreach(ntree = ntree_list,
 # Stop the parallel backend
 stopCluster(cl)
 
+final_forest <- forest_chunks
+test <- do.call(rbind, forest_chunks)
+
+# Predict using each chunk
+predictions_list <- lapply(forest_chunks, function(chunk) {
+  # Assuming `chunk` is a trained forest object
+  # Replace trainX and trainY with placeholders, if required
+  build_forest_predict(
+    trainX = NULL,       # No new training
+    trainY = NULL,       # No new training
+    testX = X_test,      # Test data for prediction
+    n_tree = length(chunk),  # Use the number of trees in the chunk
+    m_feature = 2,       # Match the training feature settings
+    min_leaf = 5         # Match the training settings
+  )
+})
+
+# Combine predictions (e.g., by averaging)
+final_predictions <- Reduce("+", predictions_list) / length(predictions_list)
+
+# View predictions
+head(final_predictions)
+
+
+library(Metrics)
+
+target_columns <- c("rush_attempt","rushing_yards", "rush_touchdown", 
+                    "receptions", "receiving_yards", "rec_touchdown",
+                    "fpts") 
+Y_test <- as.matrix(test_data[, target_columns])
+
+
+# Assuming `final_predictions` contains predictions for test data
+actual <- Y_test  # Actual target values
+
+final_predictions <- forest_chunks
+
+evaluation <- data.frame(
+  Target = colnames(actual),
+  R_squared = sapply(1:ncol(actual), function(i) {
+    cor(final_predictions[, i], actual[, i])^2  # R² for each target
+  }),
+  RMSE = sapply(1:ncol(actual), function(i) {
+    rmse(actual[, i], final_predictions[, i])  # RMSE for each target
+  })
+)
+
+print(evaluation)
+
 
 # Train Multivariate Random Forest model
 mrf_model <- build_forest_predict(
   trainX = X_train,  # Predictor matrix
   trainY = Y_train,  # Target matrix
   testX = X_test,
-  n_tree = 100, # Number of trees
+  n_tree = 10, # Number of trees
   m_feature = 2, # Number of features at each split
   min_leaf = 5   # Minimum number of samples per leaf
 )
@@ -641,7 +841,7 @@ predictions <- data.frame(
 print(predictions)
 
 
-# 6.3 train models - GPT ensemble --------------------------------------------
+# 6.4 train models - GPT ensemble --------------------------------------------
 
 
 # list of models to train
@@ -703,5 +903,6 @@ performance_df
 
 # 7.0 save model selection -----------------------------------------------------
 
-save(rb_fpts_rf, file = "./04_models/rb_fpts_rf.Rdata")
 
+save(rb_fpts_rf, file = "./04_models/rb_fpts_rf.Rdata")
+#save(forest_chunks, file = "./04_models/forest_chunks.Rdata")
