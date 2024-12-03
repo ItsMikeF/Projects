@@ -437,7 +437,7 @@ rb <- rb %>%
   mutate(fpt_proj = round(model_projections, digits = 2)) %>% 
   relocate(fpt_proj, .after = z_score) %>% 
   arrange(-fpt_proj) %>% 
-  filter(weekday == "Sunday") %>% # toggle as needed for slates
+  filter(weekday == "Monday") %>% # toggle as needed for slates
   mutate(position = paste0("RB",row_number()))
 
   
