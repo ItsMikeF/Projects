@@ -298,8 +298,12 @@ def_table()
 nfl_depth <- function() {
   # load depth chart
   depth_charts <<- load_depth_charts(seasons = nfl_year) %>% 
-    filter(week == contest_week-1) %>% # current week depth charts not always available
-    mutate(week = week +1) %>% 
+    # current week depth charts not always available
+    #filter(week == contest_week-1) %>% 
+    #mutate(week = week +1) %>% 
+    
+    # current week depth charts n
+    filter(week == contest_week) %>% 
     
     filter(position == "RB") %>% 
     filter(depth_position == "RB") %>% 

@@ -104,10 +104,17 @@ qb_fpts_pbp <- function(){
       snaps = n(),
       epa_per_play = round(epa/snaps, digits = 2),
       
-      passing_yards = sum(passing_yards, na.rm = T), 
       pass_attempt = sum(pass_attempt, na.rm = T), 
+      passing_yards = sum(passing_yards, na.rm = T), 
       pass_touchdown = sum(pass_touchdown, na.rm = T), 
       interception = sum(interception, na.rm = T), 
+      
+      qb_scramble = sum(qb_scramble, na.rm = T),
+      rush_attempt = sum(rush_attempt, na.rm = T),
+      rushing_yards = sum(rushing_yards, na.rm = T),
+      rush_touchdown = sum(rush_touchdown, na.rm = T),
+      
+      fumble = sum(fumble, na.rm = T),
       
       # use to get last non-missing values
       season_type = last(season_type), 
@@ -123,27 +130,9 @@ qb_fpts_pbp <- function(){
     ungroup() %>% 
     mutate(join = paste(game_id, passer_id, sep = "_"))
   
-  # Get passer rushing stats
-  passer_pbp <- pbp %>% 
-    group_by(game_id, passer, passer_id, posteam) %>% 
-    summarise(
-      
-      qb_scramble = sum(qb_scramble, na.rm = T),
-      rush_attempt = sum(rush_attempt, na.rm = T),
-      rushing_yards = sum(rushing_yards, na.rm = T),
-      rush_touchdown = sum(rush_touchdown, na.rm = T),
-      
-      fumble = sum(fumble, na.rm = T), 
-      
-    ) %>% 
-    drop_na() %>% 
-    ungroup() %>% 
-    mutate(join = paste(game_id, passer_id, sep = "_"))
-  
   # Get rusher rushing stats
   rusher_pbp <- pbp %>% 
-    group_by(game_id, season_type, temp, spread_line, total_line, 
-             rusher, rusher_id, posteam, week, season) %>% 
+    group_by(game_id, rusher, rusher_id) %>% 
     summarise(
       
       rush_attempt = sum(rush_attempt, na.rm = T),
@@ -151,12 +140,15 @@ qb_fpts_pbp <- function(){
       rush_touchdown = sum(rush_touchdown, na.rm = T),
       
       fumble = sum(fumble, na.rm = T)) %>% 
+    
     drop_na() %>% 
     ungroup() %>% 
-    mutate(join = paste(game_id, rusher_id, sep = "_"))
+    mutate(join = paste(game_id, rusher_id, sep = "_")) %>% 
+    select(-c("game_id"))
   
-  qb_rush <- passer_pbp %>%
-    left_join(rusher_pbp, by = "join") %>%
+  # join stats and calc fpts, dk scoring
+  qb_fpts <<- qb_pbp %>% 
+    left_join(rusher_pbp, by=c("join")) %>% # add passer + rusher stat 
     
     # add zeros so that the columns can be added
     mutate(across(c(rush_attempt.x, rush_attempt.y, 
@@ -170,14 +162,12 @@ qb_fpts_pbp <- function(){
            rushing_yards = rushing_yards.x + rushing_yards.y,
            rush_touchdown = rush_touchdown.x + rush_touchdown.y,
            fumble = fumble.x + fumble.y) %>% 
-    select(rush_attempt, rushing_yards, rush_touchdown, fumble, join)
-  
-  # join stats and calc fpts, dk scoring
-  qb_fpts <<- qb_pbp %>% 
-    left_join(qb_rush, by=c("join")) %>% # add passer + rusher stat 
-    select(-c("join")) %>% # drop the join column
+    select(-c("rush_attempt.x", "rush_attempt.y", "rushing_yards.x", "rushing_yards.y", 
+             "rush_touchdown.x", "rush_touchdown.y", "fumble.x", "fumble.y", "join")) %>% 
+    
+    relocate(c("rush_attempt", "rushing_yards", "rush_touchdown", "fumble"), .after = qb_scramble) %>% 
+    
     drop_na(passer) %>% 
-    replace(is.na(.),0) %>% 
     mutate(
       big_rush = ifelse(rushing_yards > 100, 1,0), 
       big_pass = ifelse(passing_yards > 300, 1,0), 
@@ -197,13 +187,18 @@ qb_fpts_pbp <- function(){
       fpts_ntile = ntile(fpts, 100)
     ) %>% 
     arrange(-fpts) %>% 
-    mutate(join = paste(season, week, posteam, passer, sep = "_")) %>% 
+    
+    mutate(join = tolower(paste(season, week, posteam, passer, sep = "_"))) %>% 
+    
+    # add field data from schedule
     left_join(schedule %>% select(game_id, roof), by=c("game_id")) %>% 
     mutate(temp = if_else(roof == "closed" | roof == "dome", 70, temp), 
            wind = if_else(is.na(wind), 0, wind), 
            weather_check = if_else(temp == 0 & wind == 0, 0, 1)) %>% 
     relocate(weather_check, .after = wind) %>% 
-    relocate(c("fpts", "fpts_ntile", "spread_line", "total_line"), .after = posteam)
+    
+    relocate(c("fpts", "fpts_ntile", "spread_line", "total_line"), .after = posteam) %>% 
+    relocate(c("snaps", "epa", "epa_per_play"), .after = big_pass)
   
 }
 qb_fpts_pbp()
@@ -331,8 +326,13 @@ def_table()
 nfl_depth <- function() {
   # load depth chart
   depth_charts <<- load_depth_charts(seasons = nfl_year) %>% 
-    filter(week == contest_week-1) %>% # current week depth charts not always available
-    mutate(week = week +1) %>% 
+    
+    # current week depth charts not always available
+    #filter(week == contest_week-1) %>% 
+    #mutate(week = week +1) %>% 
+    
+    # current week depth charts n
+    filter(week == contest_week) %>% 
     
     filter(position == "QB") %>% 
     filter(depth_position == "QB") %>% 
@@ -359,7 +359,7 @@ nfl_depth <- function() {
            game_id = paste(season, week, away_team, home_team, sep = "_")) %>% 
     
     select(-c(away_team, home_team, away_spread, home_spread, total_line.x, total_line.y)) %>% 
-    #drop_na() %>% # to remove bye week teams
+    drop_na() %>% # to remove bye week teams
     
     # add schedule
     left_join(schedule %>% select(game_id, gameday, weekday, gametime), by=c("game_id"))
@@ -369,41 +369,87 @@ nfl_depth()
 
 # load and process pff qb data
 pff_pass <- function(){
-  pblk <<- read.csv(glue("./01_data/contests/{folder}/pff/line_pass_blocking_efficiency.csv")) %>% 
-    mutate(team_name = clean_team_abbrs(team_name)) %>% 
-    mutate(pbe_rank = round(rank(-pbe), digits = 0), 
-           pbe_sd = round((pbe - mean(pbe, na.rm=T)) / sd(pbe, na.rm = T), digits = 2))
   
   passing_summary <<- read.csv(glue("./01_data/contests/{folder}/pff/passing_summary.csv")) %>% 
-    mutate(team_name = clean_team_abbrs(team_name), 
-           player = clean_player_names(player))
+    mutate(player = clean_player_names(player, lowercase = T), 
+           team_name = clean_team_abbrs(team_name), 
+           player = clean_player_names(player), 
+           
+           td_game = round(touchdowns / player_game_count, digits = 1),
+           pyards_game = round(yards / player_game_count), digits = 1) %>% 
+    select(-c("position"))
+  
+  pblk <<- read.csv(glue("./01_data/contests/{folder}/pff/line_pass_blocking_efficiency.csv")) %>% 
+    mutate(team_name = clean_team_abbrs(team_name),
+           
+           pressures_game = round(pressures_allowed / player_game_count, digits = 1),
+           pbe_rank = round(rank(-pbe), digits = 0), 
+           pbe_sd = round((pbe - mean(pbe, na.rm=T)) / sd(pbe, na.rm = T), digits = 2)) %>% 
+    select(team_name, pbe, pressures_game)
+  
+  passing_pressure <<- read.csv(glue("./01_data/contests/{folder}/pff/passing_pressure.csv")) %>% 
+    mutate(player = clean_player_names(player, lowercase = T),
+           player = clean_player_names(player)) %>% 
+    select(c("player","no_blitz_grades_pass", "blitz_grades_pass"))
   
   #passing_concept <<- read.csv(glue("./01_data/contests/{folder}/pff/passing_concept.csv")) %>% 
     #mutate(team_name = clean_team_abbrs(team_name), 
            #player = clean_player_names(player))
   
-  passing_pressure <<- read.csv(glue("./01_data/contests/{folder}/pff/passing_pressure.csv")) %>% 
-    mutate(team_name = clean_team_abbrs(team_name), 
-           player = clean_player_names(player))
+  receiving_summary <<- read.csv(glue("./01_data/contests/{folder}/pff/receiving_summary.csv")) %>%
+    mutate(player = clean_player_names(player, lowercase = T), 
+           team_name = clean_team_abbrs(team_name), 
+           player = clean_player_names(player), 
+           
+           td_game = round(touchdowns / player_game_count, digits = 1),
+           ryards_game = round(yards / player_game_count, digits = 1))
+  
+  receiving_summary_group <- receiving_summary %>% 
+    group_by(team_name) %>% 
+    summarize(team_rec = round(weighted.mean(x = grades_pass_route, w = routes), digits = 1),
+              team_yprr = round(weighted.mean(x = yprr, w = routes), digits = 2))
   
   qb_ids <- pbp %>% select(passer_id, passer) %>% drop_na() %>% unique()
 }
 pff_pass()
+
+# load and process pff rushing summary
+pff_rush <- function() {
+  # load pff rushing data
+  rushing_summary <- read.csv(glue("./01_data/contests/{folder}/pff/rushing_summary.csv")) %>% 
+    select(player, player_id, player_game_count, team_name, 
+           total_touches, elu_rush_mtf, elu_recv_mtf,
+           touchdowns, 
+           attempts, yco_attempt, ypa, grades_run, explosive,
+           targets, yprr) %>% 
+    mutate(player = clean_player_names(player, lowercase = T))
+  
+  rushing_summary_share <- rushing_summary %>% 
+    group_by(team_name) %>% 
+    summarize(team_attempts = sum(attempts))
+  
+  rushing_summary <<- rushing_summary %>% 
+    left_join(rushing_summary_share, by=c("team_name")) %>% 
+    mutate(rush_share = round(attempts / team_attempts, digits = 2)) %>% 
+    relocate(c("rush_share","team_attempts"), .after = attempts)
+}
+pff_rush()
 
 # combine all qb stats
 combine_qb <- function(){
   qb <<- depth_charts %>%
     
     left_join(passing_summary, by = c('full_name' = 'player')) %>% 
+    
+    left_join(pblk, by = c('club_code' = 'team_name')) %>% 
+    left_join(passing_pressure, by = c('full_name' = 'player')) %>% 
+    left_join(receiving_summary_group, by = c("team_name")) %>% 
+    
     mutate(full_name = str_to_title(full_name)) %>% 
     
     left_join(pbp_def, by = c('opp' = 'defteam')) %>% 
     left_join(pbp_off, by = c('club_code' = 'posteam')) %>%
-    left_join(def_table, by = c('opp' = 'team_name')) %>% 
-    
-    left_join(passing_summary, by = c('full_name' = 'player')) %>% 
-    left_join(pblk, by = c('club_code' = 'team_name')) %>% 
-    left_join(passing_pressure, by = c('full_name' = 'player'))
+    left_join(def_table, by = c('opp' = 'team_name'))
 }
 combine_qb()
 

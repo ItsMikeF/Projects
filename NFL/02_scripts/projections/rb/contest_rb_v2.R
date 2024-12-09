@@ -378,8 +378,10 @@ contests_rb <- lapply(contest_files, function(x){
     
     # join data
     rb <<- depth_charts %>%
+      
       left_join(rushing_summary, by = c('full_name' = 'player')) %>% 
       mutate(full_name = str_to_title(full_name)) %>% 
+      
       left_join(pbp_def, by = c('opp' = 'defteam')) %>% 
       left_join(pbp_off, by = c('club_code' = 'posteam')) %>%
       left_join(def_table, by = c('opp' = 'team_name')) %>% 
