@@ -320,6 +320,7 @@ contests_wr <- lapply(contest_files, function(x){
     receiving_summary <<- read.csv(glue("{folder}/pff/receiving_summary.csv")) %>% 
       mutate(player = clean_player_names(player, lowercase = T), # must be lowercase for join
              
+             targets_game = round(targets / player_game_count, digits = 1),
              rec_game = round(receptions / player_game_count, digits = 2),
              rec_yards_game = round(yards / player_game_count, digits = 2),
              rec_td_game = round(touchdowns / player_game_count,digits = 2)) %>% 
@@ -328,7 +329,8 @@ contests_wr <- lapply(contest_files, function(x){
     # load scheme
     receiving_scheme <<- read.csv(glue("{folder}/pff/receiving_scheme.csv")) %>% 
       mutate(player = clean_player_names(player, lowercase = T)) %>% 
-      select(player, man_yprr, zone_yprr)
+      select(player, man_yprr, zone_yprr) %>% 
+      mutate(man_adv = man_yprr - zone_yprr)
     
     defense_coverage_scheme <<- read.csv(glue("{folder}/pff/defense_coverage_scheme.csv")) %>% 
       mutate(player = clean_player_names(player, lowercase = T), 

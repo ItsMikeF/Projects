@@ -345,6 +345,7 @@ pff_rec <- function() {
   # load recieving summary
   receiving_summary <<- read.csv(glue("./01_data/contests/{folder}/pff/receiving_summary.csv")) %>% 
     mutate(player = clean_player_names(player, lowercase = T), 
+           targets_game = round(targets / player_game_count, digits = 1),
            rec_game = round(receptions / player_game_count, digits = 2),
            rec_yards_game = round(yards / player_game_count, digits = 2),
            rec_td_game = round(touchdowns / player_game_count,digits = 2)) %>% 
@@ -353,7 +354,8 @@ pff_rec <- function() {
   # load scheme
   receiving_scheme <<- read.csv(glue("./01_data/contests/{folder}/pff/receiving_scheme.csv")) %>% 
     mutate(player = clean_player_names(player, lowercase = T)) %>% 
-    select(player, man_yprr, zone_yprr)
+    select(player, man_yprr, zone_yprr) %>% 
+    mutate(man_adv = man_yprr - zone_yprr)
   
   defense_coverage_scheme <<- read.csv(glue("./01_data/contests/{folder}/pff/defense_coverage_scheme.csv")) %>% 
     mutate(player = clean_player_names(player, lowercase = T), 
@@ -367,10 +369,12 @@ pff_rec <- function() {
            zone_snap_counts_coverage_percent,
            zone_grades_coverage_defense) %>% 
     group_by(team_name) %>% 
+    
     summarize(man_snaps = sum(man_snap_counts_coverage), 
               zone_snaps = sum(zone_snap_counts_coverage),
               def_man_grade = weighted.mean(man_grades_coverage_defense, man_snap_counts_coverage), 
               def_zone_grade = weighted.mean(zone_grades_coverage_defense, zone_snap_counts_coverage)) %>% 
+    
     mutate(man_percentage = round(man_snaps / (man_snaps + zone_snaps), digits = 3), 
            man_rank =  round(rank(-man_percentage), digits = 0), 
            def_man_grade = round(def_man_grade, digits = 1), 
@@ -440,6 +444,43 @@ wr <- wr %>%
 wr_slate <- wr %>% 
   #filter(weekday == "Monday") %>% # toggle as needed for slates
   mutate(position = paste0("wr",row_number())) %>% 
+  view(title = glue("{folder}_wr"))
+
+
+
+# 2.1 revised -------------------------------------------------------------
+
+# Helper function to make predictions and round them
+predict_and_round <- function(model, data, digits = 1) {
+  round(predict(model, newdata = data), digits)
+}
+
+# Load models
+models <- list(
+  fpts = "./04_models/wr/wr_fpts_rf.Rdata",
+  receptions = "./04_models/wr/wr_receptions_rf.Rdata",
+  receiving_yards = "./04_models/wr/wr_receiving_yards_rf.Rdata",
+  pass_td = "./04_models/wr/wr_pass_touchdown_rf.Rdata"
+)
+
+lapply(models, load)
+
+# Add projections to WR data
+wr <- wr %>%
+  mutate(
+    fpt_proj = predict_and_round(wr_fpts_rf, .),
+    receptions_proj = predict_and_round(wr_receptions_rf, .),
+    receiving_yards_proj = predict_and_round(wr_receiving_yards_rf, .),
+    pass_td_proj = predict_and_round(wr_pass_touchdown_rf, .)
+  ) %>%
+  relocate(c(fpt_proj, receptions_proj, receiving_yards_proj, pass_td_proj), .after = full_name) %>%
+  arrange(desc(fpt_proj))
+
+# Prepare slate and view
+wr_slate <- wr %>%
+  # Uncomment the next line if filtering by weekday
+  # filter(weekday == "Monday") %>%
+  mutate(position = paste0("wr", row_number())) %>%
   view(title = glue("{folder}_wr"))
 
 
