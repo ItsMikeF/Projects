@@ -44,7 +44,7 @@ files()
 # load pbp
 pbp <- load_pbp(2022:2023)
 
-# calc rb fpts by game week
+# calc wr fpts by game week
 wr_fpts_pbp <- function(){
   
   # Load regular season data

@@ -324,7 +324,7 @@ contests_rb <- lapply(contest_files, function(x){
       filter(week == game_week) %>%
        
       filter(position == "RB") %>% 
-      filter(depth_position == "RB") %>% 
+      filter(depth_position %in% c("RB","HB")) %>% 
       select(1:5, 10, 12, 15) %>% 
       mutate(full_name = clean_player_names(full_name, lowercase = T), 
              game_id = paste(season, week, club_code, sep = "_")) %>% 
@@ -385,6 +385,7 @@ contests_rb <- lapply(contest_files, function(x){
       left_join(pbp_def, by = c('opp' = 'defteam')) %>% 
       left_join(pbp_off, by = c('club_code' = 'posteam')) %>%
       left_join(def_table, by = c('opp' = 'team_name')) %>% 
+      
       mutate(touches_game = round(total_touches / player_game_count, digits = 1), 
              yco_attempt_sd = round((yco_attempt - mean(yco_attempt, na.rm=T)) / sd(yco_attempt, na.rm = T), digits = 2), 
              touches_game_sd = round((touches_game - mean(touches_game, na.rm=T)) / sd(touches_game, na.rm = T), digits = 2),

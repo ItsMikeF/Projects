@@ -54,8 +54,14 @@ load_all <- function() {
   
   # set today as target date
   target_date <- Sys.Date()
-  target_row <- which.min(abs((as.Date(schedule$gameday)-target_date)))
   
+  if (weekdays(target_date) %in% c("Tuesday", "Wednesday")) {
+    target_row <- which.min(abs((as.Date(schedule$gameday) - target_date))) + 1
+  } else {
+    target_row <- which.min(abs((as.Date(schedule$gameday) - target_date)))
+  }
+  
+
   contest_week <<- as.numeric(schedule$week[target_row])
   
   # load spreads and totals
@@ -161,12 +167,16 @@ rb_fpts_pbp <- function(){
         receiving_yards * .1,  
       fpts_ntile = ntile(fpts, 100)) %>% 
     arrange(-fpts) %>% 
+    
     mutate(join = tolower(paste(season, week, posteam, rusher, sep = "_"))) %>% 
+    
     left_join(schedule %>% select(game_id, roof), by=c("game_id")) %>% 
+    
     mutate(temp = if_else(roof == "closed" | roof == "dome", 70, temp), 
            wind = if_else(is.na(wind), 0, wind), 
            weather_check = if_else(temp == 0 & wind == 0, 0, 1), 
            dome_games = if_else(roof == "dome" | roof == "closed",1,0)) %>% 
+    
     relocate(weather_check, .after = wind) %>% 
     relocate(c("fpts", "fpts_ntile", "spread_line", "total_line"), .after = posteam)
   
@@ -298,15 +308,16 @@ def_table()
 nfl_depth <- function() {
   # load depth chart
   depth_charts <<- load_depth_charts(seasons = nfl_year) %>% 
+    
     # current week depth charts not always available
-    #filter(week == contest_week-1) %>% 
-    #mutate(week = week +1) %>% 
+    filter(week == contest_week-1) %>% 
+    mutate(week = week +1) %>% 
     
     # current week depth charts n
-    filter(week == contest_week) %>% 
+    #filter(week == contest_week) %>% 
     
     filter(position == "RB") %>% 
-    filter(depth_position == "RB") %>% 
+    filter(depth_position %in% c("RB", "HB")) %>% 
     select(1:5, 10, 12, 15) %>% 
     mutate(full_name = clean_player_names(full_name, lowercase = T), 
            game_id = paste(season, week, club_code, sep = "_")) %>% 
@@ -420,6 +431,7 @@ combine_rb <- function() {
     relocate(c("z_score"), .after = game_id) %>% 
     relocate(c("off_rush_epa_sd", "def_rush_epa_sd", "rdef_sd", "yco_attempt_sd", "tack_sd", "touches_game_sd"), 
              .after = home) %>%
+    
     relocate(c("attempts_game", "ypa", "td_game", "rush_share",
                "targets_game", "yprr", 
                "grades_run", "mtf_touch", 
@@ -446,17 +458,34 @@ model_projections_rush_td <- predict(rb_rush_touchdown_rf, newdata = rb)
 
 # join projections to data
 rb <- rb %>% 
+  
   mutate(fpt_proj = round(model_projections_fpts, digits = 1), 
          rushing_yards_proj = round(model_projections_rushing_yards, digits = 1), 
          rush_attempts_proj = round(model_projections_rush_attempts, digits = 1), 
          rush_td_proj = round(model_projections_rush_td, digits = 1)) %>% 
+  
   relocate(c("fpt_proj", "rush_attempts_proj", "rushing_yards_proj", "rush_td_proj"),
            .after = z_score) %>% 
   arrange(-fpt_proj)
 
 # join projections to data and view
 rb_slate <- rb %>% 
-  filter(weekday == "Sunday") %>% # toggle as needed for slates
+  #filter(weekday == "Monday") %>% # toggle as needed for slates
   select(7:35) %>% 
   mutate(position = paste0("RB",row_number())) %>% 
   view(title = glue("{folder}_rb"))
+
+
+# 3.0 save and upload projections -----------------------------------------
+
+# save to local csv
+write.csv(rb_slate, file = glue("./05_outputs/proj/{folder}_rb.csv"))
+
+# authorize google sheets
+gs4_auth(email = "michael.john.francis2015@gmail.com")
+
+# sheet id
+sheet_id <- "https://docs.google.com/spreadsheets/d/1wo7QLvS5nbj6v3GVOlNs3Htw1VXhW9TEHCWkD-LHPSQ/edit?gid=0#gid=0"
+
+# overwrite an entire sheet
+sheet_write(rb_slate, ss = sheet_id, sheet = "rb")
