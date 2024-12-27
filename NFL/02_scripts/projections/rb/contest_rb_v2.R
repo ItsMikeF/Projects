@@ -26,7 +26,7 @@ suppressMessages({
 })
 
 
-# 1.0 ---------------------------------------------------------------------
+# 1.0 load files -------------------------------------------------------------
 
 
 files <- function(start_year){
@@ -168,13 +168,16 @@ rb_fpts_pbp <- function(){
       fpts_ntile = ntile(fpts, 100)) %>% 
     arrange(-fpts) %>% 
     mutate(join = tolower(paste(season, week, posteam, rusher, sep = "_"))) %>% 
+    
     left_join(schedule %>% select(game_id, roof), by=c("game_id")) %>% 
     mutate(temp = if_else(roof == "closed" | roof == "dome", 70, temp), 
            wind = if_else(is.na(wind), 0, wind), 
            weather_check = if_else(temp == 0 & wind == 0, 0, 1), 
            dome_games = if_else(roof == "dome" | roof == "closed",1,0)) %>% 
+    
     relocate(weather_check, .after = wind) %>% 
-    relocate(c("fpts", "fpts_ntile", "spread_line", "total_line"), .after = posteam)
+    relocate(c("fpts", "fpts_ntile", "spread_line", "total_line"), .after = rusher_id) %>% 
+    relocate(c("receptions", "receiving_yards"), .after = fumble)
   
   # remove objects
   rm(rb_pbp, wr_pbp)
@@ -360,7 +363,7 @@ contests_rb <- lapply(contest_files, function(x){
                total_touches, elu_rush_mtf, elu_recv_mtf,
                touchdowns, 
                attempts, yco_attempt, ypa, grades_run, explosive,
-               targets, yprr) %>% 
+               receptions, rec_yards, targets, yprr) %>% 
         mutate(player = clean_player_names(player, lowercase = T))
       
       rushing_summary_share <- rushing_summary %>% 
@@ -395,14 +398,21 @@ contests_rb <- lapply(contest_files, function(x){
              attempts_game = round(attempts / player_game_count, digits = 1),
              td_game = round(touchdowns / player_game_count, digits = 1),
              yards_per_game = round(attempts_game * ypa, digits = 1), 
+             
+             receptions_game = round(receptions / player_game_count, digits = 1),
+             receptions_total = receptions, 
+             
              targets_game = round(targets / player_game_count, digits = 1), 
+             rec_yards_game = round(rec_yards / player_game_count, digits = 1),
              
              mtf_touch = (elu_recv_mtf + elu_rush_mtf) / total_touches,
              explosive_rate = round(explosive/attempts, digits = 2),
              
              contest_year = nfl_year, 
              contest_week = game_week,
-             contest = x) %>% 
+             contest = x) %>%
+      
+      select(-c("receptions")) %>% 
       
       separate(contest, into = c("folder", "contest"), sep = "./01_data/contests/") %>% 
       mutate(z_score = round(
@@ -421,7 +431,7 @@ contests_rb <- lapply(contest_files, function(x){
 # remove pbp objects
 rm(pbp_def, pbp_off)
 
-# 4.0 create dataframe ----------------------------------------------------
+# 4.0 create data frame ----------------------------------------------------
 
 
 process_rb_df <- function(){
@@ -473,11 +483,14 @@ process_rb_df <- function(){
                 values_fn = function(x) 1) %>%
     mutate(depth_team = as.numeric(depth_team)) %>% 
     select(-id) %>% 
+    
     filter(attempts > 10) %>% 
     filter(status_Out == 0) %>% 
+    
     relocate(c("z_score", "fpts", "fpts_ntile", "rushing_yards", "rush_attempt", "rush_touchdown"), .after = game_id) %>% 
     relocate(c("off_rush_epa_sd", "def_rush_epa_sd", "rdef_sd", "yco_attempt_sd", "tack_sd", "touches_game_sd"), 
              .after = home) %>% 
+    
     arrange(-fpts) %>% 
     filter(fpts != 0)
 }
@@ -533,7 +546,7 @@ train_data <- model_data[split_index, ]
 test_data <- model_data[-split_index, ]
 
 
-# 6.1.0 random forest model and tuning-------------------------------------------
+# 6.1.0 random forest model and tuning for fpts-------------------------------------------
 
 # variables to add / sub / store
 # 
@@ -547,7 +560,7 @@ rb_fpts_rf <- randomForest(fpts ~
                              def_rush_epa, # defense
                    data = train_data, 
                    mtry = 1, 
-                   nodesize = 5,
+                   nodesize = 15,
                    ntree = 1000)
 
 # use rb_fpts_rf to predict on test data
@@ -581,7 +594,7 @@ rb_fpts_rf_tuned <- train(
 print(rb_fpts_rf_tuned$bestTune)
 
 # Dotchart of variable importance as measured by a Random Forest
-varImpPlot(rb_fpts_rf)
+#varImpPlot(rb_fpts_rf)
 
 # save model
 save(rb_fpts_rf, file = "./04_models/rb/rb_fpts_rf.Rdata")
@@ -593,15 +606,14 @@ save(rb_fpts_rf, file = "./04_models/rb/rb_fpts_rf.Rdata")
 # 
 
 # train random forest model
-rb_rushing_yards_rf <- randomForest(rush_attempts ~  
-                             spread + total_line + home + #temp + wind + # game data
+rb_rushing_yards_rf <- randomForest(rushing_yards ~  
                              attempts_game + ypa + td_game + rush_share + # rush usage
                              targets_game + yprr + # rec usage
                              grades_run + mtf_touch + # player grade
-                             def_rush_epa, # defense
-                           data = train_data, 
+                             def_rush_epa, 
+                             data = train_data, 
                            mtry = 2, 
-                           nodesize = 10,
+                           nodesize = 50,
                            ntree = 1000)
 
 # use rb_rushing_yards_rf to predict on test data
@@ -635,7 +647,7 @@ rb_rushing_yards_rf_tuned <- train(
 print(rb_rushing_yards_rf_tuned$bestTune)
 
 # Dotchart of variable importance as measured by a Random Forest
-varImpPlot(rb_rushing_yards_rf)
+#varImpPlot(rb_rushing_yards_rf)
 
 # save model
 save(rb_rushing_yards_rf, file = "./04_models/rb/rb_rushing_yards_rf.Rdata")
@@ -654,8 +666,8 @@ rb_rush_attempt_rf <- randomForest(rush_attempt ~
                                       grades_run + mtf_touch + # player grade
                                       def_rush_epa, # defense
                                     data = train_data, 
-                                    mtry = 3, 
-                                    nodesize = 15,
+                                    mtry = 4, 
+                                    nodesize = 100,
                                     ntree = 1000)
 
 # use rb_rush_attempt_rf to predict on test data
@@ -707,7 +719,7 @@ rb_rush_touchdown_rf <- randomForest(rush_touchdown ~
                                      def_rush_epa, # defense
                                    data = train_data, 
                                    mtry = 1, 
-                                   nodesize = 5,
+                                   nodesize = 50,
                                    ntree = 1000)
 
 # use rb_rush_touchdown_rf to predict on test data
@@ -746,7 +758,114 @@ print(rb_rush_touchdown_rf_tuned$bestTune)
 save(rb_rush_touchdown_rf, file = "./04_models/rb/rb_rush_touchdown_rf.Rdata")
 
 # expiremental code blocks for models
-{
+
+
+# 6.1.4 random forest model and tuning for receptions ----------------------
+
+
+# train random forest model
+rb_receptions_rf <- randomForest(receptions ~  
+                                       spread + total_line + home + #temp + wind + # game data
+                                       attempts_game + ypa + td_game + rush_share + # rush usage
+                                       receptions_game + yprr + # rec usage
+                                       grades_run + mtf_touch + # player grade
+                                       def_rush_epa, # defense
+                                     data = train_data, 
+                                     mtry = 2, 
+                                     nodesize = 10,
+                                     ntree = 1000)
+
+# use rb_receptions_rf to predict on test data
+rb_receptions_rf_predictions <- round(predict(rb_receptions_rf, test_data), digits = 2)
+
+# evaulated predictions 
+rb_receptions_rf_performance <- round(postResample(rb_receptions_rf_predictions, test_data$receptions), digits = 3)
+rb_receptions_rf_performance
+
+# Define the tuning grid
+tune_grid <- expand.grid(mtry = c(1, 2, 3, 4, 5), # Experiment with different mtry values
+                         splitrule = "variance", 
+                         min.node.size = c(5, 10, 15, 20, 25, 50, 100))
+
+# Train the model with caret
+rb_receptions_rf_tuned <- train(
+  receptions ~  
+    spread + total_line + #temp + wind + # game data
+    attempts_game + ypa + td_game + rush_share + # rush usage
+    receptions_game + yprr + # rec usage
+    grades_run + mtf_touch + # player grade
+    def_rush_epa,
+  data = train_data,
+  method = "ranger",
+  trControl = trainControl(method = "cv", number = 5), # 5-fold cross-validation
+  tuneGrid = tune_grid
+)
+
+# View the best model
+print(rb_receptions_rf_tuned$bestTune)
+
+# Dotchart of variable importance as measured by a Random Forest
+#varImpPlot(rb_receptions_rf)
+
+# save model
+save(rb_receptions_rf, file = "./04_models/rb/rb_receptions_rf.Rdata")
+
+# 6.1.5 random forest model and tuning for receiving yards ----------------------
+
+# variables to add / sub / store
+# 
+
+# train random forest model
+rb_receiving_yards_rf <- randomForest(receiving_yards ~  
+                                   spread + total_line + home + #temp + wind + # game data
+                                   attempts_game + ypa + td_game + rush_share + # rush usage
+                                   receptions_game + yprr + # rec usage
+                                   grades_run + mtf_touch + # player grade
+                                   def_rush_epa, # defense
+                                 data = train_data, 
+                                 mtry = 3, 
+                                 nodesize = 100,
+                                 ntree = 1000)
+
+# use rb_receiving_yards_rf to predict on test data
+rb_receiving_yards_rf_predictions <- round(predict(rb_receiving_yards_rf, test_data), digits = 2)
+
+# evaulated predictions 
+rb_receiving_yards_rf_performance <- round(postResample(rb_receiving_yards_rf_predictions, test_data$receiving_yards), digits = 3)
+rb_receiving_yards_rf_performance
+
+# Define the tuning grid
+tune_grid <- expand.grid(mtry = c(1, 2, 3, 4, 5), # Experiment with different mtry values
+                         splitrule = "variance", 
+                         min.node.size = c(5, 10, 15, 20, 25, 50, 100))
+
+# Train the model with caret
+rb_receiving_yards_rf_tuned <- train(
+  receiving_yards ~  
+    spread + total_line + #temp + wind + # game data
+    attempts_game + ypa + td_game + rush_share + # rush usage
+    receptions_game + yprr + # rec usage
+    grades_run + mtf_touch + # player grade
+    def_rush_epa,
+  data = train_data,
+  method = "ranger",
+  trControl = trainControl(method = "cv", number = 5), # 5-fold cross-validation
+  tuneGrid = tune_grid
+)
+
+# View the best model
+print(rb_receiving_yards_rf_tuned$bestTune)
+
+# Dotchart of variable importance as measured by a Random Forest
+#varImpPlot(rb_receiving_yards_rf)
+
+# save model
+save(rb_receiving_yards_rf, file = "./04_models/rb/rb_receiving_yards_rf.Rdata")
+
+# 7.0 other model code dump -----------------------------------------------
+
+
+other_models <- function() {
 # 6.2 gradient boosting ---------------------------------------------------
 
 
@@ -1187,5 +1306,4 @@ performance_df
 
 
 
-# 7.0 save model selection -----------------------------------------------------
 }

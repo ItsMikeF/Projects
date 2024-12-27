@@ -3,6 +3,7 @@
 # 1.0 load packages and data--------------------------------------------------
 
 load_all <- function() {
+  
   #load packages
   suppressMessages({
     library(nflfastR) # pbp data
@@ -12,7 +13,6 @@ load_all <- function() {
     library(caret) # data partition
     library(randomForest) # rf model
     library(googlesheets4) # google sheet
-    
   })
   
   # load all contest files
@@ -550,6 +550,8 @@ qb <- qb %>%
          pass_touchdown_proj = round(model_projections_qb_pass_touchdown, digits = 2)) %>% 
   relocate(c("fpt_proj", "pass_attempt", "passing_yards_proj", "pass_touchdown_proj"),
            .after = full_name) %>% 
+  relocate(def_pass_epa_rank, .after = opp) %>% 
+  relocate(pyards_game, .after = team_name) %>% 
   arrange(-fpt_proj)
 
 # join projections to data and view

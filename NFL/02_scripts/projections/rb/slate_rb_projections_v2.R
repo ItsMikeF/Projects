@@ -13,6 +13,7 @@ load_all <- function() {
     library(randomForest) # rf model
     library(xgboost) # xgb model
     library(openxlsx) # write xlsx files
+    library(googlesheets4) # for writing to google sheets
   })
   
   # load all contest files
@@ -178,7 +179,8 @@ rb_fpts_pbp <- function(){
            dome_games = if_else(roof == "dome" | roof == "closed",1,0)) %>% 
     
     relocate(weather_check, .after = wind) %>% 
-    relocate(c("fpts", "fpts_ntile", "spread_line", "total_line"), .after = posteam)
+    relocate(c("fpts", "fpts_ntile", "spread_line", "total_line"), .after = posteam) %>% 
+    relocate(c("receptions", "receiving_yards"), .after = fumble)
   
   # remove objects
   rm(rb_pbp, wr_pbp)
@@ -361,7 +363,7 @@ pff_rush <- function() {
            total_touches, elu_rush_mtf, elu_recv_mtf,
            touchdowns, 
            attempts, yco_attempt, ypa, grades_run, explosive,
-           targets, yprr) %>% 
+           receptions, rec_yards, targets, yprr) %>% 
     mutate(player = clean_player_names(player, lowercase = T))
   
   rushing_summary_share <- rushing_summary %>% 
@@ -394,8 +396,15 @@ combine_rb <- function() {
            off_def = (def_rush_epa_rank+rdef_rank)/2 - off_rush_epa_rank, 
            
            attempts_game = round(attempts / player_game_count, digits = 1),
-           td_game = round(touchdowns / player_game_count, digits = 1),
            yards_per_game = round(attempts_game * ypa, digits = 1), 
+           
+           receptions_game = round(receptions / player_game_count, digits = 1),
+           receptions_total = receptions, 
+           
+           targets_game = round(targets / player_game_count, digits = 1), 
+           rec_yards_game = round(rec_yards / player_game_count, digits = 1),
+           
+           td_game = round(touchdowns / player_game_count, digits = 1),
            targets_game = round(targets / player_game_count, digits = 1), 
            
            mtf_touch = round((elu_recv_mtf + elu_rush_mtf) / total_touches, digits =2),
@@ -403,6 +412,8 @@ combine_rb <- function() {
            
            contest_year = nfl_year, 
            contest_week = contest_week) %>% 
+    
+    select(-c("receptions")) %>% 
     
     #separate(contest, into = c("folder", "contest"), sep = "./01_data/contests/") %>% 
     mutate(z_score = round(
@@ -432,7 +443,7 @@ combine_rb <- function() {
     relocate(c("off_rush_epa_sd", "def_rush_epa_sd", "rdef_sd", "yco_attempt_sd", "tack_sd", "touches_game_sd"), 
              .after = home) %>%
     
-    relocate(c("attempts_game", "ypa", "td_game", "rush_share",
+    relocate(c("attempts_game", "yards_per_game", "ypa", "td_game", "rush_share",
                "targets_game", "yprr", 
                "grades_run", "mtf_touch", 
                "def_rush_epa"), .after = home)
@@ -449,12 +460,16 @@ load("./04_models/rb/rb_fpts_rf.Rdata")
 load("./04_models/rb/rb_rush_attempt_rf.Rdata")
 load("./04_models/rb/rb_rushing_yards_rf.Rdata")
 load("./04_models/rb/rb_rush_touchdown_rf.Rdata")
+load("./04_models/rb/rb_receptions_rf.Rdata")
+load("./04_models/rb/rb_receiving_yards_rf.Rdata")
 
 # make projections with rf models
 model_projections_fpts <- predict(rb_fpts_rf, newdata = rb)
 model_projections_rush_attempts <- predict(rb_rush_attempt_rf, newdata = rb)
 model_projections_rushing_yards <- predict(rb_rushing_yards_rf, newdata = rb)
-model_projections_rush_td <- predict(rb_rush_touchdown_rf, newdata = rb)
+model_projections_anytime_td <- predict(rb_rush_touchdown_rf, newdata = rb)
+model_projections_receptions <- predict(rb_receptions_rf, newdata = rb)
+model_projections_receiving_yards <- predict(rb_receiving_yards_rf, newdata = rb)
 
 # join projections to data
 rb <- rb %>% 
@@ -462,9 +477,14 @@ rb <- rb %>%
   mutate(fpt_proj = round(model_projections_fpts, digits = 1), 
          rushing_yards_proj = round(model_projections_rushing_yards, digits = 1), 
          rush_attempts_proj = round(model_projections_rush_attempts, digits = 1), 
-         rush_td_proj = round(model_projections_rush_td, digits = 1)) %>% 
+         anytime_td_proj = round(model_projections_anytime_td, digits = 1), 
+         
+         receptions_proj = round(model_projections_receptions, digits = 1), 
+         receiving_yards_proj = round(model_projections_receiving_yards, digits = 1)) %>% 
   
-  relocate(c("fpt_proj", "rush_attempts_proj", "rushing_yards_proj", "rush_td_proj"),
+  relocate(c("fpt_proj", 
+             "rush_attempts_proj", "rushing_yards_proj", "anytime_td_proj", 
+             "receptions_proj", "receiving_yards_proj"),
            .after = z_score) %>% 
   arrange(-fpt_proj)
 
