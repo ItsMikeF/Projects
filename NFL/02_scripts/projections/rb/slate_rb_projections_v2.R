@@ -442,6 +442,7 @@ combine_rb <- function() {
     relocate(c("z_score"), .after = game_id) %>% 
     relocate(c("off_rush_epa_sd", "def_rush_epa_sd", "rdef_sd", "yco_attempt_sd", "tack_sd", "touches_game_sd"), 
              .after = home) %>%
+    relocate(def_rush)
     
     relocate(c("attempts_game", "yards_per_game", "ypa", "td_game", "rush_share",
                "targets_game", "yprr", 
@@ -477,7 +478,7 @@ rb <- rb %>%
   mutate(fpt_proj = round(model_projections_fpts, digits = 1), 
          rushing_yards_proj = round(model_projections_rushing_yards, digits = 1), 
          rush_attempts_proj = round(model_projections_rush_attempts, digits = 1), 
-         anytime_td_proj = round(model_projections_anytime_td, digits = 1), 
+         anytime_td_proj = round(model_projections_anytime_td, digits = 2), 
          
          receptions_proj = round(model_projections_receptions, digits = 1), 
          receiving_yards_proj = round(model_projections_receiving_yards, digits = 1)) %>% 

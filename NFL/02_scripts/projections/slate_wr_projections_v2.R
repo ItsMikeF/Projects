@@ -302,8 +302,9 @@ nfl_depth <- function() {
     
     # current week depth charts n
     filter(week == contest_week) %>% 
+    distinct(full_name, .keep_all = T) %>% 
     
-    filter(position == "WR") %>% 
+    filter(position == "WR" | position == "TE") %>% 
     select(1:5, 10, 12, 15) %>% 
     mutate(full_name = clean_player_names(full_name, lowercase = T), 
            game_id = paste(season, week, club_code, sep = "_")) %>% 
@@ -451,7 +452,7 @@ wr_slate <- wr %>%
 # 2.1 revised -------------------------------------------------------------
 
 # Helper function to make predictions and round them
-predict_and_round <- function(model, data, digits = 1) {
+predict_and_round <- function(model, data, digits = 2) {
   round(predict(model, newdata = data), digits)
 }
 
@@ -465,8 +466,29 @@ models <- list(
 
 lapply(models, load)
 
+# Add projections to te data
+te <- wr %>%
+  filter(position.x == "TE") %>% 
+  mutate(
+    fpt_proj = predict_and_round(wr_fpts_rf, .),
+    receptions_proj = predict_and_round(wr_receptions_rf, .),
+    receiving_yards_proj = predict_and_round(wr_receiving_yards_rf, .),
+    pass_td_proj = predict_and_round(wr_pass_touchdown_rf, .)
+  ) %>%
+  relocate(c(fpt_proj, receptions_proj, receiving_yards_proj, pass_td_proj), .after = full_name) %>%
+  arrange(desc(fpt_proj))
+
+# Prepare slate and view
+te_slate <- te %>%
+  # Uncomment the next line if filtering by weekday
+  # filter(weekday == "Monday") %>%
+  select(7:50) %>% 
+  mutate(position.x = paste0("TE", row_number())) %>%
+  view(title = glue("{folder}_te"))
+
 # Add projections to WR data
 wr <- wr %>%
+  filter(position.x == "WR") %>% 
   mutate(
     fpt_proj = predict_and_round(wr_fpts_rf, .),
     receptions_proj = predict_and_round(wr_receptions_rf, .),
@@ -480,7 +502,8 @@ wr <- wr %>%
 wr_slate <- wr %>%
   # Uncomment the next line if filtering by weekday
   # filter(weekday == "Monday") %>%
-  mutate(position = paste0("wr", row_number())) %>%
+  select(7:50) %>% 
+  mutate(position.x = paste0("WR", row_number())) %>%
   view(title = glue("{folder}_wr"))
 
 
@@ -497,3 +520,6 @@ sheet_id <- "https://docs.google.com/spreadsheets/d/1wo7QLvS5nbj6v3GVOlNs3Htw1VX
 
 # overwrite an entire sheet
 sheet_write(wr_slate, ss = sheet_id, sheet = "wr")
+
+# overwrite an entire sheet
+sheet_write(te_slate, ss = sheet_id, sheet = "te")
