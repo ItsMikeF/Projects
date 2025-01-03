@@ -19,7 +19,6 @@ suppressMessages({
   library(caret) # data partition
   library(randomForest) # rf model
   library(ranger) # fast implementation of random forest
-  #library(MultivariateRandomForest) # models multivariate cases using random forests
   
   
 })
@@ -32,7 +31,7 @@ files <- function(start_year){
   
   # define year
   data_start <<- start_year
-  nfl_year <<- year(Sys.Date())
+  nfl_year <<- year(Sys.Date())-1
   
   # define contests 
   contest_files <- list.files(path = "./01_data/contests/")
@@ -213,8 +212,12 @@ qb_fpts_pbp()
 
 # 3.0 load and join all contests ------------------------------------------
 
+library(future)
+library(future.apply)
 
-contests_qb <- lapply(contest_files, function(x){
+plan(multisession)
+
+contests_qb <- future_lapply(contest_files, function(x){
   
   print(paste(x, ": Begin"))
   
@@ -461,6 +464,8 @@ contests_qb <- lapply(contest_files, function(x){
   quarterback()
   
 })
+
+plan(sequential)
 
 # remove pbp objects
 rm(pbp_def, pbp_off, passing_summary, passing_pressure, receiving_summary, receiving_summary_group, pblk)

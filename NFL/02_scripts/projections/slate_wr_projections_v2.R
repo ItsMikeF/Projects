@@ -47,7 +47,7 @@ load_all <- function() {
   folder <<- tail(contest_files, 1)
   
   # define year
-  nfl_year <<- year(Sys.Date())
+  nfl_year <<- year(Sys.Date())-1
   
   # load schedule
   schedule <<- load_schedules(nfl_year)

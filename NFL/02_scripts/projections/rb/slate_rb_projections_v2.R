@@ -48,7 +48,7 @@ load_all <- function() {
   folder <<- tail(contest_files, 1)
   
   # define year
-  nfl_year <<- year(Sys.Date())
+  nfl_year <<- year(Sys.Date())-1
   
   # load schedule
   schedule <<- load_schedules(nfl_year)
@@ -442,7 +442,7 @@ combine_rb <- function() {
     relocate(c("z_score"), .after = game_id) %>% 
     relocate(c("off_rush_epa_sd", "def_rush_epa_sd", "rdef_sd", "yco_attempt_sd", "tack_sd", "touches_game_sd"), 
              .after = home) %>%
-    relocate(def_rush)
+    relocate(def_rush_epa_rank, .after = opp) %>% 
     
     relocate(c("attempts_game", "yards_per_game", "ypa", "td_game", "rush_share",
                "targets_game", "yprr", 

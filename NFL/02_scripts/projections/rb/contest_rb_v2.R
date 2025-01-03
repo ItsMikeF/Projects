@@ -33,7 +33,7 @@ files <- function(start_year){
   
   # define year
   data_start <<- start_year
-  nfl_year <<- year(Sys.Date())
+  nfl_year <<- year(Sys.Date())-1
   
   # define contests 
   contest_files <- list.files(path = "./01_data/contests/")
@@ -1301,9 +1301,5 @@ performance_df <- cbind(models, performance_df) %>%
   arrange(-Rsquared)
 
 performance_df
-
-
-
-
 
 }
