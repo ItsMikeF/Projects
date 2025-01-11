@@ -1,4 +1,4 @@
-# create qb fpts model v2
+# create rb fpts model v2
 
 # 1.0 load packages and data--------------------------------------------------
 
@@ -306,7 +306,7 @@ def_table <- function() {
 }
 def_table()
 
-# load and processdepth charts
+# load and process depth charts
 nfl_depth <- function() {
   # load depth chart
   depth_charts <<- load_depth_charts(seasons = nfl_year) %>% 
