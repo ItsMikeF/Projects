@@ -640,7 +640,7 @@ varImpPlot(qb_fpts_rf)
 save(qb_fpts_rf, file = "./04_models/qb/qb_fpts_rf.Rdata")
 
 
-# 6.2 pass yards --------------------------------------------------------------
+# 6.2 passing yards --------------------------------------------------------------
 
 
 # variables to add / sub / store
@@ -696,7 +696,7 @@ varImpPlot(qb_passing_yards_rf)
 save(qb_passing_yards_rf, file = "./04_models/qb/qb_passing_yards_rf.Rdata")
 
 
-# 6.3 passing td ----------------------------------------------------------
+# 6.3 passing touchdown ----------------------------------------------------------
 
 # train random forest model
 qb_pass_touchdown_rf <- randomForest(pass_touchdown ~  
@@ -749,7 +749,7 @@ varImpPlot(qb_pass_touchdown_rf)
 save(qb_pass_touchdown_rf, file = "./04_models/qb/qb_pass_touchdown_rf.Rdata")
 
 
-# 6.3 pass attempt ----------------------------------------------------------
+# 6.4 pass attempt ----------------------------------------------------------
 
 # train random forest model
 qb_pass_attempt_rf <- randomForest(pass_attempt ~  
@@ -800,3 +800,163 @@ varImpPlot(qb_pass_attempt_rf)
 
 # save model
 save(qb_pass_attempt_rf, file = "./04_models/qb/qb_pass_attempt_rf.Rdata")
+# 6.5 rush attempt ----------------------------------------------------------
+
+# train random forest model
+qb_rush_attempt_rf <- randomForest(rush_attempt ~  
+                                     spread + total_line + dome + # game data
+                                     pyards_game + ypa + td_game + # rush game
+                                     #ryards_game +  # rush game
+                                     team_yprr + # receivers team grade
+                                     grades_pass + # qb grades
+                                     def_rush_epa, # rush defense
+                                   data = train_data, 
+                                   mtry = 3, 
+                                   nodesize = 5,
+                                   ntree = 1000)  
+
+# use qb_rush_attempt_rf to predict on test data
+qb_rush_attempt_rf_predictions <- round(predict(qb_rush_attempt_rf, test_data), digits = 2)
+
+# evaulated predictions 
+qb_rush_attempt_rf_performance <- round(postResample(qb_rush_attempt_rf_predictions, test_data$rush_attempt), digits = 3)
+qb_rush_attempt_rf_performance
+
+
+# Define the tuning grid
+tune_grid <- expand.grid(mtry = c(1, 2, 3, 4, 5), # Experiment with different mtry values
+                         splitrule = "variance", 
+                         min.node.size = c(5, 10, 15, 20, 25, 50, 100))
+
+# Train the model with caret
+qb_rush_attempt_rf_tuned <- train(
+  rush_attempt ~  
+    spread + total_line + dome + #temp + wind + # game data
+    pyards_game + ypa + td_game + # rush game
+    #ryards_game +  # # rush game
+    team_yprr + # receivers team grade
+    grades_pass + # qb grades
+    def_rush_epa, # defense
+  data = train_data,
+  method = "ranger",
+  trControl = trainControl(method = "cv", number = 5), # 5-fold cross-validation
+  tuneGrid = tune_grid
+)
+
+# View the best model
+print(qb_rush_attempt_rf_tuned$bestTune)
+
+# Dotchart of variable importance as measured by a Random Forest
+#varImpPlot(qb_rush_attempt_rf)
+
+# save model
+save(qb_rush_attempt_rf, file = "./04_models/qb/qb_rush_attempt_rf.Rdata")
+
+# 6.6 rushing yards --------------------------------------------------------------
+
+
+# variables to add / sub / store
+# 
+
+# train random forest model
+qb_rushing_yards_rf <- randomForest(rushing_yards ~  
+                                      spread + total_line + dome + # game data
+                                      pyards_game + ypa + td_game + # pass game
+                                      team_yprr + # receivers team grade
+                                      grades_pass + # qb grades
+                                      def_pass_epa, # pass defense
+                                    data = train_data, 
+                                    mtry = 1, 
+                                    nodesize = 10,
+                                    ntree = 1000)  
+
+# use qb_rushing_yards_rf to predict on test data
+qb_rushing_yards_rf_predictions <- round(predict(qb_rushing_yards_rf, test_data), digits = 2)
+
+# evaulated predictions 
+qb_rushing_yards_rf_performance <- round(postResample(qb_rushing_yards_rf_predictions, test_data$rushing_yards), digits = 3)
+qb_rushing_yards_rf_performance
+
+
+# Define the tuning grid
+tune_grid <- expand.grid(mtry = c(1, 2, 3, 4, 5), # Experiment with different mtry values
+                         splitrule = "variance", 
+                         min.node.size = c(5, 10, 15, 20, 25, 50, 100))
+
+# Train the model with caret
+qb_rushing_yards_rf_tuned <- train(
+  rushing_yards ~  
+    spread + total_line + dome + #temp + wind + # game data
+    pyards_game + ypa + td_game + # pass game
+    #ryards_game +  # # rush game
+    team_yprr + # receivers team grade
+    grades_pass + # qb grades
+    def_pass_epa, # defense
+  data = train_data,
+  method = "ranger",
+  trControl = trainControl(method = "cv", number = 5), # 5-fold cross-validation
+  tuneGrid = tune_grid
+)
+
+# View the best model
+print(qb_rushing_yards_rf_tuned$bestTune)
+
+# Dotchart of variable importance as measured by a Random Forest
+varImpPlot(qb_rushing_yards_rf)
+
+# save model
+save(qb_rushing_yards_rf, file = "./04_models/qb/qb_rushing_yards_rf.Rdata")
+
+
+# 6.7 rush touchdown ----------------------------------------------------------
+
+# train random forest model
+qb_rush_touchdown_rf <- randomForest(rush_touchdown ~  
+                                       spread + total_line + dome + # game data
+                                       pyards_game + ypa + td_game + # rush game
+                                       #ryards_game +  # rush game
+                                       team_yprr + # receivers team grade
+                                       grades_pass + # qb grades
+                                       def_rush_epa, # rush defense
+                                     data = train_data, 
+                                     mtry = 1, 
+                                     nodesize = 10,
+                                     ntree = 1000)  
+
+# use qb_rush_touchdown_rf to predict on test data
+qb_rush_touchdown_rf_predictions <- round(predict(qb_rush_touchdown_rf, test_data), digits = 2)
+
+# evaulated predictions 
+qb_rush_touchdown_rf_performance <- round(postResample(qb_rush_touchdown_rf_predictions, test_data$rush_touchdown), digits = 3)
+qb_rush_touchdown_rf_performance
+
+
+# Define the tuning grid
+tune_grid <- expand.grid(mtry = c(1, 2, 3, 4, 5), # Experiment with different mtry values
+                         splitrule = "variance", 
+                         min.node.size = c(5, 10, 15, 20, 25, 50, 100))
+
+# Train the model with caret
+qb_rush_touchdown_rf_tuned <- train(
+  rush_touchdown ~  
+    spread + total_line + dome + #temp + wind + # game data
+    pyards_game + ypa + td_game + # rush game
+    #ryards_game +  # # rush game
+    team_yprr + # receivers team grade
+    grades_rush + # qb grades
+    def_rush_epa, # defense
+  data = train_data,
+  method = "ranger",
+  trControl = trainControl(method = "cv", number = 5), # 5-fold cross-validation
+  tuneGrid = tune_grid
+)
+
+# View the best model
+print(qb_rush_touchdown_rf_tuned$bestTune)
+
+# Dotchart of variable importance as measured by a Random Forest
+varImpPlot(qb_rush_touchdown_rf)
+
+# save model
+save(qb_rush_touchdown_rf, file = "./04_models/qb/qb_rush_touchdown_rf.Rdata")
+

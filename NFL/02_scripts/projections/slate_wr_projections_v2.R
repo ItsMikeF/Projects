@@ -1,6 +1,6 @@
-# create qb fpts model v2
+# create wr fpts model v2
 
-# 1.0 load packages and data--------------------------------------------------
+# 1.0 load packages and data --------------------------------------------------
 
 load_all <- function() {
   #load packages
@@ -297,11 +297,11 @@ nfl_depth <- function() {
   # load depth chart
   depth_charts <<- load_depth_charts(seasons = nfl_year) %>% 
     # current week depth charts not always available
-    #filter(week == contest_week-1) %>% 
-    #mutate(week = week +1) %>% 
+    filter(week == contest_week - 2) %>% 
+    mutate(week = week + 2) %>% 
     
     # current week depth charts n
-    filter(week == contest_week) %>% 
+    #filter(week == contest_week) %>% 
     distinct(full_name, .keep_all = T) %>% 
     
     filter(position == "WR" | position == "TE") %>% 
@@ -448,8 +448,7 @@ wr_slate <- wr %>%
   view(title = glue("{folder}_wr"))
 
 
-
-# 2.1 revised -------------------------------------------------------------
+# 2.1 wr and te -------------------------------------------------------------
 
 # Helper function to make predictions and round them
 predict_and_round <- function(model, data, digits = 2) {
@@ -475,15 +474,18 @@ te <- wr %>%
     receiving_yards_proj = predict_and_round(wr_receiving_yards_rf, .),
     pass_td_proj = predict_and_round(wr_pass_touchdown_rf, .)
   ) %>%
+  select(7:112) %>% 
   relocate(c(fpt_proj, receptions_proj, receiving_yards_proj, pass_td_proj), .after = full_name) %>%
+  relocate(def_pass_epa_rank, .after = opp) %>% 
   arrange(desc(fpt_proj))
 
 # Prepare slate and view
 te_slate <- te %>%
   # Uncomment the next line if filtering by weekday
   # filter(weekday == "Monday") %>%
-  select(7:50) %>% 
+  distinct(full_name, .keep_all = T) %>% 
   mutate(position.x = paste0("TE", row_number())) %>%
+  filter(fpt_proj != "") %>% 
   view(title = glue("{folder}_te"))
 
 # Add projections to WR data
@@ -495,15 +497,18 @@ wr <- wr %>%
     receiving_yards_proj = predict_and_round(wr_receiving_yards_rf, .),
     pass_td_proj = predict_and_round(wr_pass_touchdown_rf, .)
   ) %>%
+  select(7:112) %>% 
   relocate(c(fpt_proj, receptions_proj, receiving_yards_proj, pass_td_proj), .after = full_name) %>%
+  relocate(def_pass_epa_rank, .after = opp) %>% 
   arrange(desc(fpt_proj))
 
 # Prepare slate and view
 wr_slate <- wr %>%
   # Uncomment the next line if filtering by weekday
   # filter(weekday == "Monday") %>%
-  select(7:50) %>% 
+  distinct(full_name, .keep_all = T) %>% 
   mutate(position.x = paste0("WR", row_number())) %>%
+  filter(fpt_proj != "") %>% 
   view(title = glue("{folder}_wr"))
 
 

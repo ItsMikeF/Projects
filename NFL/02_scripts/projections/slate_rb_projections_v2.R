@@ -312,8 +312,8 @@ nfl_depth <- function() {
   depth_charts <<- load_depth_charts(seasons = nfl_year) %>% 
     
     # current week depth charts not always available
-    filter(week == contest_week-1) %>% 
-    mutate(week = week +1) %>% 
+    filter(week == contest_week-2) %>% 
+    mutate(week = week + 2) %>% 
     
     # current week depth charts n
     #filter(week == contest_week) %>% 
@@ -493,7 +493,9 @@ rb <- rb %>%
 rb_slate <- rb %>% 
   #filter(weekday == "Monday") %>% # toggle as needed for slates
   select(7:35) %>% 
+  distinct(full_name, .keep_all = T) %>% 
   mutate(position = paste0("RB",row_number())) %>% 
+  filter(fpt_proj != "") %>% 
   view(title = glue("{folder}_rb"))
 
 

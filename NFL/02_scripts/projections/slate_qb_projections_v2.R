@@ -339,7 +339,7 @@ nfl_depth <- function() {
     mutate(week = week +1) %>% 
     
     # current week depth charts n
-    #filter(week == contest_week) %>% 
+    #filter(week == 20) %>% # hard code for playoffs
     
     filter(position == "QB") %>% 
     filter(depth_team == 1) %>% 
@@ -369,7 +369,7 @@ nfl_depth <- function() {
     drop_na() %>% # to remove bye week teams
     
     # add schedule
-    left_join(schedule %>% select(game_id, gameday, weekday, gametime), by=c("game_id"))
+    left_join(schedule %>% select(game_id, gameday, weekday, gametime), by=c("game_id")) 
 
 }
 nfl_depth()
@@ -534,23 +534,30 @@ load("./04_models/qb/qb_fpts_rf.Rdata")
 load("./04_models/qb/qb_pass_attempt_rf.Rdata")
 load("./04_models/qb/qb_passing_yards_rf.Rdata")
 load("./04_models/qb/qb_pass_touchdown_rf.Rdata")
+load("./04_models/qb/qb_rush_attempt_rf.Rdata")
+load("./04_models/qb/qb_rushing_yards_rf.Rdata")
 
 # make projections with rf models
 model_projections_qb_fpts <- predict(qb_fpts_rf, newdata = qb)
 model_projections_qb_pass_attempt <- predict(qb_pass_attempt_rf, newdata = qb)
 model_projections_qb_passing_yards <- predict(qb_passing_yards_rf, newdata = qb)
 model_projections_qb_pass_touchdown <- predict(qb_pass_touchdown_rf, newdata = qb)
-
+model_projections_qb_rush_attempt <- predict(qb_rush_attempt_rf, newdata = qb)
+model_projections_qb_rushing_yards <- predict(qb_rushing_yards_rf, newdata = qb)
 
 # join projections to data
 qb <- qb %>% 
   mutate(fpt_proj = round(model_projections_qb_fpts, digits = 2), 
          pass_attempt = round(model_projections_qb_pass_attempt, digits = 2), 
          passing_yards_proj = round(model_projections_qb_passing_yards, digits = 2), 
-         pass_touchdown_proj = round(model_projections_qb_pass_touchdown, digits = 2)) %>% 
-  relocate(c("fpt_proj", "pass_attempt", "passing_yards_proj", "pass_touchdown_proj"),
+         pass_touchdown_proj = round(model_projections_qb_pass_touchdown, digits = 2), 
+         rush_attempt_proj = round(model_projections_qb_rush_attempt, digits = 2), 
+         rushing_yards_proj = round(model_projections_qb_rushing_yards, digits = 2)) %>% 
+  relocate(c("fpt_proj", 
+             "pass_attempt", "passing_yards_proj", "pass_touchdown_proj", 
+             "rush_attempt_proj", "rushing_yards_proj"),
            .after = full_name) %>% 
-  relocate(def_pass_epa_rank, .after = opp) %>% 
+  relocate(c("def_pass_epa_rank", "def_rush_epa_rank"), .after = opp) %>% 
   relocate(pyards_game, .after = team_name) %>% 
   arrange(-fpt_proj)
 
@@ -558,6 +565,7 @@ qb <- qb %>%
 qb_slate <- qb %>% 
   #filter(weekday == "Monday") %>% # toggle as needed for slates
   select(7:35) %>% 
+  distinct(full_name, .keep_all = T) %>% 
   mutate(position = paste0("qb",row_number())) %>% 
   view(title = glue("{folder}_qb"))
 
