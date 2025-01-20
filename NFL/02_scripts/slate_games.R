@@ -221,33 +221,36 @@ def_table()
 # 2.0 slate games ------------------------------------------------------------
 
 
-slate_games <- schedule %>% 
-  filter(week == 20) %>% 
-  select(game_id, away_team, home_team, spread_line, total_line, roof) 
-
-slate_games_alpha <- slate_games %>% 
-  select(game_id, away_team, home_team, spread_line, total_line, roof) %>% 
-  mutate(home = 0) %>% 
-  rename(team = away_team,
-         opp = home_team)
-
-slate_games_bravo <- slate_games %>% 
-  select(game_id, home_team, away_team, spread_line, total_line, roof) %>% 
-  mutate(spread_line = spread_line * -1, 
-         home = 1) %>% 
-  rename(opp = away_team,
-         team = home_team)
-
-slate_games <- rbind(slate_games_alpha, slate_games_bravo) %>% 
+slate_games <- function(contest_week){
+  slate_games <- schedule %>% 
+    filter(week == 21) %>% 
+    select(game_id, away_team, home_team, spread_line, total_line, roof) 
   
-  left_join(pbp_off %>% select(posteam, off_pass_epa_rank, off_rush_epa_rank), by=c("team"="posteam")) %>% 
-  left_join(pbp_def %>% select(defteam, def_pass_epa_rank, def_rush_epa_rank), by=c("opp"="defteam")) %>% 
+  slate_games_alpha <- slate_games %>% 
+    select(game_id, away_team, home_team, spread_line, total_line, roof) %>% 
+    mutate(home = 0) %>% 
+    rename(team = away_team,
+           opp = home_team)
   
-  mutate(rush_adv = def_rush_epa_rank-off_rush_epa_rank,
-         pass_adv = def_pass_epa_rank-off_pass_epa_rank,
-         delta = rush_adv + pass_adv) %>% 
-  arrange(-delta) %>% 
-  view(title = "slate_games")
+  slate_games_bravo <- slate_games %>% 
+    select(game_id, home_team, away_team, spread_line, total_line, roof) %>% 
+    mutate(spread_line = spread_line * -1, 
+           home = 1) %>% 
+    rename(opp = away_team,
+           team = home_team)
+  
+  slate_games <- rbind(slate_games_alpha, slate_games_bravo) %>% 
+    
+    left_join(pbp_off %>% select(posteam, off_pass_epa_rank, off_rush_epa_rank), by=c("team"="posteam")) %>% 
+    left_join(pbp_def %>% select(defteam, def_pass_epa_rank, def_rush_epa_rank), by=c("opp"="defteam")) %>% 
+    
+    mutate(rush_adv = def_rush_epa_rank-off_rush_epa_rank,
+           pass_adv = def_pass_epa_rank-off_pass_epa_rank,
+           delta = rush_adv + pass_adv) %>% 
+    arrange(-delta) %>% 
+    view(title = "slate_games")
+}
+slate_games(21) 
 
 
 # 3.0 write to google sheets---------------------------------------------------
