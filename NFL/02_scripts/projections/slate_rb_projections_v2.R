@@ -62,8 +62,7 @@ load_all <- function() {
     target_row <- which.min(abs((as.Date(schedule$gameday) - target_date)))
   }
   
-
-  contest_week <<- as.numeric(schedule$week[target_row])
+  contest_week <<- as.numeric(schedule$week[target_row]) +1 # hard code for playoffs
   
   # load spreads and totals
   odds <<- function(year){
