@@ -14,8 +14,8 @@ suppressMessages({
   library(mlbplotR)
   library(baseballr)
   library(openxlsx)
+  library(googlesheets4)
 })
-
 
 # 0.0 load teams colors ---------------------------------------------------
 
@@ -31,16 +31,20 @@ teams_colors_logos <- mlbplotR::load_mlb_teams() %>%
 
 # 1.0 rankings --------------------------------------------------------------
 
-date1 = "jan19"
-date2 = "feb23"
+season <- year(Sys.Date())
+
+dates <- substr(list.files(path = "./01_data/projections_season/2025"), 10,14)
+
+date1 <- dates[1]
+date2 <- dates[2]
 
 #load the rankings
-rankings_1 <- read.csv(glue("./01_data/projections_season/2024/rankings_{date1}.csv")) %>% 
+rankings_1 <- read.csv(glue("./01_data/projections_season/{season}/rankings_{date1}.csv")) %>% 
   mutate(name = paste(firstName, lastName),
          adp = as.numeric(adp)) %>% 
   select(name, slotName, adp, projectedPoints, positionRank, slotName, teamName)
 
-rankings_2 <- read.csv(glue("./01_data/projections_season/2024/rankings_{date2}.csv")) %>% 
+rankings_2 <- read.csv(glue("./01_data/projections_season/{season}/rankings_{date2}.csv")) %>% 
   mutate(name = paste(firstName, lastName),
          adp = as.numeric(adp)) %>% 
   select(name, slotName, adp, projectedPoints, positionRank, slotName, teamName)
@@ -54,12 +58,22 @@ rankings <- rankings_2 %>%
   rename(projectedPoints = projectedPoints.x, 
          projectedPoints_jan23 = projectedPoints.y) %>% 
   select(name, slotName, adp.x, adp.y, delta, percent_change, projectedPoints, projectedPoints_jan23, projectedPoints_delta, positionRank, teamName) %>% 
-  rename(.,"jan23"=adp.y) %>% 
-  rename(.,"mar26"=adp.x) %>% 
-  arrange(mar26) %>% 
+  rename(.,"jan14"=adp.y) %>% 
+  rename(.,"jan26"=adp.x) %>% 
+  arrange(jan26) %>% 
   left_join(teams_colors_logos %>% select(team_name, team_abbr, team_logo_espn),by=c('teamName'='team_name')) %>% 
   rename(., team = team_logo_espn) %>% 
   distinct()
+
+
+# 1.1 write rankings to sheets --------------------------------------------
+
+
+gs4_auth(email = "michael.john.francis2015@gmail.com")
+
+sheet_id <- "https://docs.google.com/spreadsheets/d/19w6LwOmxwRfcBMhZhr4eAviyhTVtskAmjNDKxEOsiVI/edit?gid=0#gid=0"
+
+sheet_write(rankings, ss = sheet_id, sheet = "rankings")
 
 #get all player ids
 {
