@@ -1,0 +1,3 @@
+"","position","full_name","fpt_proj","pass_attempt","passing_yards_proj","pass_touchdown_proj","rush_attempt_proj","rushing_yards_proj","game_id","total_line","opp","def_pass_epa_rank","def_rush_epa_rank","spread","home","gameday","weekday","gametime","player_id","team_name","pyards_game","player_game_count","accuracy_percent","aimed_passes","attempts","avg_depth_of_target","avg_time_to_throw","bats","big_time_throws"
+"1","qb1","Patrick Mahomes",21.47,38.38,278.49,1.82,3.08,12.99,"2024_22_KC_PHI",48.5,"PHI",4,2,-1.5,0,"2025-02-09","Sunday","18:30",11765,"KC",246,16,77.1,532,581,6.9,2.76,10,18
+"2","qb2","Jalen Hurts",20.55,36.05,267.28,1.49,4.87,17.67,"2024_22_KC_PHI",48.5,"KC",16,15,1.5,1,"2025-02-09","Sunday","18:30",40291,"PHI",190,16,79.9,338,382,8.3,3.22,9,14

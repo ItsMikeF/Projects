@@ -223,7 +223,7 @@ def_table()
 
 slate_games <- function(contest_week){
   slate_games <- schedule %>% 
-    filter(week == 21) %>% 
+    filter(week == 22) %>% 
     select(game_id, away_team, home_team, spread_line, total_line, roof) 
   
   slate_games_alpha <- slate_games %>% 

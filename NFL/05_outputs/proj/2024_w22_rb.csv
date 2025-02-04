@@ -1,0 +1,7 @@
+"","position","full_name","game_id","z_score","fpt_proj","rush_attempts_proj","rushing_yards_proj","anytime_td_proj","receptions_proj","receiving_yards_proj","total_line","opp","def_rush_epa_rank","spread","home","attempts_game","yards_per_game","ypa","td_game","rush_share","targets_game","yprr","grades_run","mtf_touch","def_rush_epa","off_rush_epa_sd","def_rush_epa_sd","rdef_sd","yco_attempt_sd"
+"1","RB1","Saquon Barkley","2024_22_KC_PHI",0.723,14.6,18.5,87.4,0.57,2.3,18.9,48.5,"KC",15,1.5,1,21.8,124.3,5.7,0.8,0.56,2.4,0.9,85.3,0.2,-0.092,1.79,-0.32,NA,0.15
+"2","RB2","Kareem Hunt","2024_22_KC_PHI",0.558,10.9,12.7,49.6,0.35,1.9,14.9,48.5,"PHI",2,-1.5,0,15.4,55.4,3.6,0.5,0.44,2.1,0.83,72.8,0.13,-0.193,0.04,-1.72,NA,-0.6
+"3","RB3","Isiah Pacheco","2024_22_KC_PHI",0.38,8.4,10.6,43.7,0.27,1.3,12.8,48.5,"PHI",2,-1.5,0,11.9,44,3.7,0.1,0.18,2.3,0.81,64.8,0.09,-0.193,0.04,-1.72,NA,-0.73
+"4","RB4","Samaje Perine","2024_22_KC_PHI",-0.114,6.1,4.3,20.1,0.19,1.8,13.6,48.5,"PHI",2,-1.5,0,1.2,5.5,4.6,0.1,0.04,1.9,1.59,67.7,0.19,-0.193,0.04,-1.72,NA,-0.72
+"5","RB5","Kenneth Gainwell","2024_22_KC_PHI",-0.189,5.1,4.5,19.2,0.1,1,9.8,48.5,"KC",15,1.5,1,4.3,16.8,3.9,0.1,0.12,1.2,0.92,55.8,0.2,-0.092,1.79,-0.32,NA,-0.45
+"6","RB6","Will Shipley","2024_22_KC_PHI",-0.289,4.7,4.3,18.1,0.13,0.9,6.6,48.5,"KC",15,1.5,1,3.8,10.3,2.7,0,0.05,0.5,1.46,59.1,0.12,-0.092,1.79,-0.32,NA,-1
