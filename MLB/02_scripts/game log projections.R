@@ -19,7 +19,7 @@ pitchers <- fg_pitcher_leaders(startseason = 2024, endseason = 2024)
 pitcher_ids <- pitchers %>% select(PlayerName, playerid)
 
 # Load opponent batter K rates 
-team <- fg_team_batter(startseason = 2024, endseason = 2024)
+team <- fg_team_batter(01)
 
 team_k_fg <- team %>% select(team_name, K_pct, WAR) %>% 
   mutate(WAR = round(WAR, digits = 1),

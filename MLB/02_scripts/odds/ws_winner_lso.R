@@ -67,17 +67,42 @@ plot <- ws_odds %>%
   ggplot(aes(y= reorder(team_abbr, implied_odds), x=implied_odds)) +
   geom_col(aes(color=team_abbr, fill=team_abbr)) +
   geom_mlb_logos(aes(team_abbr=team_abbr), width = 0.03, alpha=0.8) +
+  
   scale_color_mlb(type="secondary") +
   scale_fill_mlb(alpha = 0.4) +
+  scale_x_continuous(breaks = seq(0, max(ws_odds$implied_odds), by = 0.02), 
+                     labels = scales::label_number(accuracy = 0.01)) +
+  
   labs(title = paste(Sys.Date(), "World Series Odds"), 
        caption = "Odds via Live Sports Odds API | Twitter: @Its_MikeF") +
   theme(
     axis.title.y = element_blank(),
     plot.title = element_text(size = 28),
-    axis.text = element_text(size = 20)
+    axis.text = element_text(size = 20),
+    plot.caption = element_text(size = 16)
   )
 
+# gpt code
+plot <- ws_odds %>% 
+  ggplot(aes(y = reorder(team_abbr, implied_odds), x = implied_odds)) +
+  geom_col(aes(fill = team_abbr), color = NA) + # Remove bar outline
+  geom_mlb_logos(aes(team_abbr = team_abbr), width = 0.025, alpha = 0.9) +
+  scale_fill_mlb(alpha = 0.4) +
+  scale_x_continuous(breaks = seq(0, max(ws_odds$implied_odds), by = 0.02),
+                     labels = scales::label_number(accuracy = 0.01)) +
+  labs(title = paste(Sys.Date(), "World Series Odds"), 
+       caption = "Odds via Live Sports Odds API | Twitter: @Its_MikeF") +
+  theme(
+    axis.title.y = element_blank(),
+    axis.text = element_text(size = 20),
+    axis.text.x = element_text(size = 16),
+    plot.title = element_text(size = 30, hjust = 0.5),
+    plot.caption = element_text(size = 14, hjust = 0.5, margin = margin(t = 10))
+  )
+
+
+# save to 03_outputs in 1080p
 ggsave(filename = paste0("./03_outputs/ws_odds/",Sys.Date()," World Series Odds.png"), 
-       width = 26.7, 
-       height = 15, 
-       dpi = 300)
+       width = 19.2, # was 26.7
+       height = 10.8,  # was 15
+       dpi = 100) # was 300
