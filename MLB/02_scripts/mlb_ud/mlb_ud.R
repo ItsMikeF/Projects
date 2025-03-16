@@ -36,7 +36,7 @@ season <- year(Sys.Date())
 dates <- substr(list.files(path = "./01_data/projections_season/2025"), 10,14)
 
 date1 <- dates[1]
-date2 <- dates[2]
+date2 <- dates[4]
 
 #load the rankings
 rankings_1 <- read.csv(glue("./01_data/projections_season/{season}/rankings_{date1}.csv")) %>% 
