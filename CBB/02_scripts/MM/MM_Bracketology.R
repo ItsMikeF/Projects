@@ -1,6 +1,9 @@
+# bracketology
+
 library(tidyverse)
 library(lubridate)
 library(stats)
+
 
 bracket <- read.csv("/Training_data/2022MM/2022MM bracket.csv", header = F)
 names(bracket) <- c("rank", "team")
@@ -9,7 +12,7 @@ bracket <- replace(bracket, bracket == 'Uconn', 'Connecticut')
 bracket <- replace(bracket, bracket == 'CS Fullerton', 'Cal St. Fullerton')
 bracket <- replace(bracket, bracket == 'Miami(FL)', 'Miami FL')
 
-kp <- read.csv("summary22.csv")
+kp <- read.csv("./01_data/mm/2025/summary25.csv")
 
 kp$AdjEM <- round(kp$AdjEM, digits = 3)
 kp$AdjOE <- round(kp$AdjOE, digits = 3)
@@ -27,7 +30,7 @@ kp <- kp %>%
          AdjDE, 
          RankAdjDE) %>%
   arrange(-AdjEM)
-
+  
 ###Round of 64 ###
 
 bracket <- bracket %>% 

@@ -4,15 +4,15 @@ library(tidyverse)
 library(openxlsx)
 
 ### Import Kenpom Era data ###
-kenpom <- read.xlsx("./03_outputs/kenpom_summary.xlsx")
+kenpom <- read.xlsx("./03_outputs/mm/2025/kenpom_summary.xlsx")
 
 ### Filter kenpom for current year and NCAA seeds ###
-kenpom2024 <- kenpom %>% 
-  filter(year == 2024) %>% 
+kenpom2025 <- kenpom %>% 
+  filter(year == 2025) %>% 
   drop_na(ncaa_seed)
 
 ### Add metric for back testing###
-kenpom2024$metric <- round(kenpom2024$adj_em^2 * kenpom2024$sos_adj_em, digits = 1)
+kenpom2025$metric <- round(kenpom2025$adj_em^2 * kenpom2025$sos_adj_em, digits = 1)
 
 ###Get the bracket###
 
@@ -24,7 +24,7 @@ names(bracket) <- "team"
 ###Round of 64 ###
 
 r64 <- bracket %>% 
-  left_join(kenpom2024, by=c("team"))
+  left_join(kenpom2025, by=c("team"))
 
 favorites <- r64[seq(1, nrow(r64), 2), ]
 dogs <- r64[seq(2, nrow(r64), 2), ]
@@ -40,7 +40,7 @@ r32 <- tibble(r64$winner)
 names(r32) <- "team"
 
 r32 <- r32 %>% 
-  left_join(kenpom2024, by = c("team"))
+  left_join(kenpom2025, by = c("team"))
 
 favorites <- r32[seq(1, nrow(r32), 2), ]
 dogs <- r32[seq(2, nrow(r32), 2), ]
@@ -55,7 +55,7 @@ r16 <- tibble(r32$winner)
 names(r16) <- "team"
 
 r16 <- r16 %>% 
-  left_join(kenpom2024, by = c("team"))
+  left_join(kenpom2025, by = c("team"))
 
 favorites <- r16[seq(1, nrow(r16), 2), ]
 dogs <- r16[seq(2, nrow(r16), 2), ]
@@ -71,7 +71,7 @@ e8 <- tibble(r16$winner)
 names(e8) <- "team"
 
 e8 <- e8 %>% 
-  left_join(kenpom2024, by = c("team"))
+  left_join(kenpom2025, by = c("team"))
 
 favorites <- e8[seq(1, nrow(e8), 2), ]
 dogs <- e8[seq(2, nrow(e8), 2), ]
@@ -87,7 +87,7 @@ f4 <- tibble(e8$winner)
 names(f4) <- "team"
 
 f4 <- f4 %>% 
-  left_join(kenpom2024, by = c("team"))
+  left_join(kenpom2025, by = c("team"))
 
 favorites <- f4[seq(1, nrow(f4), 2), ]
 dogs <- f4[seq(2, nrow(f4), 2), ]
@@ -103,7 +103,7 @@ c2 <- tibble(f4$winner)
 names(c2) <- "team"
 
 c2 <- c2 %>% 
-  left_join(kenpom2024, by = c("team"))
+  left_join(kenpom2025, by = c("team"))
 
 favorites <- c2[seq(1, nrow(c2), 2), ]
 dogs <- c2[seq(2, nrow(c2), 2), ]

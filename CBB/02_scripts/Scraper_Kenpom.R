@@ -11,17 +11,20 @@ suppressMessages({
 })
 
 # kenpom years
-years <- 2024:2024 # start at 2002
+years <- 2024:2025 # start at 2002
 
 for(year in years) {
+  
   cat("Getting", year,"\n")
-  ### Pull Data
-  url <- paste0("https://kenpom.com/index.php?y=", year)
+  
+  # Pull Data
+  url <- paste0("https://kenpom.com/index.php?y=", 2025)
+  url <- "https://kenpom.com/index.php"
   page <- read_html(url)
   tables <- page %>% html_nodes("table") %>% html_table()
   x <- as.data.frame(tables)
   
-  ### Clean Data
+  # Clean Data
   names(x) <- c("rank", "team", "conference", "record", "adj_em", "adj_o", 
                 "adj_o_rank", "adj_d", "adj_d_rank", "adj_tempo", "adj_tempo_rank", 
                 "luck", "luck_rank", "sos_adj_em", "sos_adj_em_rank", "sos_adj_o",
@@ -118,4 +121,4 @@ teamKenpom <- merge(teamyr,kenpom,by.x=c("TeamName","Season"),by.y=c("TeamName",
 teamKenpom[Season>=2002 & is.na(Seed),.(TeamName,Season)]
 
 #write out file
-write.xlsx(kenpom, file = glue("./03_outputs/kenpom_summary.xlsx"))
+write.xlsx(kenpom, file = glue("./03_outputs/kenpom_summary_25.xlsx"))

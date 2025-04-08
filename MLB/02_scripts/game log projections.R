@@ -14,12 +14,14 @@ mlb_teams <- mlbplotR::load_mlb_teams()
 
 #load fangraphs leaderboard data
 
+season = year(Sys.Date())
+
 # load pitcher ids
-pitchers <- fg_pitcher_leaders(startseason = 2024, endseason = 2024)
+pitchers <- fg_pitcher_leaders(startseason = season, endseason = season)
 pitcher_ids <- pitchers %>% select(PlayerName, playerid)
 
 # Load opponent batter K rates 
-team <- fg_team_batter(01)
+team <- fg_team_batter(startseason = season, endseason = season)
 
 team_k_fg <- team %>% select(team_name, K_pct, WAR) %>% 
   mutate(WAR = round(WAR, digits = 1),
@@ -38,8 +40,8 @@ team_k <- team %>% select(team_name, K_pct, WAR) %>%
   left_join(mlb_teams %>% select(team_abbr, team_id_num), by=c("team_name"="team_abbr"))
 
 
-#load savant
-savant <- statcast_leaderboards(year = 2024, 
+# load savant data
+savant <- statcast_leaderboards(year = season, 
                                 leaderboard = "expected_statistics",
                                 player_type = "pitcher") %>% 
   separate(`last_name, first_name`, 
@@ -56,7 +58,7 @@ savant_select <- savant %>% select(fullName, est_woba)
 # define slate date probable pitchers
 slate_date <- Sys.Date()
 
-schedule <- mlb_schedule(season = 2024) %>% 
+schedule <- mlb_schedule(season = 2025) %>% 
   filter(date == slate_date)
 
 games <- schedule %>% 
@@ -80,6 +82,8 @@ slate_probables <- map_df(games$game_pk, mlb_probables) %>%
 
 
 # 3.0 generate projections ------------------------------------------------
+
+game_log_test <- fg_pitcher_game_logs(17677, 2024)
 
 
 # Function to generate projection for each playerid
