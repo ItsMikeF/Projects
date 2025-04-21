@@ -14,6 +14,7 @@ mlb_teams <- mlbplotR::load_mlb_teams()
 
 #load fangraphs leaderboard data
 
+# define season
 season = year(Sys.Date())
 
 # load pitcher ids
