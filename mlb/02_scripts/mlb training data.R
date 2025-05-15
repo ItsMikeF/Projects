@@ -6,10 +6,14 @@
 
 # load packages
 suppressMessages({
+  library(furrr) # built on future and purrr, integrates well with map_df
+  library(purrr)
   library(baseballr)
   library(mlbplotR)
   library(tidyverse)
   library(glue)
+  library(progress)
+  library(progressr)
 })
 
 # define season
@@ -25,7 +29,7 @@ years <- c(2023:2025)
 batters <- fg_batter_leaders(startseason = season, endseason = season)
 batter_ids <- batters %>% select(PlayerName, playerid, Bats)
 
-# batter game logs, single batter, Corbin Carroll
+# batter game logs, single batter example, Corbin Carroll
 {
   batter_game_log <- fg_batter_game_logs(25878, 2024) %>% 
     
@@ -105,20 +109,45 @@ safe_batter_logs <- function(batter_id, years) {
   })
 }
 
-# Get game logs for all batters across specified years
-all_batter_game_logs <- map_df(batter_ids$playerid, function(batter_id) {
-  safe_batter_logs(batter_id, years)
+# Get game logs for all batters with parallel processing and progress bar
+all_batter_game_logs <- function(batter_ids, years, cores = availableCores() - 2) {
+  # Set up parallel processing
+  plan(multisession, workers = cores) # Use multiple CPU cores
+  
+  # Set up progress bar with progressr
+  handlers(global = TRUE) # Enable progress bar globally
+  handlers("progress") # Use progress bar style
+  
+  # Initialize progress bar
+  p <- progressor(along = batter_ids$playerid)
+  
+  # Parallel map with progress bar
+  result <- future_map_dfr(batter_ids$playerid, function(batter_id) {
+    p() # Update progress bar
+    safe_batter_logs(batter_id, years)
+  }, .options = furrr_options(seed = TRUE))
+  
+  # Clean up parallel plan
+  plan(sequential)
+  
+  return(result)
+}
+
+# Call the function, save output, and time execution
+cores <- availableCores() - 2 # Use all cores except one
+system.time({
+  batter_logs <- all_batter_game_logs(batter_ids, years, cores)
 })
 
-save(all_batter_game_logs, file = "./01_data/training_data/all_batter_game_logs.Rdata")
+# save Rdata file
+save(batter_logs, file = "./01_data/training_data/batter_logs.Rdata")
 
 # load batter logs
-load("./01_data/training_data/all_batter_game_logs.Rdata")
+load("./01_data/training_data/batter_logs.Rdata")
 
 test <- all_batter_game_logs %>% 
   mutate(Date = ymd(Date)) %>% 
   filter(Date < "2024-04-12")
-
 
 
 # 2.1 aggregate batter data -----------------------------------------------
@@ -258,16 +287,84 @@ all_pitcher_game_logs <- map_df(pitcher_ids$playerid, function(pitcher_id) {
 })
 
 # save all pitcher game logs 
-save(all_pitcher_game_logs, file = "./01_data/training_data/all_pitcher_game_logs.Rdata")
+save(pitcher_logs, file = "./01_data/training_data/pitcher_logs.Rdata")
 
 # load pitcher logs
-load("./01_data/training_data/all_pitcher_game_logs.Rdata")
+load("./01_data/training_data/pitcher_logs.Rdata")
 
 all_pitcher_game_logs <- all_pitcher_game_logs %>% 
   mutate(fpts = W*5 + SO*3 + IP*3 + ER*-3) %>% 
   mutate(Date = ymd(Date)) %>% 
   arrange(-fpts)
 
+
+# 3.0 pitchers ------------------------------------------------------------
+
+
+# Load required packages
+library(furrr)
+library(progressr)
+library(dplyr)
+library(purrr)
+library(lubridate)
+library(glue)
+library(parallel)
+
+# Function to safely fetch pitcher game logs (unchanged)
+safe_pitcher_logs <- function(pitcher_id, years) {
+  tryCatch({
+    map_df(years, function(year) {
+      fg_pitcher_game_logs(pitcher_id, year) %>%
+        select(Date, Team, PlayerName, playerid, Age, W, L, QS, 
+               Balls, Strikes, Pitches, Events, Barrels, HardHit,
+               Opp, HomeAway, IP, H, ER, SO) %>%
+        mutate(Opp = gsub("@", "", Opp), 
+               fpts = W*5 + SO*3 + IP*3 + ER*-3, 
+               Date = ymd(Date), 
+               season = year(Date)) %>%
+        arrange(Date)
+    })
+  }, error = function(e) {
+    message(glue("Error getting data for pitcher ID {pitcher_id}: {e$message}"))
+    return(NULL)
+  })
+}
+
+# Get game logs for all pitchers with parallel processing and progress bar
+all_pitcher_game_logs <- function(pitcher_ids, years, cores = detectCores() - 1) {
+  # Set up parallel processing
+  plan(multisession, workers = cores) # Use multiple CPU cores
+  
+  # Set up progress bar with progressr
+  handlers(global = TRUE) # Enable progress bar globally
+  handlers(handler_progress(format = "[:bar] :percent :eta")) # Custom progress bar style
+  
+  # Initialize progress bar
+  p <- progressor(along = pitcher_ids$playerid)
+  
+  # Parallel map with progress bar
+  result <- future_map_dfr(pitcher_ids$playerid, function(pitcher_id) {
+    p() # Update progress bar
+    safe_pitcher_logs(pitcher_id, years)
+  }, .options = furrr_options(seed = TRUE))
+  
+  # Clean up parallel plan
+  plan(sequential)
+  
+  return(result)
+}
+
+# Call the function, save output, and time execution
+cores <- detectCores() - 2 # Use all cores except two
+system.time({
+  pitcher_logs <- all_pitcher_game_logs(pitcher_ids, years, cores)
+})
+
+# Inspect or save the output
+head(pitcher_logs) # View first few rows
+# Optional: Save to CSV or RDS
+write.csv(pitcher_logs, "pitcher_game_logs.csv", row.names = FALSE)
+saveRDS(pitcher_logs, "pitcher_logs.rds") # Smaller, faster format
 
 
 # 3.1 join team level batter data to pitcher game log ---------------------
