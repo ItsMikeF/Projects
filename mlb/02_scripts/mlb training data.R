@@ -25,9 +25,29 @@ years <- c(2023:2025)
 # 2.0 batters -------------------------------------------------------------
 
 
-# get batter data
-batters <- fg_batter_leaders(startseason = season, endseason = season)
-batter_ids <- batters %>% select(PlayerName, playerid, Bats)
+# 2.1 define all batter ids -----------------------------------------------
+
+
+# Use lapply to get batter data for each year
+batter_data_list <- lapply(years, function(year) {
+  fg_batter_leaders(startseason = year, 
+                    endseason = year, 
+                    qual = "0")
+})
+
+# Combine the list of data frames into a single data frame
+batter_data <- do.call(rbind, c(batter_data_list, fill = TRUE))
+
+batter_ids <- batter_data %>% 
+  select(PlayerName, playerid, Bats) %>% # include bats for game log data
+  arrange(playerid) %>% 
+  distinct(playerid, .keep_all = T)
+
+batter_ids_vec <- as.vector(batter_ids$playerid)
+
+
+# 2.2 game logs -----------------------------------------------------------
+
 
 # batter game logs, single batter example, Corbin Carroll
 {
@@ -109,8 +129,11 @@ safe_batter_logs <- function(batter_id, years) {
   })
 }
 
+# define cores
+cores <- availableCores() - 2 # Use all cores except two
+
 # Get game logs for all batters with parallel processing and progress bar
-all_batter_game_logs <- function(batter_ids, years, cores = availableCores() - 2) {
+all_batter_game_logs <- function(batter_ids_vec, years, cores) {
   # Set up parallel processing
   plan(multisession, workers = cores) # Use multiple CPU cores
   
@@ -134,9 +157,8 @@ all_batter_game_logs <- function(batter_ids, years, cores = availableCores() - 2
 }
 
 # Call the function, save output, and time execution
-cores <- availableCores() - 2 # Use all cores except one
 system.time({
-  batter_logs <- all_batter_game_logs(batter_ids, years, cores)
+  batter_logs <- all_batter_game_logs(batter_ids_vec, years, cores)
 })
 
 # save Rdata file
@@ -145,15 +167,28 @@ save(batter_logs, file = "./01_data/training_data/batter_logs.Rdata")
 # load batter logs
 load("./01_data/training_data/batter_logs.Rdata")
 
-test <- all_batter_game_logs %>% 
+batter_logs <- batter_logs %>% 
   mutate(Date = ymd(Date)) %>% 
   filter(Date < "2024-04-12")
 
+test2 <- batter_logs %>% 
+  filter(PlayerName == "Pete Alonso")
 
 # 2.1 aggregate batter data -----------------------------------------------
 
 
-batter_team_rolling <- all_batter_game_logs %>%
+test1 <- batter_logs %>% 
+  filter(season == 2025) %>% 
+  filter(Team == "MIL") %>% 
+  group_by(PlayerName) %>% 
+  summarise(total_ab = sum(AB), 
+            total_hr = sum(HR))
+
+test <- batter_logs %>% 
+  group_by(Team, season) %>% 
+  summarise(total_hr = sum(HR))
+
+batter_team_rolling <- batter_logs %>%
   group_by(Team, season) %>%
   arrange(Date) %>%
   mutate(
@@ -190,9 +225,103 @@ team_stats_up_to_date <- batter_team_rolling %>%
          bb_rate = round(BB/AB, digits = 3),
          k_rate = round(SO/AB, digits = 3))
 
+library(dplyr)
+library(zoo)
+
+library(dplyr)
+library(zoo)
+
+# Step 1: Aggregate raw batter stats to team-level stats per game/date
+team_game_stats <- batter_logs %>%
+  group_by(Team, season, Date) %>%
+  summarise(
+    AB = sum(AB, na.rm = TRUE),
+    H = sum(H, na.rm = TRUE),
+    HR = sum(HR, na.rm = TRUE),
+    R = sum(R, na.rm = TRUE),
+    RBI = sum(RBI, na.rm = TRUE),
+    BB = sum(BB, na.rm = TRUE),
+    SO = sum(SO, na.rm = TRUE),
+    #wOBA = weighted.mean(wOBA, w = AB, na.rm = TRUE),  # Weighted by AB
+    #wRCplus = weighted.mean(wRCplus, w = AB, na.rm = TRUE),  # Weighted by AB
+    .groups = "drop"
+  )
+
+# Step 2: Calculate cumulative or rolling team stats
+team_stats_rolling <- team_game_stats %>%
+  group_by(Team, season) %>%
+  arrange(Date) %>%
+  mutate(
+    AB_cum = lag(cumsum(AB), default = 0),
+    H_cum = lag(cumsum(H), default = 0),
+    HR_cum = lag(cumsum(HR), default = 0),
+    R_cum = lag(cumsum(R), default = 0),
+    RBI_cum = lag(cumsum(RBI), default = 0),
+    BB_cum = lag(cumsum(BB), default = 0),
+    SO_cum = lag(cumsum(SO), default = 0),
+    #wOBA_avg = lag(rollmean(wOBA, k = 14, fill = NA, align = "right")),  # 14-day rolling avg
+    #wRCplus_avg = lag(rollmean(wRCplus, k = 14, fill = NA, align = "right"))  # 14-day rolling avg
+  ) %>%
+  ungroup()
+
+# Step 3: Calculate team-level derived metrics
+team_stats_up_to_date <- team_stats_rolling %>%
+  mutate(
+    join = paste0(Date, Team),
+    bat_avg = round(H_cum / AB_cum, digits = 3),
+    R_rate = round(R_cum / AB_cum, digits = 3),
+    bb_rate = round(BB_cum / AB_cum, digits = 3),
+    k_rate = round(SO_cum / AB_cum, digits = 3)
+  ) %>%
+  filter(AB_cum > 0)  # Avoid division by zero
+
+# Step 1: Aggregate raw batter stats to team-level stats per game/date
+team_game_stats <- batter_logs %>%
+  group_by(Team, season, Date) %>%
+  summarise(
+    AB = sum(AB, na.rm = TRUE),
+    H = sum(H, na.rm = TRUE),
+    HR = sum(HR, na.rm = TRUE),
+    R = sum(R, na.rm = TRUE),
+    RBI = sum(RBI, na.rm = TRUE),
+    BB = sum(BB, na.rm = TRUE),
+    SO = sum(SO, na.rm = TRUE),
+    wOBA = weighted.mean(wOBA, w = AB, na.rm = TRUE),  # Weighted by AB
+    wRCplus = weighted.mean(wRCplus, w = AB, na.rm = TRUE),  # Weighted by AB
+    .groups = "drop"
+  )
+
+# Step 2: Calculate cumulative or rolling team stats
+team_stats_rolling <- team_game_stats %>%
+  group_by(Team, season) %>%
+  arrange(Date) %>%
+  mutate(
+    AB_cum = lag(cumsum(AB), default = 0),
+    H_cum = lag(cumsum(H), default = 0),
+    HR_cum = lag(cumsum(HR), default = 0),
+    R_cum = lag(cumsum(R), default = 0),
+    RBI_cum = lag(cumsum(RBI), default = 0),
+    BB_cum = lag(cumsum(BB), default = 0),
+    SO_cum = lag(cumsum(SO), default = 0),
+    wOBA_avg = lag(rollmean(wOBA, k = 14, fill = NA, align = "right")),  # 14-day rolling avg
+    wRCplus_avg = lag(rollmean(wRCplus, k = 14, fill = NA, align = "right"))  # 14-day rolling avg
+  ) %>%
+  ungroup()
+
+# Step 3: Calculate team-level derived metrics
+team_stats_up_to_date <- team_stats_rolling %>%
+  mutate(
+    join = paste0(Date, Team),
+    bat_avg = round(H_cum / AB_cum, digits = 3),
+    R_rate = round(R_cum / AB_cum, digits = 3),
+    bb_rate = round(BB_cum / AB_cum, digits = 3),
+    k_rate = round(SO_cum / AB_cum, digits = 3)
+  ) %>%
+  filter(AB_cum > 0)  # Avoid division by zero
+
 
 # Step 2: Aggregate each game at the team-date level (i.e., 1 row per Team-Date)
-team_game_logs <- all_batter_game_logs %>%
+team_game_logs <- batter_logs %>%
   group_by(Team, Date, year) %>%
   summarise(
     AB = sum(AB, na.rm = TRUE),
@@ -292,7 +421,7 @@ save(pitcher_logs, file = "./01_data/training_data/pitcher_logs.Rdata")
 # load pitcher logs
 load("./01_data/training_data/pitcher_logs.Rdata")
 
-all_pitcher_game_logs <- all_pitcher_game_logs %>% 
+pitcher_logs <- pitcher_logs %>% 
   mutate(fpts = W*5 + SO*3 + IP*3 + ER*-3) %>% 
   mutate(Date = ymd(Date)) %>% 
   arrange(-fpts)
@@ -362,6 +491,7 @@ system.time({
 
 # Inspect or save the output
 head(pitcher_logs) # View first few rows
+
 # Optional: Save to CSV or RDS
 write.csv(pitcher_logs, "pitcher_game_logs.csv", row.names = FALSE)
 saveRDS(pitcher_logs, "pitcher_logs.rds") # Smaller, faster format
@@ -370,7 +500,7 @@ saveRDS(pitcher_logs, "pitcher_logs.rds") # Smaller, faster format
 # 3.1 join team level batter data to pitcher game log ---------------------
 
 
-test <- all_pitcher_game_logs %>% 
+test <- pitcher_logs %>% 
   mutate(join = paste0(Date, Opp)) %>% 
   left_join(team_stats_up_to_date, by=c("join"))
 
