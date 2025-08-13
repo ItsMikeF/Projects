@@ -1,6 +1,6 @@
 #web scrape depth charts from espn
 #made via https://stackoverflow.com/questions/56739863/web-scraping-image-url-for-a-series-of-events-in-espn-play-by-play
-#run this script 2nd
+
 
 #load packages
 suppressMessages({
@@ -15,382 +15,237 @@ suppressMessages({
 
 # 1.0 scrape and clean depth charts -------------------------------------------------
 
-#css tags to be used
-css1 <- ".fw-medium .AnchorLink" #starters
-css2 <- ".Table__TD:nth-child(2) .AnchorLink" #second string
-css3 <- ".Table--fixed-left span" #positions
-#css4 <- ".Table__TD span , .Table__TD .AnchorLink" #all text
+espn_depth_chart_scraper <- function() {
+  
+  library(nflverse) #nflfastr nflseedr nfl4th nflreadr nflplotr
+  library(rvest) #easily harvest (scrape) web pages
+  
+  #css tags to be used
+  css1 <- ".fw-medium .AnchorLink" #starters
+  css2 <- ".Table__TD:nth-child(2) .AnchorLink" #second string
+  css3 <- ".Table--fixed-left span" #positions
+  #css4 <- ".Table__TD span , .Table__TD .AnchorLink" #all text
+  
+  #write css tags to a vector
+  css <- c(css1, css2, css3)
+  #css <- c(css4)
+  
+  #nfl team abbrev table
+  teams <- teams_colors_logos %>% 
+    select(team_abbr, team_name) %>% 
+    filter(!team_abbr %in% c("LA", "OAK", "SD", "STL"))
+  
+  #replace spaces with dashes
+  teams$team_name <- gsub(" ", "-", teams$team_name)
+  
+  #fix Washington names
+  teams$team_abbr[32] <- "WSH"
+  teams$team_name[32] <- "Washington-Commanders"
+  
+  #purrr map every offensive roster into a list
+  i <- 1:32
+  
+  depth_off <- i %>% 
+    map(function (i) {
+      print(teams$team_abbr[i])
+      url <- paste0("https://www.espn.com/nfl/team/depth/_/name/",teams$team_abbr[i],"/",teams$team_name[i])
+      
+      #scrape webpage with rvest
+      webpage <- read_html(url)
+      
+      depth_chart <- css %>% 
+        map(function (css){
+          html <- html_nodes(webpage,css)
+          text <- trimws(html_text(html)) %>% as_tibble()
+        })
+      
+      # Get length of the position list element
+      len <- length(depth_chart[[3]][[1]])
+      
+      # Extract the positions
+      positions <- depth_chart[[3]][[1]][seq(2, len, 2)]
+      positions <- tibble(positions[1:12])
+      
+      # Extract the first string players
+      off1 <- depth_chart[[1]][c(1:12),]
+      
+      # Extract second string players
+      off2 <- depth_chart[[2]][c(1:12),]
+      
+      # column bind all
+      cbind(positions, off1, off2, teams$team_abbr[i])
+    } )
+  
+  depth_off <- setNames(depth_off, teams$team_abbr)
+  
+  # Create a data frame of the rosters from the list
+  nfl_depth <- bind_rows(depth_off)
+  
+  # Assign column names
+  names(nfl_depth) <- c("pos", "first_string", "second_string","team")
+  
+  # Remove FBs and blanks
+  nfl_depth <- nfl_depth %>% filter(!(pos %in% c("", "FB")))
+  
+  # test code to get wr3s
+  test <- nfl_depth %>% filter(pos == "WR")
+  test <- test[seq(3,96,3),]
+  
+  # create a second dataframe
+  nfl_depth2 <- nfl_depth %>% select(pos, second_string, team) 
+  
+  # Extract pos values and assign depth chart numbers
+  pos2 <- paste0(nfl_depth2$pos[1:11],2)
+  
+  pos2[3] <- "WR4"
+  pos2[4] <- "WR5"
+  pos2[5] <- "WR6"
+  nfl_depth2$pos <- pos2
+  
+  # Extract pos values and assign depth chart numbers
+  pos <- paste0(nfl_depth$pos[1:11],1)
+  pos[4] <- "WR2"
+  pos[5] <- "WR3"
+  
+  nfl_depth$pos <- rep(pos, 32)
+  
+  nfl_depth_full <<- bind_rows(nfl_depth %>% select(pos, first_string, team) %>% rename(player = first_string), 
+                              nfl_depth2 %>% rename(player = second_string))
+  
+  nfl_depth_full %>% filter(team == "ARI") %>% arrange(pos)
+  
+  
+}
+espn_depth_chart_scraper()
 
-#write css tags to a vector
-css <- c(css1, css2, css3)
-#css <- c(css4)
+# save the R object
+save(nfl_depth_full, file = "./01_data/depth_chart/espn_depth_chart_2025.Rdata")
 
-#nfl team abbrev table
-teams <- teams_colors_logos %>% 
-  select(team_abbr, team_name) %>% 
-  filter(!team_abbr %in% c("LA", "OAK", "SD", "STL"))
-
-#replace spaces with dashes
-teams$team_name <- gsub(" ", "-", teams$team_name)
-
-#fix Washington names
-teams$team_abbr[32] <- "WSH"
-teams$team_name[32] <- "Washington-Commanders"
-
-#purrr map every offensive roster into a list
-i <- 1:32
-
-depth_off <- i %>% 
-  map(function (i) {
-    print(teams$team_abbr[i])
-    url <- paste0("https://www.espn.com/nfl/team/depth/_/name/",teams$team_abbr[i],"/",teams$team_name[i])
+# gpt5 code
+espn_depth_chart_scraper <- function(save_path = NULL, assign_global = TRUE, progress = TRUE) {
+  suppressPackageStartupMessages({
+    library(dplyr)
+    library(purrr)
+    library(stringr)
+    library(rvest)
+    library(tidyr)
+    library(nflreadr)
+    library(httr)
+    library(xml2)
+    library(progress)
+  })
+  
+  # ---------- helpers ----------
+  make_espn_slug <- function(team_name) {
+    team_name |>
+      str_replace_all("[^A-Za-z0-9 ]", "") |>
+      str_squish() |>
+      str_replace_all(" ", "-") |>
+      (\(s) ifelse(s == "Washington", "Washington-Commanders", s))()
+  }
+  
+  read_html_retry <- function(url, tries = 3, sleep = 1) {
+    ua <- httr::user_agent("nfl-depth-chart-scraper (contact: you@example.com)")
+    for (i in seq_len(tries)) {
+      resp <- tryCatch({ xml2::read_html(httr::GET(url, ua)) }, error = function(e) NULL)
+      if (!is.null(resp)) return(resp)
+      Sys.sleep(sleep)
+    }
+    stop("Failed to read: ", url)
+  }
+  
+  parse_team_depth <- function(team_abbr, espn_slug) {
+    url <- paste0("https://www.espn.com/nfl/team/depth/_/name/", team_abbr, "/", espn_slug)
+    page <- read_html_retry(url)
     
-    #scrape webpage with rvest
-    webpage <- read_html(url)
+    starters <- page %>% html_elements(".fw-medium .AnchorLink") %>% html_text2()
+    second   <- page %>% html_elements(".Table__TD:nth-child(2) .AnchorLink") %>% html_text2()
+    pos_raw  <- page %>% html_elements(".Table--fixed-left span") %>% html_text2()
     
-    depth_chart <- css %>% 
-      map(function (css){
-        html <- html_nodes(webpage,css)
-        text <- trimws(html_text(html)) %>% as_tibble()
-      })
+    keep_pos <- c("QB","RB","WR","TE","LT","LG","C","RG","RT","FB","OL")
+    positions <- pos_raw[pos_raw %in% keep_pos]
     
-    # Get length of the position list element
-    len <- length(depth_chart[[3]][[1]])
+    n <- min(length(starters), length(second), length(positions))
+    if (n == 0) return(tibble())
     
-    # Extract the positions
-    positions <- depth_chart[[3]][[1]][seq(2, len, 2)]
-    positions <- tibble(positions[1:12])
-    
-    # Extract the first string players
-    off1 <- depth_chart[[1]][c(1:12),]
-    
-    # Extract second string players
-    off2 <- depth_chart[[2]][c(1:12),]
-    
-    # column bind all
-    cbind(positions, off1, off2, teams$team_abbr[i])
- } )
-
-depth_off <- setNames(depth_off, teams$team_abbr)
-
-# Create a data frame of the rosters from the list
-nfl_depth <- bind_rows(depth_off)
-
-# Assign column names
-names(nfl_depth) <- c("pos", "first_string", "second_string","team")
-
-# Remove FBs and blanks
-nfl_depth <- nfl_depth %>% filter(!(pos %in% c("", "FB")))
-
-# test code to get wr3s
-test <- nfl_depth %>% filter(pos == "WR")
-test <- test[seq(3,96,3),]
-
-# create a second dataframe
-nfl_depth2 <- nfl_depth %>% select(pos, second_string, team) 
-
-# Extract pos values and assign depth chart numbers
-pos2 <- paste0(nfl_depth2$pos[1:11],2)
-
-pos2[3] <- "WR4"
-pos2[4] <- "WR5"
-pos2[5] <- "WR6"
-nfl_depth2$pos <- pos2
-
-# Extract pos values and assign depth chart numbers
-pos <- paste0(nfl_depth$pos[1:11],1)
-pos[4] <- "WR2"
-pos[5] <- "WR3"
-
-nfl_depth$pos <- rep(pos, 32)
-
-nfl_depth_full <- bind_rows(nfl_depth %>% select(pos, first_string, team) %>% rename(player = first_string), 
-                            nfl_depth2 %>% rename(player = second_string))
-
-nfl_depth_full %>% filter(team == "ARI") %>% arrange(pos)
-
-# Lets get the second column, now obsolete
-i = 1:32
-depth_off2 <- i %>% 
-  map(function (i) {
-    print(teams$team_abbr[i])
-    url <- paste0("https://www.espn.com/nfl/team/depth/_/name/",teams$team_abbr[i],"/",teams$team_name[i])
-    
-    #scrape webpage with rvest
-    webpage <- read_html(url)
-    
-    depth_chart <- css %>% 
-      map(function (css){
-        html <- html_nodes(webpage,css2)
-        text <- trimws(html_text(html)) %>% as_tibble()
-      })
-    
-    len <- length(depth_chart[[3]][[1]])
-    
-    positions <- depth_chart[[3]][[1]][seq(2, len, 2)]
-    positions <- tibble(positions[1:12])
-    
-    off <- depth_chart[[1]][c(1:12),]
-    cbind(positions,off, teams$team_abbr[i])
-  } )
-depth_off2 <- setNames(depth_off2, teams$team_abbr)
-
-#create a data frame of the rosters from the list 
-nfl_depth2 <- Reduce(full_join,depth_off2)
-names(nfl_depth2) <- c("pos", "player", "team")
-
-nfl_depth2$pos <- rep(pos, 32)
-
-# 2.0 add injury report to starters ---------------------------------------
-
-nfl_depth_inj <- nfl_depth %>% 
-  left_join(injuries %>% select(name, status, comment), by=c("first_string"="name"))
-
-# 3.0 separate into positions and load data -----------------------------------
-
-#separate into position groups
-qb1 <- nfl_depth_full$player[which(nfl_depth_full$pos == "QB1")]
-qb1_pbp <- paste(substr(qb1, 1, 1), 
-                 str_split(qb1," ") %>% unlist() %>% .[seq(2, length(.), 2)], 
-                 sep = ".")
-
-rb1 <- nfl_depth_full$player[which(nfl_depth_full$pos == "RB1")]
-rb1_pbp <- paste(substr(rb1, 1, 1), 
-                  str_split(rb1," ") %>% unlist() %>% .[seq(2, length(.), 2)], 
-                  sep = ".")
-
-wr1 <- nfl_depth_full$player[which(nfl_depth_full$pos == "WR1")]
-
-
-# Save to Rdata file ------------------------------------------------------
-
-save(nfl_depth, nfl_depth_full, qb1, qb1_pbp,
-     file = "./01_data/depth_chart/depth_chart_data.Rdata")
-
-# IOL  --------------------------------------------------------------------
-
-
-iol <- nfl_depth %>% 
-  filter(pos == "LG" | pos == "C" | pos == "RG")
-
-ot <- nfl_depth %>% 
-  filter(pos == "LT" | pos == "RT")
-
-#load pff offensive line data
-pff_ol <- read_rds("./01_data/training_data/position_groups/ols.Rdata") %>% 
-  filter(year == max(year) & week == max(week))
-
-pff_ol <- load(file = "./01_data/training_data/position_groups/qbs.Rdata")
-
-
-#left join pff ol data to iol
-iol_grades <- iol %>% 
-  left_join(pff_ol, by = c("player"))
-
-#summarise the iol data
-iol_team <- iol_grades %>% 
-  group_by(team) %>% 
-  summarise(
-    rblk = round(weighted.mean(grades_run_block.x, non_spike_pass_block.x, na.rm=T), digits = 1),
-    rblk_snaps = sum(snap_counts_run_block.x, na.rm=T), 
-    
-    gap_snaps = sum(gap_snap_counts_run_block, na.rm=T),
-    gap_rblk = round(weighted.mean(gap_grades_run_block, gap_snap_counts_run_block, na.rm=T), digits = 1),
-    
-    zone_snaps = sum(zone_snap_counts_run_block, na.rm=T),
-    zone_rblk = round(weighted.mean(zone_grades_run_block, zone_snap_counts_run_block, na.rm=T), digits = 1),
-    
-    pass_snaps = sum(snap_counts_pass_block.x, na.rm = T),
-    pbe = round(weighted.mean(pbe.x, non_spike_pass_block.x, na.rm=T), digits = 1),
-    hurries = sum(hurries_allowed.x, na.rm=T),
-    
-    tps_snaps = sum(true_pass_set_non_spike_pass_block, na.rm=T), 
-    tps_pbe = round(weighted.mean(true_pass_set_pbe, true_pass_set_non_spike_pass_block, na.rm=T), digits = 1),
-    tps_hurries = sum(true_pass_set_hurries_allowed, na.rm=T)
-  )
-
-#lets scrape pro football reference for team advanced rushing stats
-url <- "https://www.pro-football-reference.com/years/2022/advanced.htm"
-
-webpage <- read_html(url)
-tables <- webpage %>% html_table(fill = T)
-pfr_rush <- tables[[5]] %>% 
-  clean_names()
-
-#clean the pfr data frame
-pfr_rush$tm <- gsub(" ", "-", pfr_rush$tm)
-pfr_rush$tm[32] <- "Washington-Commanders"
-
-# 4.0 qb eda ---------------------------------------------------------
-
-#lets look at the OT groups
-
-#left join pff ol data to iol
-ot_grades <- ot %>% 
-  left_join(pff_ol, by = c("player"))
-
-#summarise the iol data
-ot_team <- ot_grades %>% 
-  group_by(team) %>% 
-  summarise(
-    grades_pass_block.x = round(weighted.mean(grades_pass_block.x, non_spike_pass_block.x, na.rm=T), digits = 1),
-    
-    pass_snaps = sum(snap_counts_pass_block.x, na.rm = T),
-    pbe = round(weighted.mean(pbe.x, non_spike_pass_block.x, na.rm=T), digits = 1),
-    pressures_allowed = sum(true_pass_set_pressures_allowed, na.rm=T),
-    
-    tps_snaps = sum(true_pass_set_non_spike_pass_block, na.rm=T), 
-    tps_pbe = round(weighted.mean(true_pass_set_pbe, true_pass_set_non_spike_pass_block, na.rm=T), digits = 1),
-    tps_pressures_allowed = sum(true_pass_set_pressures_allowed, na.rm=T)
-  )
-
-#join qb and ot dfs
-qb_team <- qb1 %>% 
-  left_join(ot_team, by=c("team"))
-
-#load qb data
-pff_qb <- read.csv("./Training_Data/position_groups/qbs.csv") %>% 
-  filter(year == max(year) & week == max(week)) 
-
-pff_qb <- read.csv("./Training_Data/2022/passing_summary (17).csv")
-
-#sort for elu
-pff_qb_select <- pff_qb %>% 
-  select(player, grades_pass, btt_rate, twp_rate, avg_depth_of_target, 
-         avg_time_to_throw, grades_run, pressure_to_sack_rate, player_game_count, attempts, yards, ypa) %>% 
-  mutate(ttt_run_grade = round(avg_time_to_throw*grades_run/pressure_to_sack_rate, digits = 1))
-
-#left join rb_team with pff_rb_select
-plot_qb <- qb_team %>% 
-  left_join(pff_qb_select, by=c("player")) 
-
-#change player full name in pff df to pbp name format
-plot_qb <- plot_qb %>% 
-  mutate(name = paste(substr(player,1,1),str_extract(player, '[^ ]+$'),sep = "."), 
-         cat = paste0(name, team))
-
-#load pbp data for player ids
-pbp <- nflreadr::load_pbp(2021) %>% 
-  dplyr::filter(season_type == "REG") %>%
-  dplyr::filter(!is.na(posteam) & (rush == 1 | pass == 1))
-
-#load pbp data for player ids
-pbp_qbs <- pbp %>%
-  filter(pass == 1) %>%
-  filter(down %in% 1:4) %>%
-  group_by(id) %>%
-  summarise(
-    name = first(name),
-    team = last(posteam),
-    plays = n(),
-    passing_yards = sum(passing_yards, na.rm = T),
-    pass_attempt = sum(pass_attempt, na.rm = T)
-  ) %>% 
-  arrange(-passing_yards) %>% 
-  mutate(cat = paste0(name, team))
-
-#join plot_rb with pbp_rbs for ids and stats
-plot_qb_pbp <- plot_qb %>% 
-  left_join(pbp_qbs, by=c("cat")) %>% 
-  mutate(btt_twp = round(btt_rate / twp_rate, digits = 1)) #%>% drop_na() 
-
-#qb plot
-plot_qb_pbp %>% 
-  ggplot(aes(x = grades_pass_block.x, y = grades_pass)) +
-  geom_vline(xintercept = mean(plot_qb_pbp$grades_pass_block.x, na.rm=T), color="red",linetype="dashed", alpha=0.5) +
-  geom_hline(yintercept = mean(plot_qb_pbp$grades_pass, na.rm=T), color="red",linetype="dashed", alpha=0.5) +
-  #geom_nfl_logos(aes(team_abbr=team.x), width=0.065, alpha=0.7) +
-  geom_nfl_headshots(aes(player_gsis = id), width = 0.075, vjust = 0.45) +
-  geom_label_repel(aes(label = player)) +
-  scale_y_continuous(limits = c(NA, 100)) +
-  labs(
-    title = "2023 QB Review",
-    caption = "2022 OT Grade based on starting LT and RT on 2022 ESPN Depth Chart.",
-    x = "Avg OT 2022 PBLK Grades",
-    y = "2022 QB Passing Grade"
-  ) + 
-  theme(axis.title.x = element_text(size = 18), 
-        axis.title.y = element_text(size = 18)) +
-  ggsave("2022 QB Grades vs OT Grades.png", width = 1920/72, height = 1080/72, dpi = 72)
-
-# 5.0 rb eda ---------------------------------------------------------
-
-#join rb and iol dfs
-rb_team <- rb1 %>% 
-  left_join(iol_team, by=c("team"))
-
-#load rb data
-pff_rb <- read.csv("./Training_Data/position_groups/rbs.csv") %>% 
-  filter(year == max(year) & week == max(week))
-
-#manually add in missing data
-plot_rb[which(plot_rb=="Breece Hall",arr.ind = T)[1],19] <- 88.8
-plot_rb[which(plot_rb=="J.K. Dobbins",arr.ind = T)[1],19] <- 77.8
-plot_rb[which(plot_rb=="Travis Etienne Jr.",arr.ind = T)[1],19] <- 86.9
-plot_rb[which(plot_rb=="Cam Akers",arr.ind = T)[1],19] <- 45.5
-plot_rb[which(plot_rb=="Dameon Pierce",arr.ind = T)[1],19] <- 83.4
-
-#sort for elu
-#The PFF "Elusive Rating" distills the success and impact of a runner with the ball independently of the blocking in front of him by looking at how hard he was to bring down.
-pff_rb_select <- pff_rb %>% 
-  select(player, attempts, player_game_count, designed_yards, elusive_rating)
-
-#left join rb_team with pff_rb_select
-plot_rb <- rb_team %>% 
-  left_join(pff_rb_select, by=c("player")) 
-
-#change player full name in pff df to pbp name format
-plot_rb <- plot_rb %>% 
-  mutate(name = paste(substr(player,1,1),str_extract(player, '[^ ]+$'),sep = "."), 
-         cat = paste0(name, team)) 
-
-#filter pbp data for rbs
-pbp_rbs <- pbp %>%
-  filter(rush == 1) %>%
-  filter(down %in% 1:4) %>%
-  group_by(id) %>%
-  summarise(
-    name = first(name),
-    team = last(posteam),
-    plays = n(),
-    rushing_yards = sum(rushing_yards, na.rm = T),
-    rush_att = sum(rush_attempt, na.rm = T)
-  ) %>% 
-  arrange(-rushing_yards) %>% 
-  mutate(cat = paste0(name, team))
-
-#join plot_rb with pbp_rbs for ids and stats
-plot_rb_pbp <- plot_rb %>% 
-  left_join(pbp_rbs, by=c("cat")) #%>% drop_na()
-
-#rb plot
-plot_rb_pbp %>% 
-  ggplot(aes(x = rblk, y = elusive_rating)) +
-  geom_vline(xintercept = mean(plot_rb_pbp$rblk), color="red",linetype="dashed", alpha=0.5) +
-  geom_hline(yintercept = mean(plot_rb_pbp$elusive_rating, na.rm = T), color="red",linetype="dashed", alpha=0.5) +
-  #geom_nfl_logos(aes(team_abbr=team.x), width=0.065, alpha=0.7) +
-  geom_nfl_headshots(aes(player_gsis = id), width = 0.075, vjust = 0.45) +
-  geom_label_repel(aes(label = player)) +
-  labs(
-    title = "2023 RB Elu vs IOL Grades",
-    caption = "2022 IOL Grade based on starting LG, C, RG on 2022 ESPN Depth Chart. \n 
-    The PFF Elusive Rating distills the success and impact of a runner with the ball independently of the blocking in front of him by looking at how hard he was to bring down.",
-    x = "Avg IOL 2022 RBLK Grades", 
-    y = "Elusiveness Rating"
-  ) +
-  scale_y_continuous(limits = c(NA, 130)) +
-  theme(plot.title = element_text(size = 24), 
-        axis.title = element_text(size = 18), 
-        axis.text = element_text(size = 16), 
-        plot.caption = element_text(size = 12)) +
-  ggsave("2023 RB Elu vs IOL Grades.png", width = 1920/72, height = 1080/72, dpi = 72)
-
-
-# 6.0 wr eda --------------------------------------------------------------
-
-
-# 7.0 te eda --------------------------------------------------------------
-
-
-# 8.0 def eda -------------------------------------------------------------
-
+    tibble(
+      team = toupper(team_abbr),
+      pos  = positions[seq_len(n)],
+      first_string  = starters[seq_len(n)],
+      second_string = second[seq_len(n)]
+    ) %>% filter(pos %in% keep_pos)
+  }
+  
+  # ---------- team list (current) ----------
+  teams <- nflreadr::load_teams() %>%
+    select(team_abbr, team_name) %>%
+    distinct() %>%
+    mutate(
+      team_abbr = if_else(team_abbr %in% c("WAS", "WSH"), "WSH", team_abbr),  # ESPN uses WSH
+      team_abbr = if_else(team_abbr == "LA", "LAR", team_abbr),               # ESPN uses LAR (not LA)
+      team_abbr_espn = tolower(team_abbr),
+      espn_slug = make_espn_slug(team_name)
+    ) %>%
+    arrange(team_abbr)
+  
+  # ---------- scrape with progress ----------
+  start_time <- Sys.time()
+  if (progress) {
+    pb <- progress_bar$new(
+      format = "Scraping ESPN depth charts [:bar] :percent ETA: :eta",
+      total = nrow(teams), clear = FALSE, width = 70
+    )
+  }
+  
+  # Keep results aligned in a single list-column
+  scrape <- vector("list", nrow(teams))
+  for (i in seq_len(nrow(teams))) {
+    scrape[[i]] <- safely(parse_team_depth)(teams$team_abbr_espn[i], teams$espn_slug[i])
+    if (progress) pb$tick()
+  }
+  
+  elapsed_sec <- as.integer(difftime(Sys.time(), start_time, units = "secs"))
+  message(sprintf("\nScraping completed in %d seconds.", elapsed_sec))
+  
+  scrape_tbl <- teams %>%
+    mutate(scrape = scrape,
+           result = map(scrape, "result"),
+           error  = map(scrape, "error"))
+  
+  failed <- scrape_tbl %>% filter(!map_lgl(error, is.null)) %>% pull(team_abbr)
+  if (length(failed) > 0) warning("Failed teams: ", paste0(failed, collapse = ", "))
+  
+  depth_raw <- scrape_tbl$result %>%
+    discard(is.null) %>%
+    list_rbind()
+  
+  if (nrow(depth_raw) == 0) stop("No depth data scraped — site structure may have changed.")
+  
+  # ---------- tidy to single long table ----------
+  depth_long <- depth_raw %>%
+    pivot_longer(c(first_string, second_string), names_to = "string", values_to = "player") %>%
+    mutate(string = if_else(string == "first_string", 1L, 2L)) %>%
+    arrange(team, pos, string)
+  
+  nfl_depth_full <- depth_long %>%
+    group_by(team, pos) %>%
+    mutate(depth = row_number()) %>%
+    ungroup() %>%
+    transmute(team, pos = paste0(pos, depth), player) %>%
+    arrange(team, pos)
+  
+  if (!is.null(save_path)) {
+    dir.create(dirname(save_path), recursive = TRUE, showWarnings = FALSE)
+    save(nfl_depth_full, file = save_path)
+  }
+  
+  if (assign_global) assign("nfl_depth_full", nfl_depth_full, envir = .GlobalEnv)
+  
+  nfl_depth_full
+}
+
+# --- Example ---
+nfl_depth_full <- espn_depth_chart_scraper(
+  save_path = "./01_data/depth_chart/espn_depth_chart_2025.Rdata",
+  assign_global = TRUE
+ )

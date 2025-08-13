@@ -16,7 +16,7 @@ suppressMessages({
 
 
 # Load the schedule
-schedules <- load_schedules(2023)
+schedules <- load_schedules(2025)
 
 # Make a list of nfl schedules by team
 nfl_schedules <- map(teams_colors_logos$team_abbr, 

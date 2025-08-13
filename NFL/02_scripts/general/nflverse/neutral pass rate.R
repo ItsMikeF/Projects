@@ -7,7 +7,7 @@ library(httr)
 library(rvest)
 
 # load pbp
-pbp <- load_pbp(2023)
+pbp <- load_pbp(2024)
 
 n_pass <- pbp %>% 
   filter(down <= 4, .25 < wp, wp < .75, half_seconds_remaining > 120) %>% 
@@ -52,7 +52,9 @@ plot <- ggplot(neutral_pass, aes(y= reorder(posteam, neutral_pass_rate), x=neutr
   )
 
 ggsave(plot, 
-       filename = "./03_plots/neutral_pass_rate.png", 
+       filename = "./03_plots/neutral_pass_rate_2024.png", 
        width = 26.7, 
        height = 15, 
        dpi = 300)
+
+# neutral pass rate era
