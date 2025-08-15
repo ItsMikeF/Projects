@@ -3,7 +3,7 @@ library(fs)
 library(dplyr)
 
 # >>> set your root folder
-root <- "C:/Users/mikef/OneDrive/Documents/GitHub/Projects/NFL/01_data"
+root <- "C:/Users/mikef/OneDrive/Documents/GitHub/Projects/NFL/01_data/"
 
 pretty_bytes <- function(bytes) {
   u <- c("B","KB","MB","GB","TB","PB")
