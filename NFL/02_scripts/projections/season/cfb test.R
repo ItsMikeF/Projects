@@ -13,13 +13,13 @@ suppressMessages({
   library(tidymodels)
 })
 
-
 # load pbp
-#cfb_pbp <- load_cfb_pbp(seasons = 2015:2024)
+cfb_pbp <- load_cfb_pbp(seasons = 2015:2024)
+
 #save(cfb_pbp, file = "./01_data/cfb/cfb_pbp_2015_2024.Rdata")
 
 # load cfb pbp from local save
-load("./01_data/cfb/cfb_pbp_2015_2024.Rdata")
+#load("./01_data/cfb/cfb_pbp_2015_2024.Rdata")
 
 
 # 2.0 QB -----------------------------------------------------------------

@@ -28,7 +28,7 @@ load("./01_data/cfb/cfb_pbp_qb_weighted.Rdata")
 draft_picks <- load_draft_picks(seasons = 2020:2025)
 
 # Define rookies function
-rookies <- function() {
+def_rookies <- function() {
   rookies <<- rosters %>%
     filter(status == "ACT") %>%
     filter(years_exp == 0) %>% 
@@ -42,7 +42,7 @@ rookies <- function() {
     # Add join column for NFL fpts
     mutate(join = paste(season, gsis_id, sep = "_"))
 }
-rookies()
+def_rookies()
 
 # Calculate QB fantasy points by season
 qb_fpts_pbp <- function() {
@@ -119,14 +119,14 @@ qb_fpts_pbp <- function() {
 qb_fpts_pbp()
 
 # QB position group split
-rookies_qb <- function() {
+def_rookies_qb <- function() {
   rookies_qb <<- rookies %>% 
     filter(position == "QB") %>% 
     left_join(qb_fpts, by = "join") %>% 
     arrange(-fpts) %>% 
     left_join(cfb_pbp_qb_weighted, by = c("full_name" = "passer_player_name"))
 }
-rookies_qb()
+def_rookies_qb()
 
 # Prepare training data (seasons before 2025)
 train_data <- rookies_qb %>%
