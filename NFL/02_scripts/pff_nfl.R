@@ -8,12 +8,12 @@ suppressPackageStartupMessages({
   library(glue)
 })
 
-# Read the team abbreviation file
-cfbd_to_pff_abbrev_df <- read.csv("./01_data/reference/cfbd_to_pff_abbrev.csv")
+# Read the team abbreviation file (assumed to contain NFL team IDs; update if necessary)
+cfbd_to_pff_abbrev_df <- read.csv("./01_data/reference/cfbd_to_pff_abbrev.csv") # Replace with NFL team ID file if needed
 idlist <- cfbd_to_pff_abbrev_df$pff_team_id
 
-# Define cookies as a named character vector
-cookies_pff <- c(
+# Define cookies as a named list
+cookies_pff <- list(
   `_fbp` = "fb.1.1661369695596.714656027",
   `userty.core.p.f30f6b` = "__2VySWQiOiI0ZjA2YzdlMzQ2YTFhNTkyNWYzM2MwZTM2NGZjZTc3NiJ9eyJ1c",
   `prism_651055355` = "abbac514-b698-441b-bd8c-fc13375b34dc",
@@ -37,35 +37,29 @@ master_df <- data.frame()
 # Function to fetch data for a given team_id, week, and year
 fetch_pff_data <- function(team_id, week, year) {
   # Construct the URL using glue
-  url <- glue("https://premium.pff.com/api/v1/facet/receiving/summary?league=ncaa&season={year}&franchise_id={team_id}&week={week}")
+  url <- glue("https://premium.pff.com/api/v1/facet/position/summary?league=nfl&season={year}&franchise_id={team_id}&week={week}&position=qb")
   
   # Make the request
-  response <- GET(url, set_cookies(cookies_pff))
+  response <- GET(url, set_cookies(.cookies = cookies_pff))
   
   # Check if request is successful
   if (status_code(response) == 200) {
     # Parse JSON response
     json_data <- fromJSON(content(response, "text", encoding = "UTF-8"))
     
-    # Check if receiving_summary exists and has data
-    if (!is.null(json_data$receiving_summary) && length(json_data$receiving_summary) > 0) {
-      # Extract and normalize data
-      df <- as.data.frame(json_data$receiving_summary)
-      df$week <- week
-      df$year <- year
-      df$team_id <- team_id
-      
-      # Print progress
-      cat(year, week, team_id, "\n")
-      try({
-        cat(sum(df$wide_snaps, na.rm = TRUE), "wide_snaps\n")
-      }, silent = TRUE)
-      
-      return(df)
-    } else {
-      cat("No data in receiving_summary for year:", year, "week:", week, "team_id:", team_id, "\n")
-      return(data.frame()) # Return empty data frame if no data
-    }
+    # Extract and normalize data
+    df <- as.data.frame(json_data$position_summary)
+    df$week <- week
+    df$year <- year
+    df$team_id <- team_id
+    
+    # Print progress
+    cat(year, week, team_id, "\n")
+    try({
+      cat(nrow(df), "rows retrieved\n")
+    }, silent = TRUE)
+    
+    return(df)
   } else {
     cat("Failed request for year:", year, "week:", week, "team_id:", team_id, "Status:", status_code(response), "\n")
     return(data.frame()) # Return empty data frame if request fails
@@ -75,6 +69,7 @@ fetch_pff_data <- function(team_id, week, year) {
 # Use lapply to iterate over weeks and team IDs
 weeks <- 6 # Define weeks (can be a vector like c(1, 2, 3) for multiple weeks)
 year <- 2024 # Define the year
+
 results <- lapply(weeks, function(week) {
   # Iterate over team IDs for the current week
   team_results <- lapply(idlist, function(team_id) {
