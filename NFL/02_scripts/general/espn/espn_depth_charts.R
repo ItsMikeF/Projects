@@ -121,6 +121,10 @@ espn_depth_chart_scraper()
 # save the R object
 save(nfl_depth_full, file = "./01_data/depth_chart/espn_depth_chart_2025.Rdata")
 
+
+# 2.0 improved code -------------------------------------------------------
+
+
 # gpt5 code
 espn_depth_chart_scraper <- function(save_path = NULL, assign_global = TRUE, progress = TRUE) {
   suppressPackageStartupMessages({
@@ -246,6 +250,6 @@ espn_depth_chart_scraper <- function(save_path = NULL, assign_global = TRUE, pro
 
 # --- Example ---
 nfl_depth_full <- espn_depth_chart_scraper(
-  save_path = "./01_data/depth_chart/espn_depth_chart_2025.Rdata",
+  save_path = "./01_data/depth_chart/espn_depth_chart_2025.RDS",
   assign_global = TRUE
  )

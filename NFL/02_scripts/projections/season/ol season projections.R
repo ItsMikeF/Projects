@@ -5,14 +5,14 @@ library(tidyverse)
 library(randomForest)
 
 # load pff predicted grades
-load("./05_outputs/2025_ol_pff_grades.Rdata")
+ol_grades <- load("./05_outputs/season_projections/2025_ol_pff_grades.RDS")
 preds_out_select <- preds_out %>% select(player, pred_pass_block_2025_cal, pred_run_block_2025_cal)
 
 # espn depth charts from espn depth charts script
-load("./01_data/depth_chart/espn_depth_chart_2025.Rdata")
+load("./01_data/depth_chart/espn_depth_chart_2025.RDS")
 
 # load ol grades
-load("./05_outputs/ol_grades.Rdata")
+load("./01_data/season_grades/nfl/ol_grades.RDS")
 
 # calculate OL weights 
 ol_weights <- function() {
@@ -44,7 +44,7 @@ ol_weights <- function() {
   w_RT1_run <- (1 - interior_share_run) / 2
   
   # Build + round
-  weights <<- tibble::tribble(
+  weights <- tibble::tribble(
     ~pos,  ~w_pass,       ~w_run,
     "LT1", w_LT1_pass,    w_LT1_run,
     "LG1", w_LG1_pass,    w_G_run,
@@ -59,10 +59,8 @@ ol_weights <- function() {
   #   mutate(w_pass = w_pass / sum(w_pass),
   #          w_run  = w_run  / sum(w_run)) %>%
   #   mutate(across(c(w_pass, w_run), ~ round(.x, 2)))
-  
-
 }
-ol_weights()
+weights <- ol_weights()
 
 # filter and join
 ol_team <- nfl_depth_full %>%
@@ -92,6 +90,10 @@ ol_team <- nfl_depth_full %>%
   arrange(overall_rank)
 
 save(ol_team, file = "./05_outputs/season_projections/ol_team.Rdata")
+
+
+# 2.0 load to google sheets -----------------------------------------------
+
 
 library(googlesheets4)
 

@@ -3,12 +3,13 @@
 # ---- packages ----
 library(tidyverse)
 library(randomForest)
+library(glue)
 
 # ---- 0) Load & filter base data ----
-seasons <- 2021:2024
+seasons <- 2012:2024
 
 ol_list <- lapply(seasons, function(season) {
-  read.csv(paste0("./01_data/season_grades/", season, "/offense_blocking.csv")) %>%
+  read.csv(glue("./01_data/season_grades/nfl/{season}/offense_blocking.csv")) %>%
     mutate(season = season)
 })
 
@@ -20,7 +21,7 @@ ol_grades <- bind_rows(ol_list) %>%
   filter(snap_counts_pass_block > 100)
 
 # save for reuse
-save(ol_grades, file = "./05_outputs/ol_grades.Rdata")
+save(ol_grades, file = "./01_data/season_grades/nfl/ol_grades.RDS")
 
 # ---- 1) Feature engineering: predict NEXT season (t+1) from current season (t) + lags ----
 fe <- ol_grades %>%
@@ -220,6 +221,6 @@ preds_out <- pred_2025 %>%
 head(preds_out)
 
 # Check a specific player (e.g., Trent Williams)
-# preds_out %>% filter(player == "Trent Williams")
+preds_out %>% filter(player == "Trent Williams")
 
-save(preds_out, file = "./05_outputs/2025_ol_pff_grades.Rdata")
+save(preds_out, file = "./05_outputs/season_projections/2025_ol_pff_grades.RDS")
