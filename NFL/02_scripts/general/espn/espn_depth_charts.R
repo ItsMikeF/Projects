@@ -253,3 +253,5 @@ nfl_depth_full <- espn_depth_chart_scraper(
   save_path = "./01_data/depth_chart/espn_depth_chart_2025.RDS",
   assign_global = TRUE
  )
+
+load("./01_data/depth_chart/espn_depth_chart_2025.RDS")

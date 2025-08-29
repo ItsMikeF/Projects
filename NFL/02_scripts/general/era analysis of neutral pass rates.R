@@ -101,7 +101,8 @@ team_neutral_pass_rate <- function(seasons = 2024,
   
   neut <- neutral_filter(
     pbp,
-    wp_low = wp_low, wp_high = wp_high,
+    wp_low = wp_low, 
+    wp_high = wp_high,
     min_half_sec = min_half_sec,
     downs = downs,
     include_q4_if_neutral = include_q4_if_neutral

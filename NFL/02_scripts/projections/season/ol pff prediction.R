@@ -13,7 +13,7 @@ ol_list <- lapply(seasons, function(season) {
     mutate(season = season)
 })
 
-ol_grades <- bind_rows(ol_list) %>%
+ol_grades_player <- bind_rows(ol_list) %>%
   select(player, player_id, position, team_name, season, player_game_count,
          grades_pass_block, snap_counts_pass_block,
          grades_run_block,  snap_counts_run_block) %>%
@@ -21,10 +21,10 @@ ol_grades <- bind_rows(ol_list) %>%
   filter(snap_counts_pass_block > 100)
 
 # save for reuse
-save(ol_grades, file = "./01_data/season_grades/nfl/ol_grades.RDS")
+saveRDS(ol_grades_player, file = "./01_data/season_grades/nfl/ol_grades_player.RDS")
 
 # ---- 1) Feature engineering: predict NEXT season (t+1) from current season (t) + lags ----
-fe <- ol_grades %>%
+fe <- ol_grades_player %>%
   arrange(player_id, season) %>%
   group_by(player_id) %>%
   mutate(

@@ -28,32 +28,16 @@ nfl_schedules <- map(teams_colors_logos$team_abbr,
                      )
 nfl_schedules <- set_names(nfl_schedules, teams_colors_logos$team_abbr)
 
-# lets look one schedule
-nfl_schedules$ARI %>% mutate(opponent = if_else(away_team=="ARI", home_team, away_team)) %>% 
-  select(game_id, week, opponent)
-
-
 # 2.0 Rest Days ---------------------------------------------------------------
 
 
 # Make a dataframe of the rest gained days
-rest_days_gained <- data.frame()
-
-for (i in seq_along(teams_colors_logos$team_abbr)) {
-  rest_days_gained[i,1] <- teams_colors_logos$team_abbr[i]
-  rest_days_gained[i,2] <- sum(nfl_schedules[[i]]$rest_gained, na.rm=T)
-}
-
-# investigaing why 11/13 produces 0.04 
-test <- nfl_schedules[[11]] %>% select(gameday, rest, rest_gained)
-
-difftime(test$gameday[9],test$gameday[8])
-difftime("2022-11-13","2022-11-06")
-
-# Inspect a few columns 
-nfl_schedules[[4]]$gameday
-nfl_schedules[[4]]$rest
-nfl_schedules[[4]]$rest_gained
+rest_days_gained <- schedules %>% 
+  group_by(away_team) %>% 
+  summarise(away_rest_total = sum(away_rest), 
+            games = n()) %>% 
+  ungroup() %>% 
+  mutate(net_rest = away_rest_total / games)
 
 
 # 3.0 Bye Weeks -----------------------------------------------------------
@@ -61,16 +45,7 @@ nfl_schedules[[4]]$rest_gained
 # Find which gameweek is the bye week for each team
 bye_weeks <- data.frame()
 
-for (i in c(1:18,20:26,28:29,31:32,34:36)) {
-  bye_weeks[i,1] <- teams_colors_logos$team_abbr[i]
-  bye_weeks[i,2] <- which(nfl_schedules[[i]]$rest == max(nfl_schedules[[i]]$rest, na.rm = T))
-}
 
-bye_weeks <- bye_weeks %>% drop_na() %>% rename(team = V1, bye_week = V2)
-
-bye_weeks %>% 
-  group_by(bye_week) %>% 
-  summarise(n=n())
 
 
 # 4.0 Add run defense data ----------------------------------------------------
