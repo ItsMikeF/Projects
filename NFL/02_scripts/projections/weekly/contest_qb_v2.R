@@ -1,4 +1,4 @@
-# create a list of all the rb slates
+# create a list of all the qb slates
 
 # 0.0 load packages -------------------------------------------------------
 
@@ -41,6 +41,7 @@ files <- function(start_year){
   indices <- which(!grepl("2021", contest_files))
   contest_files[indices]
   contest_files <- contest_files[indices]
+  contest_files
   
   # remove week 8 for missing files
   contest_files <- contest_files[-which(grepl("2022_w08", contest_files))]
@@ -48,6 +49,10 @@ files <- function(start_year){
   
   # remove week 1s
   contest_files <<- contest_files[-which(grepl("w01", contest_files))]
+  
+  #remove wrong folder name
+  contest_files <<- contest_files[-which(grepl("2024_21", contest_files))]
+  contest_files
   
   # remove unncessary objects
   rm(indices)
