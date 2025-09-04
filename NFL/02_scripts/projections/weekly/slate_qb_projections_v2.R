@@ -44,10 +44,11 @@ load_all <- function() {
   }
   files(2022)
   
-  folder <<- tail(contest_files, 1)
+  folder <<- "2025_w01"
+  #folder <<- tail(contest_files, 1)
   
   # define year
-  nfl_year <<- year(Sys.Date())-1
+  nfl_year <<- year(Sys.Date())
   
   # load schedule
   schedule <<- load_schedules(nfl_year)
@@ -88,11 +89,11 @@ load_all <- function() {
   odds(nfl_year)
   
   #load injuries
-  inj <<- load_injuries(2022:nfl_year) %>% 
+  inj <<- load_injuries(data_start:nfl_year-1) %>% # add -1 for w01
     mutate(inj_join = paste(season, week, team, full_name, sep = "_"))
   
   # load pbp
-  pbp <<- load_pbp(data_start:nfl_year) %>% 
+  pbp <<- load_pbp(data_start:nfl_year-1) %>% # add -1 for w01
     mutate(weather = as.character(weather))
   
 }
