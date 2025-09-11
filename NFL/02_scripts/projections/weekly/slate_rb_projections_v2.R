@@ -3,6 +3,7 @@
 # 1.0 load packages and data--------------------------------------------------
 
 load_all <- function() {
+  
   #load packages
   suppressMessages({
     library(nflfastR) # pbp data
@@ -11,9 +12,7 @@ load_all <- function() {
     library(glue) # interpreted literal strings
     library(caret) # data partition
     library(randomForest) # rf model
-    library(xgboost) # xgb model
-    library(openxlsx) # write xlsx files
-    library(googlesheets4) # for writing to google sheets
+    library(googlesheets4) # google sheet
   })
   
   # load all contest files
@@ -45,10 +44,11 @@ load_all <- function() {
   }
   files(2022)
   
+  #folder <<- "2025_w01"
   folder <<- tail(contest_files, 1)
   
   # define year
-  nfl_year <<- year(Sys.Date())-1
+  nfl_year <<- year(Sys.Date())
   
   # load schedule
   schedule <<- load_schedules(nfl_year)
@@ -62,7 +62,8 @@ load_all <- function() {
     target_row <- which.min(abs((as.Date(schedule$gameday) - target_date)))
   }
   
-  contest_week <<- as.numeric(schedule$week[target_row])
+  contest_week <<- as.numeric(schedule$week[target_row]) # hard code for playoffs
+  contest_week_0 <<- paste0("0", contest_week)
   
   # load spreads and totals
   odds <<- function(year){
@@ -89,11 +90,11 @@ load_all <- function() {
   odds(nfl_year)
   
   #load injuries
-  inj <<- load_injuries(2022:nfl_year) %>% 
+  inj <<- load_injuries(data_start:nfl_year-1) %>% # add -1 for w01
     mutate(inj_join = paste(season, week, team, full_name, sep = "_"))
   
   # load pbp
-  pbp <<- load_pbp(data_start:nfl_year) %>% 
+  pbp <<- load_pbp(data_start:nfl_year) %>% # add -1 for w01
     mutate(weather = as.character(weather))
   
 }
@@ -310,18 +311,13 @@ nfl_depth <- function() {
   # load depth chart
   depth_charts <<- load_depth_charts(seasons = nfl_year) %>% 
     
-    # current week depth charts not always available
-    filter(week == contest_week-2) %>% 
-    mutate(week = week + 2) %>% 
+    filter(dt == max(dt)) %>% 
+    filter(pos_abb == "RB") %>% 
+    filter(pos_rank == 1 | pos_rank == 2) %>% 
+    select(2:3) %>% 
     
-    # current week depth charts n
-    #filter(week == contest_week) %>% 
-    
-    filter(position == "RB") %>% 
-    filter(depth_position %in% c("RB", "HB")) %>% 
-    select(1:5, 10, 12, 15) %>% 
-    mutate(full_name = clean_player_names(full_name, lowercase = T), 
-           game_id = paste(season, week, club_code, sep = "_")) %>% 
+    mutate(player_name = clean_player_names(player_name, lowercase = T), 
+           game_id = paste(nfl_year, contest_week, team, sep = "_")) %>% 
     
     left_join(odds %>% select(away_team, home_team, home_spread, away_spread, home_join, total_line), by = c("game_id" = "home_join")) %>% 
     left_join(odds %>% select(away_team, home_team, home_spread, away_spread, away_join, total_line), by = c("game_id" = "away_join")) %>% 
@@ -336,21 +332,16 @@ nfl_depth <- function() {
     
     select(-c(away_team.x, away_team.y, home_team.x, home_team.y, home_spread.x, home_spread.y, away_spread.x, away_spread.y)) %>% 
     
-    mutate(opp = if_else(club_code == home_team, away_team, home_team), 
-           spread = if_else(club_code == home_team, home_spread, away_spread),
-           home = if_else(club_code == home_team, 1,0), 
-           game_id = paste(season, week, away_team, home_team, sep = "_")) %>% 
+    mutate(opp = if_else(team == home_team, away_team, home_team), 
+           spread = if_else(team == home_team, home_spread, away_spread),
+           home = if_else(team == home_team, 1,0), 
+           game_id = paste(nfl_year, contest_week_0, away_team, home_team, sep = "_")) %>% 
     
     select(-c(away_team, home_team, away_spread, home_spread, total_line.x, total_line.y)) %>% 
     #drop_na() %>% # to remove bye week teams
     
     # add schedule
     left_join(schedule %>% select(game_id, gameday, weekday, gametime), by=c("game_id"))
-  
-  unique(depth_charts$club_code)
-  
-  teams_colors_logos$team_abbr <- teams_colors_logos[!teams_colors_logos %in% c("OAK", "SD", "STL")]
-  teams_colors_logos[!teams_colors_logos %in% unique(depth_charts$club_code)]
 }
 nfl_depth()
 
@@ -381,11 +372,11 @@ combine_rb <- function() {
   
   rb <<- depth_charts %>%
     
-    left_join(rushing_summary, by = c('full_name' = 'player')) %>% 
-    mutate(full_name = str_to_title(full_name)) %>% 
+    left_join(rushing_summary, by = c('player_name' = 'player')) %>% 
+    mutate(player_name = str_to_title(player_name)) %>% 
     
     left_join(pbp_def, by = c('opp' = 'defteam')) %>% 
-    left_join(pbp_off, by = c('club_code' = 'posteam')) %>%
+    left_join(pbp_off, by = c('team' = 'posteam')) %>%
     left_join(def_table, by = c('opp' = 'team_name')) %>% 
     
     mutate(touches_game = round(total_touches / player_game_count, digits = 1), 
@@ -434,7 +425,7 @@ combine_rb <- function() {
       yco_attempt_sd = round((yco_attempt - mean(yco_attempt, na.rm=T)) / sd(yco_attempt, na.rm = T), digits = 2), 
       touches_game_sd = round((touches_game - mean(touches_game, na.rm=T)) / sd(touches_game, na.rm = T), digits = 2), 
       
-      inj_join = paste(contest_year, contest_week, club_code, full_name, sep = "_")) %>% 
+      inj_join = paste(contest_year, contest_week, team, player_name, sep = "_")) %>% 
     
     left_join(inj %>% select(inj_join, report_status, practice_status), by=c("inj_join")) %>% 
     
@@ -491,8 +482,8 @@ rb <- rb %>%
 # join projections to data and view
 rb_slate <- rb %>% 
   #filter(weekday == "Monday") %>% # toggle as needed for slates
-  select(7:35) %>% 
-  distinct(full_name, .keep_all = T) %>% 
+  select(1:43) %>% 
+  distinct(player_name, .keep_all = T) %>% 
   mutate(position = paste0("RB",row_number())) %>% 
   filter(fpt_proj != "") %>% 
   view(title = glue("{folder}_rb"))

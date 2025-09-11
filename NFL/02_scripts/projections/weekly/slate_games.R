@@ -48,7 +48,7 @@ load_all <- function() {
   folder <<- tail(contest_files, 1)
   
   # define year
-  nfl_year <<- year(Sys.Date())-1
+  nfl_year <<- year(Sys.Date())
   
   # load schedule
   schedule <<- load_schedules(nfl_year)
@@ -221,9 +221,9 @@ def_table()
 # 2.0 slate games ------------------------------------------------------------
 
 
-slate_games <- function(contest_week){
+def_slate_games <- function(contest_week_value){
   slate_games <- schedule %>% 
-    filter(week == 22) %>% 
+    filter(week == contest_week_value) %>% 
     select(game_id, away_team, home_team, spread_line, total_line, roof) 
   
   slate_games_alpha <- slate_games %>% 
@@ -239,7 +239,7 @@ slate_games <- function(contest_week){
     rename(opp = away_team,
            team = home_team)
   
-  slate_games <- rbind(slate_games_alpha, slate_games_bravo) %>% 
+  slate_games <<- rbind(slate_games_alpha, slate_games_bravo) %>% 
     
     left_join(pbp_off %>% select(posteam, off_pass_epa_rank, off_rush_epa_rank), by=c("team"="posteam")) %>% 
     left_join(pbp_def %>% select(defteam, def_pass_epa_rank, def_rush_epa_rank), by=c("opp"="defteam")) %>% 
@@ -247,10 +247,9 @@ slate_games <- function(contest_week){
     mutate(rush_adv = def_rush_epa_rank-off_rush_epa_rank,
            pass_adv = def_pass_epa_rank-off_pass_epa_rank,
            delta = rush_adv + pass_adv) %>% 
-    arrange(-delta) %>% 
-    view(title = "slate_games")
+    arrange(-delta)
 }
-slate_games(21) 
+def_slate_games(contest_week) 
 
 
 # 3.0 write to google sheets---------------------------------------------------
