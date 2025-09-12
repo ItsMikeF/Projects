@@ -429,7 +429,7 @@ wr <- wr %>%
   mutate(fpt_proj = round(model_projections_fpts, digits = 1), 
          receptions_proj = round(model_projections_receptions, digits = 1), 
          receiving_yards_proj = round(model_projections_receiving_yards, digits = 1), 
-         pass_td_proj = round(model_projections_pass_td, digits = 1)) %>% 
+         pass_td_proj = round(model_projections_pass_td, digits = 2)) %>% 
   
   relocate(c("fpt_proj", "receptions_proj", "receiving_yards_proj", "pass_td_proj"),
            .after = player_name) %>% 

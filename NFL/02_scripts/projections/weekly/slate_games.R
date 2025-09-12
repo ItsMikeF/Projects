@@ -224,16 +224,16 @@ def_table()
 def_slate_games <- function(contest_week_value){
   slate_games <- schedule %>% 
     filter(week == contest_week_value) %>% 
-    select(game_id, away_team, home_team, spread_line, total_line, roof) 
+    select(game_id, away_team, home_team, spread_line, total_line, roof, gameday, weekday) 
   
   slate_games_alpha <- slate_games %>% 
-    select(game_id, away_team, home_team, spread_line, total_line, roof) %>% 
+    select(game_id, away_team, home_team, spread_line, total_line, roof, gameday, weekday) %>% 
     mutate(home = 0) %>% 
     rename(team = away_team,
            opp = home_team)
   
   slate_games_bravo <- slate_games %>% 
-    select(game_id, home_team, away_team, spread_line, total_line, roof) %>% 
+    select(game_id, home_team, away_team, spread_line, total_line, roof, gameday, weekday) %>% 
     mutate(spread_line = spread_line * -1, 
            home = 1) %>% 
     rename(opp = away_team,
