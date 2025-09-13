@@ -7,10 +7,14 @@ library(cfbfastR)
 contest_week = 3
 cfb_season = 2025
 
+keep.conf <- c("SEC", "Moutain West", "American Athletic", "Pac-12", 
+               "Mid-American", "Sun Belt", "ACC", "Big 12", "Big Ten", 
+               "FBS Independents", "Conference USA")
+
 scores <- load_cfb_schedules(2025) %>% 
   filter(week < contest_week) %>% 
-  filter(home_conference %in% keep.conf | home_conference %in% keep.conf) %>% 
-  filter(away_conference %in% keep.conf | away_conference %in% keep.conf) %>% 
+  filter(home_division == "fbs") %>% 
+  filter(away_division == "fbs") %>% 
   select(game_id, 
          home_id, home_team, home_pregame_elo, home_points,
          away_id, away_team, away_pregame_elo, away_points)
@@ -23,10 +27,6 @@ rosters_qb <- load_cfb_rosters(2025) %>%
   relocate(player, .after = team)
 
 pbp <- load_cfb_pbp(2025)
-
-keep.conf <- c("SEC", "Moutain West", "American Athletic", "Pac-12", 
-               "Mid-American", "Sun Belt", "ACC", "Big 12", "Big Ten", 
-               "FBS Independents", "Conference USA")
 
 pbp_clean <- pbp %>% 
   filter(offense_conference %in% keep.conf | defense_conference %in% keep.conf)
@@ -123,3 +123,39 @@ slate <- load_cfb_schedules(2025) %>%
   select(-c("start_date", "date_time")) %>% 
   relocate(c("date", "time"), .after = game_id) %>% 
   left_join(epa_off, by = c("home_team"="pos_team"))
+
+# Load required packages
+library(dplyr)
+
+# Join slate and odds data frames
+merged_data <- slate %>%
+  left_join(
+    odds,
+    by = c("home_team" = "home_team", "away_team" = "away_team")
+  ) %>%
+  # Select and reorder columns for clarity (optional)
+  select(
+    game_id.x, date, time, home_team, away_team,
+    home_spread, away_spread, game_total,
+    avg_rank, off_rush_epa, off_rush_epa_rank, off_rush_epa_sd,
+    off_pass_epa, off_pass_epa_rank, off_pass_epa_sd,
+    target_date
+  ) %>%
+  # Rename game_id.x to game_id for consistency
+  rename(game_id = game_id.x)
+
+# Print structure of merged data
+str(merged_data)
+
+# Optional: Check for unmatched games (rows where odds data is missing)
+unmatched <- merged_data %>%
+  filter(is.na(home_spread) | is.na(away_spread) | is.na(game_total))
+if (nrow(unmatched) > 0) {
+  cat("Number of games in slate without odds data:", nrow(unmatched), "\n")
+  print(unmatched[, c("game_id", "home_team", "away_team", "date")])
+}
+
+library(googlesheets4)
+gs4_auth()
+sheet_id <- "https://docs.google.com/spreadsheets/d/1zTmxMOxGUuY5bYIiEA9lgbagUgmwXmYB3e7EVoF1LeA/edit?gid=0#gid=0"
+write_sheet(merged_data, ss = sheet_id, sheet = "slate")
